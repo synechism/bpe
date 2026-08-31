@@ -33,8 +33,11 @@ table before execution and retain its peer of descriptor 3.
 The launcher binary must be executed from the same pinned bytes that were hashed. A caller
 must use an already-verified immutable root-owned inode or an fd-based `execveat(...,
 AT_EMPTY_PATH)`/equivalent flow; hashing a pathname and later executing that pathname is not
-an acceptable preflight. The build emits a static PIE so no runtime ELF interpreter or
-shared-library path participates.
+an acceptable preflight. `bpe.inert_artifact` now provides the process-free deployment
+preflight: it verifies the configured digest, ELF and embedded seccomp markers, copies the
+bytes into a completely sealed executable memfd, and retains only a read-only descriptor.
+Atomic launch orchestration remains separate and pending. The build emits a static PIE so
+no runtime ELF interpreter or shared-library path participates.
 
 ## Fixed kernel sequence
 
@@ -125,6 +128,49 @@ make -C worker/linux/inert_fixture_launcher check
 ```
 
 The output is `build/native/inert_fixture_launcher/bpe-inert-fixture-launcher`. The build
-checks the canonical and embedded seccomp identity, ELF64 little-endian x86-64 PIE type,
+checks the canonical seccomp filter digest and embedded identity markers, ELF64
+little-endian x86-64 PIE type,
 absence of interpreter/shared-library/search-path dependencies, non-executable GNU stack,
 RELRO, immediate binding, PIE flag, and SHA-1 build ID.
+
+## Privileged live-kernel gate
+
+The internal evaluator probe `tests/integration/inert_fixture_launcher_native_probe.py`
+is the isolated blocking end-to-end kernel gate. It is not included in public release
+archives. A public artifact therefore cannot by itself prove that this internal gate passed.
+CI is configured to run it as root/PID 1 in a disposable privileged Linux x86-64 container
+with private PID and cgroup namespaces and no network. CI first requires both the runner host and Docker server
+to report native x86-64, so emulation is not accepted as qualification evidence. The probe
+moves itself into a manager cgroup, creates a new empty sibling leaf per case, constructs the
+exact empty-environment/argv0/descriptor-0-through-4 ABI, drains every `SOCK_SEQPACKET`
+record through EOF, waits for the exact
+launcher PID, and validates the result with the installed Python parser. The workflow passes
+an external digest of the built artifact; the rootful probe copies those exact bytes into a
+fresh root-owned mode-0500 file, runs the production immutable-artifact preflight, and uses a
+fresh validated duplicate of that sealed read-only memfd for every fd-capable `execve` case.
+The high close-on-exec artifact fd therefore cannot leak into the launcher's descriptor
+table, and source-inode mutation cannot change executed bytes after preflight. Success
+requires mask `0x1ff`, the exact child PID lifecycle, no reparented or zombie child,
+`populated 0`, empty `cgroup.procs`, strict manager-cgroup removal, and a removable leaf.
+Separate fresh leaves
+require fail-closed behavior for an inherited descriptor 257, prequeued inbound control
+data, and a peer closed before `exec`. A fifth leaf adds an adversarial evaluator-only
+inherited outer seccomp filter immediately before fd-exec. That filter allows the native
+x86-64 ABI except for `pidfd_send_signal`, which returns `EPERM`; it is not part of the
+production launcher or its embedded policy. A successful native run must then parse the
+exact `HELLO`, `CHILD_READY`, `ERROR` transcript with
+`PIDFD_SIGNAL/PIDFD_SIGNAL_FAILED/EPERM`, kernel exit code, and achieved mask `0x1c3`, before
+independently proving exact reap, an empty/removable leaf, and no reparented child. Passing
+that live case conditionally qualifies the launcher's bounded emergency `cgroup.kill`
+fallback when both its normal pidfd stop and emergency pidfd kill are denied; merely having
+the probe code does not.
+
+This gate cannot run meaningfully in the ordinary unprivileged unit-test environment: it
+requires a writable cgroup-v2 namespace, `CAP_SYS_ADMIN`, `CLONE_INTO_CGROUP`, pidfds,
+`cgroup.kill`, and the native x86-64 seccomp/syscall ABI. The compile-time protocol,
+descriptor-scan, seccomp-digest, and ELF checks remain unprivileged `make check` coverage;
+passing those checks is not a substitute for the privileged live-kernel gate. Architecture
+emulation is not release evidence because it may not implement fd-based `execve`, `clone3`,
+pidfds, or the fixed seccomp syscall ABI faithfully.
+Only a successful privileged run on a native x86-64 CI host qualifies the lifecycle; probe
+and workflow presence do not.

@@ -1,0 +1,332 @@
+{
+  "additionalProperties": false,
+  "description": "Evidence that fixed bytes were sealed and retained, never launch authority.",
+  "properties": {
+    "artifact_digest_verified": {
+      "const": true,
+      "title": "Artifact Digest Verified",
+      "type": "boolean"
+    },
+    "authoritative": {
+      "const": false,
+      "title": "Authoritative",
+      "type": "boolean"
+    },
+    "claim_ledger_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Claim Ledger Id",
+      "type": "string"
+    },
+    "delegated_root_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Delegated Root Id",
+      "type": "string"
+    },
+    "elf_contract": {
+      "const": "elf64-le-x86_64-static-pie-v1",
+      "title": "Elf Contract",
+      "type": "string"
+    },
+    "elf_contract_verified": {
+      "const": true,
+      "title": "Elf Contract Verified",
+      "type": "boolean"
+    },
+    "embedded_seccomp_markers_verified": {
+      "const": true,
+      "title": "Embedded Seccomp Markers Verified",
+      "type": "boolean"
+    },
+    "executable_fd_retained_at_preflight": {
+      "const": true,
+      "title": "Executable Fd Retained At Preflight",
+      "type": "boolean"
+    },
+    "execution_started": {
+      "const": false,
+      "title": "Execution Started",
+      "type": "boolean"
+    },
+    "fixture_child_process_created": {
+      "const": false,
+      "title": "Fixture Child Process Created",
+      "type": "boolean"
+    },
+    "host_architecture": {
+      "const": "x86_64",
+      "title": "Host Architecture",
+      "type": "string"
+    },
+    "host_platform": {
+      "const": "linux",
+      "title": "Host Platform",
+      "type": "string"
+    },
+    "launch_attempt_consumed": {
+      "const": false,
+      "title": "Launch Attempt Consumed",
+      "type": "boolean"
+    },
+    "launch_authorized": {
+      "const": false,
+      "title": "Launch Authorized",
+      "type": "boolean"
+    },
+    "launch_ledger_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Launch Ledger Id",
+      "type": "string"
+    },
+    "launcher_argv_environment": {
+      "const": "argc-one-empty-environment-v1",
+      "title": "Launcher Argv Environment",
+      "type": "string"
+    },
+    "launcher_artifact_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Launcher Artifact Id",
+      "type": "string"
+    },
+    "launcher_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Launcher Artifact Sha256",
+      "type": "string"
+    },
+    "launcher_fd_layout": {
+      "const": "stdio-null-control-3-cgroup-4-v1",
+      "title": "Launcher Fd Layout",
+      "type": "string"
+    },
+    "launcher_launch_method": {
+      "const": "fixed-one-shot-executable-v1",
+      "title": "Launcher Launch Method",
+      "type": "string"
+    },
+    "launcher_process_created": {
+      "const": false,
+      "title": "Launcher Process Created",
+      "type": "boolean"
+    },
+    "launcher_protocol_version": {
+      "const": "bpe.clone3-inert-launcher-protocol.v1",
+      "title": "Launcher Protocol Version",
+      "type": "string"
+    },
+    "launcher_seccomp_policy_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Launcher Seccomp Policy Id",
+      "type": "string"
+    },
+    "launcher_seccomp_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Launcher Seccomp Policy Sha256",
+      "type": "string"
+    },
+    "policy_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Policy Sha256",
+      "type": "string"
+    },
+    "preflight_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Preflight Id",
+      "type": "string"
+    },
+    "process_created": {
+      "const": false,
+      "title": "Process Created",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "bpe.linux-inert-launcher-artifact-preflight-receipt.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "sealed_copy_method": {
+      "const": "memfd-exec-complete-seals-procfd-readonly-v1",
+      "title": "Sealed Copy Method",
+      "type": "string"
+    },
+    "sealed_copy_mode": {
+      "maximum": 65535,
+      "minimum": 0,
+      "title": "Sealed Copy Mode",
+      "type": "integer"
+    },
+    "sealed_copy_nlink": {
+      "const": 0,
+      "title": "Sealed Copy Nlink",
+      "type": "integer"
+    },
+    "sealed_copy_seals": {
+      "const": 63,
+      "title": "Sealed Copy Seals",
+      "type": "integer"
+    },
+    "sealed_copy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sealed Copy Sha256",
+      "type": "string"
+    },
+    "sealed_copy_size_bytes": {
+      "maximum": 16777216,
+      "minimum": 64,
+      "title": "Sealed Copy Size Bytes",
+      "type": "integer"
+    },
+    "sealed_copy_verified": {
+      "const": true,
+      "title": "Sealed Copy Verified",
+      "type": "boolean"
+    },
+    "source_ctime_ns": {
+      "minimum": 0,
+      "title": "Source Ctime Ns",
+      "type": "integer"
+    },
+    "source_device": {
+      "minimum": 0,
+      "title": "Source Device",
+      "type": "integer"
+    },
+    "source_gid": {
+      "minimum": 0,
+      "title": "Source Gid",
+      "type": "integer"
+    },
+    "source_inode": {
+      "minimum": 1,
+      "title": "Source Inode",
+      "type": "integer"
+    },
+    "source_method": {
+      "const": "exact-caller-supplied-readable-fd-v1",
+      "title": "Source Method",
+      "type": "string"
+    },
+    "source_mode": {
+      "maximum": 65535,
+      "minimum": 0,
+      "title": "Source Mode",
+      "type": "integer"
+    },
+    "source_mtime_ns": {
+      "minimum": 0,
+      "title": "Source Mtime Ns",
+      "type": "integer"
+    },
+    "source_nlink": {
+      "const": 1,
+      "title": "Source Nlink",
+      "type": "integer"
+    },
+    "source_not_group_other_writable": {
+      "const": true,
+      "title": "Source Not Group Other Writable",
+      "type": "boolean"
+    },
+    "source_owner_trusted": {
+      "const": true,
+      "title": "Source Owner Trusted",
+      "type": "boolean"
+    },
+    "source_regular_file_verified": {
+      "const": true,
+      "title": "Source Regular File Verified",
+      "type": "boolean"
+    },
+    "source_size_bytes": {
+      "maximum": 16777216,
+      "minimum": 64,
+      "title": "Source Size Bytes",
+      "type": "integer"
+    },
+    "source_stable_during_read": {
+      "const": true,
+      "title": "Source Stable During Read",
+      "type": "boolean"
+    },
+    "source_uid": {
+      "minimum": 0,
+      "title": "Source Uid",
+      "type": "integer"
+    },
+    "status": {
+      "const": "artifact_preflighted_not_launched",
+      "title": "Status",
+      "type": "string"
+    },
+    "worker_instance_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Worker Instance Id",
+      "type": "string"
+    },
+    "worker_pool_audience": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Worker Pool Audience",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "status",
+    "preflight_id",
+    "policy_id",
+    "policy_sha256",
+    "worker_pool_audience",
+    "worker_instance_id",
+    "claim_ledger_id",
+    "launch_ledger_id",
+    "delegated_root_id",
+    "launcher_artifact_id",
+    "launcher_artifact_sha256",
+    "launcher_seccomp_policy_id",
+    "launcher_seccomp_policy_sha256",
+    "host_platform",
+    "host_architecture",
+    "launcher_protocol_version",
+    "launcher_launch_method",
+    "launcher_fd_layout",
+    "launcher_argv_environment",
+    "source_method",
+    "source_device",
+    "source_inode",
+    "source_mode",
+    "source_uid",
+    "source_gid",
+    "source_nlink",
+    "source_size_bytes",
+    "source_mtime_ns",
+    "source_ctime_ns",
+    "source_regular_file_verified",
+    "source_owner_trusted",
+    "source_not_group_other_writable",
+    "source_stable_during_read",
+    "artifact_digest_verified",
+    "elf_contract",
+    "elf_contract_verified",
+    "embedded_seccomp_markers_verified",
+    "sealed_copy_method",
+    "sealed_copy_sha256",
+    "sealed_copy_size_bytes",
+    "sealed_copy_mode",
+    "sealed_copy_nlink",
+    "sealed_copy_seals",
+    "sealed_copy_verified",
+    "executable_fd_retained_at_preflight",
+    "launch_attempt_consumed",
+    "launch_authorized",
+    "launcher_process_created",
+    "fixture_child_process_created",
+    "process_created",
+    "execution_started",
+    "authoritative"
+  ],
+  "title": "LinuxInertLauncherArtifactPreflightReceipt",
+  "type": "object"
+}

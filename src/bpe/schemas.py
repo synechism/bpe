@@ -9,6 +9,7 @@ from bpe.capabilities import WorkerCapabilities
 from bpe.cgroup import JSON_SCHEMAS as CGROUP_JSON_SCHEMAS
 from bpe.corpus import CorpusAuditPolicy, CorpusAuditReport, CorpusManifest
 from bpe.dispatch import JSON_SCHEMAS as DISPATCH_JSON_SCHEMAS
+from bpe.inert_artifact import JSON_SCHEMAS as INERT_ARTIFACT_JSON_SCHEMAS
 from bpe.inert_fixture import JSON_SCHEMAS as INERT_FIXTURE_JSON_SCHEMAS
 from bpe.inert_launch import JSON_SCHEMAS as INERT_LAUNCH_JSON_SCHEMAS
 from bpe.ingress import JSON_SCHEMAS as INGRESS_JSON_SCHEMAS
@@ -23,6 +24,7 @@ JSON_SCHEMAS: dict[str, type[BaseModel]] = {
     **CGROUP_JSON_SCHEMAS,
     **DISPATCH_JSON_SCHEMAS,
     **INGRESS_JSON_SCHEMAS,
+    **INERT_ARTIFACT_JSON_SCHEMAS,
     **INERT_FIXTURE_JSON_SCHEMAS,
     **INERT_LAUNCH_JSON_SCHEMAS,
     **ORACLE_JSON_SCHEMAS,
@@ -45,6 +47,7 @@ if len(JSON_SCHEMAS) != (
     + len(CGROUP_JSON_SCHEMAS)
     + len(DISPATCH_JSON_SCHEMAS)
     + len(INGRESS_JSON_SCHEMAS)
+    + len(INERT_ARTIFACT_JSON_SCHEMAS)
     + len(INERT_FIXTURE_JSON_SCHEMAS)
     + len(INERT_LAUNCH_JSON_SCHEMAS)
     + len(ORACLE_JSON_SCHEMAS)

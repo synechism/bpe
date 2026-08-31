@@ -227,10 +227,13 @@ and concurrent mutation by a process with equivalent authority are outside the b
 It provides no mount-namespace, filesystem, network, executable, environment, output, or
 candidate isolation.
 
-Phase 1B.2b-1 must use the retained handle with a fixed inert fixture and native launcher
-that atomically creates the child in the leaf with
-`clone3(CLONE_INTO_CGROUP | CLONE_PIDFD)`. Its first narrow slice may qualify only pidfd
-stop/exit observation and reaping, one live `cgroup.kill`, `populated 0`, and exact cleanup.
+The Phase 1B.2b-1 blocking privileged native gate is configured to exercise a fixed inert
+fixture and launcher that atomically creates the child in a leaf with
+`clone3(CLONE_INTO_CGROUP | CLONE_PIDFD)`. When it passes on native x86-64, it qualifies
+pidfd stop/exit observation and reaping, one live `cgroup.kill`, `populated 0`, and exact
+cleanup. Gate code and configuration alone are not qualification evidence. The pending
+atomic Python orchestrator must acquire the same fully revalidated retained handle before
+launch.
 Bounded signed output/deadlines, real resource pressure, and a forking descendant require
 later fixed fixture protocols. No phase may infer those claims from empty-leaf or single-child
 success, and this boundary still exposes no caller-controlled argv, environment, executable

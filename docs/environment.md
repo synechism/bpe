@@ -6,8 +6,12 @@ protocol, and non-executable prepared job bundles. Phase 1A adds signed one-shot
 admission. Phase 1B.0 adds Linux-only verified ingress into a private worker tree, and
 Phase 1B.1 adds an empty-leaf cgroup-v2 qualification probe. Phase 1B.2a adds a pure-Python
 signed intent claim for one future fixed inert fixture, and Phase 1B.2b-0 adds a separate
-pure-Python atomic launch-attempt consumption ledger. None is a process launcher; process
-isolation arrives with the later Phase 1 worker.
+pure-Python atomic launch-attempt consumption ledger. Phase 1B.2b-1 adds process-free
+immutable artifact preflight plus a configured blocking privileged native x86-64
+live-kernel qualification probe for the fixed launcher. Only a successful run of that gate
+on a native x86-64 CI host produces lifecycle-qualification evidence. None of the production
+Python boundaries is yet a process
+launcher; atomic launch orchestration and candidate isolation remain later Phase 1 work.
 
 ## Agent-visible environment
 
@@ -154,9 +158,15 @@ This claim is one-shot only within that configured physical database. Deployment
 one durable, non-clonable ledger ownership domain per worker and supply external uniqueness
 and anti-rollback; local SQLite identity fields cannot prevent whole-file copies or rollback.
 
-Phase 1B.2b-1 must qualify a fixed inert fixture created atomically with
-`clone3(CLONE_INTO_CGROUP | CLONE_PIDFD)`. Its first narrow slice may prove only pidfd
-lifecycle handling, one live `cgroup.kill`, reaping, and `populated 0`; bounded signed
+Phase 1B.2b-1 now authenticates and immutably seals the configured launcher artifact without
+creating a process, while a separate blocking privileged Linux probe is configured to
+exercise a fixed inert fixture created atomically with
+`clone3(CLONE_INTO_CGROUP | CLONE_PIDFD)`. When it passes on native x86-64, that narrow gate
+qualifies pidfd lifecycle handling, one live `cgroup.kill`, reaping, and `populated 0`. Its
+evaluator-only inherited seccomp case denies both normal and emergency
+`pidfd_send_signal`; only the successful native `EPERM`/mask-`0x1c3` case qualifies the
+emergency `cgroup.kill` fallback and exact cleanup. Atomic Python orchestration remains
+pending. Bounded signed
 output/deadlines, real resource pressure, and forking-descendant cleanup remain later fixed
 fixtures. Snapshot freshness, candidate execution, executable/argv/environment/dynamic-
 loader qualification, and authoritative result attestations remain separate later

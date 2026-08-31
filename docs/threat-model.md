@@ -130,11 +130,19 @@ The intent claim is necessary but not sufficient for that future process. Phase 
 uses a distinct atomic launch ledger, requires the exact committed receipt, and revalidates
 the original signed intent, trust role, complete policy preimage, worker and ledger identities,
 local bindings, clock floor, and expiry immediately before consuming the sole launch attempt.
-Its terminal receipt is explicitly non-launching and nonauthoritative. Phase 1B.2b-1 must
-then separately qualify atomic
+Its terminal receipt is explicitly non-launching and nonauthoritative. Phase 1B.2b-1
+separately binds immutable launcher bytes and configures a blocking native-lifecycle gate.
+The process-free artifact preflight now returns a completely sealed read-only executable
+fd, and a privileged disposable Linux probe is designed to exercise atomic
 `clone3(CLONE_INTO_CGROUP | CLONE_PIDFD)` creation, pidfd lifecycle handling, a live
-`cgroup.kill`, reaping, and empty cleanup. Bounded signed output/deadlines, real resource
-pressure, and race-safe forking-descendant cleanup require later fixed fixtures. A later
+`cgroup.kill`, reaping, and empty cleanup. It also configures an evaluator-only inherited
+seccomp adversary that forces both pidfd signal attempts to fail with `EPERM`, making exact
+reap and empty/removable cleanup depend on emergency `cgroup.kill`. Only a successful
+privileged run with the canonical failure transcript on native x86-64 qualifies that
+fallback or the broader lifecycle; probe and workflow presence do not. The atomic Python
+orchestrator that joins those
+boundaries to the consumed launch attempt is still pending. Bounded signed output/deadlines,
+real resource pressure, and race-safe forking-descendant cleanup require later fixed fixtures. A later
 terminal result also needs a separate signing domain, attestor role, and durable
 result/finalization ledger; it cannot authorize retry or candidate launch. See [cgroup-v2
 empty-leaf qualification](cgroup-qualification.md) and [inert-fixture intent

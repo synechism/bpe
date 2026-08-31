@@ -18,7 +18,9 @@ This repository currently contains the **Phase 0 grading contract**, the non-exe
 **Phase 1A dispatch primitive**, the non-executing **Phase 1B.0 Linux ingress boundary**,
 the non-executing **Phase 1B.1 cgroup-v2 empty-leaf qualification boundary**, and the
 pure-Python, non-launching **Phase 1B.2a inert-fixture intent admission** and
-**Phase 1B.2b-0 launch-attempt consumption boundaries**:
+**Phase 1B.2b-0 launch-attempt consumption boundaries**, plus the process-free
+**Phase 1B.2b-1 immutable launcher-artifact preflight and configured native x86-64
+qualification gate**:
 
 - strict, versioned task, suite, experiment, exact-check scoring-contract, evidence,
   environment, grade, policy, replay, and attestation-registry schemas;
@@ -55,7 +57,9 @@ pure-Python, non-launching **Phase 1B.2a inert-fixture intent admission** and
   retry path;
 - a separately compiled Linux x86-64 static-PIE launcher with a fixed seccomp filter,
   built-in no-exec child, exact `clone3`/pidfd/cgroup state machine, and cross-language
-  bounded result parser; the artifact is build-audited but not yet callable from Python;
+  bounded result parser; Python can authenticate and seal its exact bytes into a retained
+  read-only executable fd without launching it, and a blocking privileged native x86-64
+  Linux CI gate is configured to exercise its fixed live-kernel lifecycle;
 - a typed, deterministic XDP differential oracle for return values, packet/context bytes,
   maps, ordered events, counters, and first-divergence evidence;
 - a cross-platform worker capability probe that refuses to claim verifier support on macOS;
@@ -64,11 +68,17 @@ pure-Python, non-launching **Phase 1B.2a inert-fixture intent admission** and
 
 Privileged verifier execution is intentionally not faked on macOS. Signed dispatch, Linux
 ingress, cgroup qualification, inert-fixture admission, and launch-attempt consumption still
-return `execution_started: false` and `authoritative: false`. The remaining Phase 1B.2b-1
-work is immutable artifact preflight, atomic Python launch orchestration, and privileged
-Linux qualification of the fixed
-`clone3(CLONE_INTO_CGROUP | CLONE_PIDFD)` supervisor. That is followed by a pinned Linux
-XDP compiler and disposable microVM worker. See [the
+return `execution_started: false` and `authoritative: false`. Immutable launcher-artifact
+preflight and the blocking privileged native x86-64 qualification gate for the fixed
+`clone3(CLONE_INTO_CGROUP | CLONE_PIDFD)` supervisor are implemented. Code or workflow
+presence is not qualification evidence: the lifecycle is qualified only by a successful
+privileged run on a native x86-64 CI host. That configured run includes an evaluator-only
+inherited seccomp case whose successful canonical `EPERM`/mask-`0x1c3` failure and external
+reap/empty/removal checks qualify emergency cleanup through `cgroup.kill` when both pidfd
+signal attempts are denied. The remaining
+Phase 1B.2b-1 work is atomic Python launch orchestration that preserves preflight-before-
+consumption ordering and terminal post-consumption failure semantics. That is followed by a
+pinned Linux XDP compiler and disposable microVM worker. See [the
 grading design](docs/grading.md), [provisional admission
 contract](docs/admission.md), [contamination gate](docs/contamination.md), [environment
 contract](docs/environment.md), [grader qualification](docs/grader-qualification.md), [typed
@@ -77,7 +87,8 @@ protocol](docs/worker-protocol.md), [signed dispatch admission](docs/dispatch-ad
 [Linux claimed-job ingress](docs/linux-ingress.md), [repair
 taxonomy](docs/root-cause-taxonomy.md), [cgroup-v2 empty-leaf
 qualification](docs/cgroup-qualification.md), [inert-fixture intent
-admission](docs/inert-fixture-admission.md), and [roadmap](docs/roadmap.md).
+admission](docs/inert-fixture-admission.md), [immutable launcher artifact
+preflight](docs/launcher-artifact-preflight.md), and [roadmap](docs/roadmap.md).
 
 ## Quick start
 

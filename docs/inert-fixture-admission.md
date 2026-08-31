@@ -7,9 +7,13 @@ create or configure a cgroup, call `clone3`, obtain a pidfd, or start any proces
 
 For these admission APIs, the spawned one-shot launcher, its fixed descriptor layout and
 empty environment, and the built-in no-exec fixture remain signed **metadata only**. A
-separately compiled native launcher source artifact now implements that fixed state machine,
-but Python does not yet preflight or invoke it and no privileged runtime qualification has
-been claimed. A successful receipt has status `claimed_not_started` and fixes
+separately compiled native launcher source artifact now implements that fixed state machine.
+Python authenticates and seals its exact configured bytes without invoking it, and a
+separate blocking privileged native x86-64 Linux CI probe is configured to exercise its
+fixed live-kernel lifecycle. Qualification requires that probe to pass on a native x86-64
+host; its presence alone is not evidence. Atomic Python launch orchestration is still absent.
+A successful admission receipt has status
+`claimed_not_started` and fixes
 `launch_authorized`, `launch_attempt_consumed`,
 `process_created`, `execution_started`, and `authoritative` to `false`.
 
@@ -252,21 +256,32 @@ prevent whole-file rollback, cloning, and duplicate provisioning for the same lo
 ## Required native boundary
 
 The orchestration boundary must safely preflight the host, trusted launcher bytes, and exact
-seccomp filter before consuming the launch attempt. It must then consume that attempt before
-creating a leaf cgroup or any process and treat every later failure or ambiguity as terminal.
+seccomp filter before consuming the launch attempt. The process-free [immutable launcher
+artifact preflight](launcher-artifact-preflight.md) now provides that sealed executable-FD
+handoff. A blocking privileged native probe is configured to exercise the exact fixed
+launcher lifecycle, and qualifies it only when it passes on a native x86-64 host. The
+pending atomic orchestrator must then consume that attempt before creating a leaf cgroup or
+any process and treat every later failure or ambiguity as terminal.
 Neither the original claim receipt nor the launch-attempt receipt can be accepted as a
 standalone launch token.
 
 The repository now contains a separately compiled, single-threaded, one-shot C launcher
 whose child follows one built-in fixed no-exec fixture state machine. It must qualify the
 actual `clone3(CLONE_INTO_CGROUP | CLONE_PIDFD)`, pidfd stop/exit observation and reaping,
-one live `cgroup.kill`, and empty cleanup first. Signed wall/output deadlines, real
+one live `cgroup.kill`, and empty cleanup first. The configured native gate also has an
+evaluator-only inherited seccomp case that denies both `pidfd_send_signal` attempts with
+`EPERM`; only a successful native run with the canonical `0x1c3` error transcript plus
+external reap/empty/removal checks qualifies emergency cleanup through `cgroup.kill`.
+Signed wall/output deadlines, real
 controller pressure, and forking-descendant cleanup require later fixed fixture protocols
 and cannot be inferred from that first slice. Its static-PIE build, fixed seccomp filter, and
-result-only wire parser are compile- and unit-checked, but no Python orchestration path can
-launch it yet. The Phase 1B.2a launcher kind, artifact and seccomp digests, fixed
+result-only wire parser have compile and unit checks plus a configured blocking privileged
+native x86-64 live-kernel gate. Only a successful native run supplies qualification
+evidence. The
+process-free Python preflight can retain its exact sealed executable fd, but no atomic Python
+orchestration path launches it yet. The Phase 1B.2a launcher kind, artifact and seccomp digests, fixed
 `argc == 1`/empty-environment design, descriptor layout, IPC method, and fixture protocol
-remain commitments until the complete artifact/preflight/orchestration boundary is reviewed;
+remain commitments until the complete launch-orchestration/result boundary is reviewed;
 their presence alone is not evidence that any of it ran.
 
 A terminal result needs another signing domain and result-attestor trust role, plus a

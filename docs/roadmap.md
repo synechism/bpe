@@ -50,15 +50,26 @@
   `launch_attempt_consumed_not_started`: it is terminal no-retry evidence, not launch
   authority, and the API has no process, executable, cgroup, argv, environment, job, or
   candidate surface;
-- **Phase 1B.2b-1 — native artifact implemented, orchestration in progress:** a native x86-64
-  `clone3(CLONE_INTO_CGROUP | CLONE_PIDFD)` supervisor exercised only with a fixed inert
+- **Phase 1B.2b-1 — artifact preflight and native x86-64 qualification gate
+  implemented/configured; atomic orchestration pending:** a native x86-64
+  `clone3(CLONE_INTO_CGROUP | CLONE_PIDFD)` supervisor limited to a fixed inert
   fixture, with a fixed seccomp filter, cross-language bounded result protocol, and static
-  ELF build gates. Its first result-only slice is intentionally limited to atomic cgroup birth,
-  pidfd stop/exit observation and reaping, a live `cgroup.kill`, and `populated 0`; wall and
-  output deadlines, real controller pressure, and forking-descendant cleanup remain later
-  fixed fixtures. It accepts no caller argv, environment, executable path, candidate, or
-  job bytes. A distinct result-signing domain and durable result/finalization ledger must
-  bind any terminal outcome without creating candidate-launch or retry authority;
+  ELF build gates. A process-free Python preflight authenticates the configured digest,
+  exact ELF shape, and embedded seccomp markers, then copies the bytes into a completely
+  sealed executable memfd and retains only a read-only fd. A blocking privileged disposable
+  Linux CI probe is configured to exercise atomic cgroup birth, pidfd stop/exit observation
+  and reaping, a live `cgroup.kill`, and `populated 0`. An evaluator-only inherited seccomp
+  case denies both normal and emergency `pidfd_send_signal` calls with `EPERM`; its exact
+  `0x1c3` error transcript and external reap/empty/removal checks make successful cleanup
+  depend on `cgroup.kill`. Qualification requires that gate to pass on a native x86-64
+  host; its code and configuration alone are not evidence. Atomic
+  Python orchestration that orders
+  preflight, one-shot consumption, retained-cgroup handoff, launch, collection, and terminal
+  cleanup is still pending. Wall and output deadlines, real controller pressure, and
+  forking-descendant cleanup remain later fixed fixtures. The boundary accepts no caller
+  argv, environment, executable path, candidate, or job bytes. A distinct result-signing
+  domain and durable result/finalization ledger must bind any terminal outcome without
+  creating candidate-launch or retry authority;
 - pinned Clang 18 single-file XDP compilation;
 - ELF/BTF/object-policy inspection;
 - static libbpf runner with per-program log buffers at verifier log level 2;
