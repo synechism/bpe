@@ -1,0 +1,146 @@
+{
+  "additionalProperties": false,
+  "description": "Short-lived one-shot authority, signed by an external control plane.",
+  "properties": {
+    "authorization_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Authorization Id",
+      "type": "string"
+    },
+    "dispatch_nonce": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Dispatch Nonce",
+      "type": "string"
+    },
+    "environment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Environment Sha256",
+      "type": "string"
+    },
+    "execution_profile_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Execution Profile Sha256",
+      "type": "string"
+    },
+    "experiment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Experiment Sha256",
+      "type": "string"
+    },
+    "expires_at_unix": {
+      "minimum": 0,
+      "title": "Expires At Unix",
+      "type": "integer"
+    },
+    "issued_at_unix": {
+      "minimum": 0,
+      "title": "Issued At Unix",
+      "type": "integer"
+    },
+    "job_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Job Manifest Sha256",
+      "type": "string"
+    },
+    "not_before_unix": {
+      "minimum": 0,
+      "title": "Not Before Unix",
+      "type": "integer"
+    },
+    "policy_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Policy Sha256",
+      "type": "string"
+    },
+    "purpose": {
+      "enum": [
+        "training",
+        "development",
+        "calibration",
+        "validation",
+        "sealed_eval",
+        "benchmark"
+      ],
+      "title": "Purpose",
+      "type": "string"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "resource_profile_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Resource Profile Sha256",
+      "type": "string"
+    },
+    "retry_index": {
+      "default": 0,
+      "maximum": 16,
+      "minimum": 0,
+      "title": "Retry Index",
+      "type": "integer"
+    },
+    "retry_of_authorization_id": {
+      "anyOf": [
+        {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Retry Of Authorization Id"
+    },
+    "retry_of_claim_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Retry Of Claim Sha256"
+    },
+    "schema_version": {
+      "const": "bpe.dispatch-authorization-payload.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "worker_pool_audience": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Worker Pool Audience",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "authorization_id",
+    "dispatch_nonce",
+    "job_manifest_sha256",
+    "request_sha256",
+    "experiment_sha256",
+    "environment_sha256",
+    "execution_profile_sha256",
+    "resource_profile_sha256",
+    "purpose",
+    "worker_pool_audience",
+    "policy_id",
+    "policy_sha256",
+    "issued_at_unix",
+    "not_before_unix",
+    "expires_at_unix"
+  ],
+  "title": "DispatchAuthorizationPayload",
+  "type": "object"
+}

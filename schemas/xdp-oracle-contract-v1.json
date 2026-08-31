@@ -1,0 +1,572 @@
+{
+  "$defs": {
+    "ByteRange": {
+      "additionalProperties": false,
+      "properties": {
+        "length": {
+          "maximum": 16777216,
+          "minimum": 1,
+          "title": "Length",
+          "type": "integer"
+        },
+        "offset": {
+          "maximum": 16777216,
+          "minimum": 0,
+          "title": "Offset",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "offset",
+        "length"
+      ],
+      "title": "ByteRange",
+      "type": "object"
+    },
+    "ContentIdentity": {
+      "additionalProperties": false,
+      "description": "Exact byte identity for a program or stored case fixture.",
+      "properties": {
+        "media_type": {
+          "maxLength": 127,
+          "minLength": 1,
+          "title": "Media Type",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "maximum": 16777216,
+          "minimum": 1,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sha256",
+        "size_bytes",
+        "media_type"
+      ],
+      "title": "ContentIdentity",
+      "type": "object"
+    },
+    "ContextBytesAssertion": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "context_bytes",
+          "title": "Kind",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "weight": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "maximum": 1000000,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "kind"
+      ],
+      "title": "ContextBytesAssertion",
+      "type": "object"
+    },
+    "CounterAssertion": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "counter_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Counter Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "counter",
+          "title": "Kind",
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "final",
+            "delta"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "weight": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "maximum": 1000000,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "kind",
+        "counter_id",
+        "mode"
+      ],
+      "title": "CounterAssertion",
+      "type": "object"
+    },
+    "MapDeltaAssertion": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "map_delta",
+          "title": "Kind",
+          "type": "string"
+        },
+        "map_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Map Id",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "weight": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "maximum": 1000000,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "kind",
+        "map_id"
+      ],
+      "title": "MapDeltaAssertion",
+      "type": "object"
+    },
+    "MapSnapshotAssertion": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "map_snapshot",
+          "title": "Kind",
+          "type": "string"
+        },
+        "map_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Map Id",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "weight": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "maximum": 1000000,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "kind",
+        "map_id"
+      ],
+      "title": "MapSnapshotAssertion",
+      "type": "object"
+    },
+    "MaskByteRanges": {
+      "additionalProperties": false,
+      "description": "Replace declared byte ranges with zeroes before one assertion is compared.",
+      "properties": {
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "component": {
+          "enum": [
+            "bytes",
+            "key",
+            "value",
+            "record"
+          ],
+          "title": "Component",
+          "type": "string"
+        },
+        "kind": {
+          "const": "mask_byte_ranges",
+          "title": "Kind",
+          "type": "string"
+        },
+        "normalization_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Normalization Id",
+          "type": "string"
+        },
+        "ranges": {
+          "items": {
+            "$ref": "#/$defs/ByteRange"
+          },
+          "maxItems": 256,
+          "minItems": 1,
+          "title": "Ranges",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "normalization_id",
+        "assertion_id",
+        "component",
+        "ranges"
+      ],
+      "title": "MaskByteRanges",
+      "type": "object"
+    },
+    "OrderedEventsAssertion": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "ordered_events",
+          "title": "Kind",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "stream_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Stream Id",
+          "type": "string"
+        },
+        "weight": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "maximum": 1000000,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "kind",
+        "stream_id"
+      ],
+      "title": "OrderedEventsAssertion",
+      "type": "object"
+    },
+    "PacketBytesAssertion": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "packet_bytes",
+          "title": "Kind",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "weight": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "maximum": 1000000,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "kind"
+      ],
+      "title": "PacketBytesAssertion",
+      "type": "object"
+    },
+    "RetvalAssertion": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "retval",
+          "title": "Kind",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "weight": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "maximum": 1000000,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "kind"
+      ],
+      "title": "RetvalAssertion",
+      "type": "object"
+    },
+    "XdpCaseInput": {
+      "additionalProperties": false,
+      "description": "The exact stored input supplied independently to both program executions.",
+      "properties": {
+        "driver": {
+          "const": "bpf_prog_run/xdp@1",
+          "title": "Driver",
+          "type": "string"
+        },
+        "fixture": {
+          "$ref": "#/$defs/ContentIdentity"
+        },
+        "repeat": {
+          "const": 1,
+          "title": "Repeat",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "fixture",
+        "driver",
+        "repeat"
+      ],
+      "title": "XdpCaseInput",
+      "type": "object"
+    },
+    "XdpOracleCase": {
+      "additionalProperties": false,
+      "properties": {
+        "assertions": {
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "context_bytes": "#/$defs/ContextBytesAssertion",
+                "counter": "#/$defs/CounterAssertion",
+                "map_delta": "#/$defs/MapDeltaAssertion",
+                "map_snapshot": "#/$defs/MapSnapshotAssertion",
+                "ordered_events": "#/$defs/OrderedEventsAssertion",
+                "packet_bytes": "#/$defs/PacketBytesAssertion",
+                "retval": "#/$defs/RetvalAssertion"
+              },
+              "propertyName": "kind"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/RetvalAssertion"
+              },
+              {
+                "$ref": "#/$defs/PacketBytesAssertion"
+              },
+              {
+                "$ref": "#/$defs/ContextBytesAssertion"
+              },
+              {
+                "$ref": "#/$defs/MapSnapshotAssertion"
+              },
+              {
+                "$ref": "#/$defs/MapDeltaAssertion"
+              },
+              {
+                "$ref": "#/$defs/OrderedEventsAssertion"
+              },
+              {
+                "$ref": "#/$defs/CounterAssertion"
+              }
+            ]
+          },
+          "maxItems": 256,
+          "minItems": 1,
+          "title": "Assertions",
+          "type": "array"
+        },
+        "case_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "input": {
+          "$ref": "#/$defs/XdpCaseInput"
+        },
+        "normalizations": {
+          "default": [],
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "mask_byte_ranges": "#/$defs/MaskByteRanges"
+              },
+              "propertyName": "kind"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/MaskByteRanges"
+              }
+            ]
+          },
+          "maxItems": 256,
+          "title": "Normalizations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "case_id",
+        "input",
+        "assertions"
+      ],
+      "title": "XdpOracleCase",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Frozen comparison logic and input identities for one evaluation plan.",
+  "properties": {
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/XdpOracleCase"
+      },
+      "maxItems": 256,
+      "minItems": 1,
+      "title": "Cases",
+      "type": "array"
+    },
+    "environment_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Environment Id",
+      "type": "string"
+    },
+    "environment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Environment Sha256",
+      "type": "string"
+    },
+    "evaluation_plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evaluation Plan Sha256",
+      "type": "string"
+    },
+    "grader_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Grader Id",
+      "type": "string"
+    },
+    "harness_commit": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Harness Commit",
+      "type": "string"
+    },
+    "normalizer_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Normalizer Sha256",
+      "type": "string"
+    },
+    "normalizer_version": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Normalizer Version",
+      "type": "string"
+    },
+    "profile": {
+      "const": "xdp-differential-oracle-v1",
+      "title": "Profile",
+      "type": "string"
+    },
+    "reference_program": {
+      "$ref": "#/$defs/ContentIdentity"
+    },
+    "schema_version": {
+      "const": "bpe.xdp-oracle-contract.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "task_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Task Bundle Sha256",
+      "type": "string"
+    },
+    "task_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Task Id",
+      "type": "string"
+    },
+    "task_version": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Task Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "profile",
+    "task_id",
+    "task_version",
+    "task_bundle_sha256",
+    "evaluation_plan_sha256",
+    "grader_id",
+    "environment_id",
+    "environment_sha256",
+    "harness_commit",
+    "normalizer_version",
+    "normalizer_sha256",
+    "reference_program",
+    "cases"
+  ],
+  "title": "XdpOracleContract",
+  "type": "object"
+}

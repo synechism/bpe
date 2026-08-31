@@ -1,0 +1,199 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "authoritative": {
+      "const": false,
+      "title": "Authoritative",
+      "type": "boolean"
+    },
+    "authorization_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Authorization Id",
+      "type": "string"
+    },
+    "authorization_payload_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Authorization Payload Sha256",
+      "type": "string"
+    },
+    "authorization_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Authorization Sha256",
+      "type": "string"
+    },
+    "claim_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Claim Id",
+      "type": "string"
+    },
+    "claim_nonce": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Claim Nonce",
+      "type": "string"
+    },
+    "claimed_at_unix": {
+      "minimum": 0,
+      "title": "Claimed At Unix",
+      "type": "integer"
+    },
+    "dispatch_nonce": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Dispatch Nonce",
+      "type": "string"
+    },
+    "environment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Environment Sha256",
+      "type": "string"
+    },
+    "execution_profile_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Execution Profile Sha256",
+      "type": "string"
+    },
+    "execution_started": {
+      "const": false,
+      "title": "Execution Started",
+      "type": "boolean"
+    },
+    "experiment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Experiment Sha256",
+      "type": "string"
+    },
+    "job_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Job Manifest Sha256",
+      "type": "string"
+    },
+    "policy_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Policy Sha256",
+      "type": "string"
+    },
+    "purpose": {
+      "enum": [
+        "training",
+        "development",
+        "calibration",
+        "validation",
+        "sealed_eval",
+        "benchmark"
+      ],
+      "title": "Purpose",
+      "type": "string"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "resource_profile_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Resource Profile Sha256",
+      "type": "string"
+    },
+    "retry_index": {
+      "maximum": 16,
+      "minimum": 0,
+      "title": "Retry Index",
+      "type": "integer"
+    },
+    "retry_of_authorization_id": {
+      "anyOf": [
+        {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Retry Of Authorization Id"
+    },
+    "retry_of_claim_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Retry Of Claim Sha256"
+    },
+    "schema_version": {
+      "const": "bpe.dispatch-admission-receipt.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "signature_key_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Signature Key Id",
+      "type": "string"
+    },
+    "signature_verified": {
+      "const": true,
+      "title": "Signature Verified",
+      "type": "boolean"
+    },
+    "status": {
+      "const": "claimed_not_executed",
+      "title": "Status",
+      "type": "string"
+    },
+    "trust_store_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Trust Store Id",
+      "type": "string"
+    },
+    "trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Trust Store Sha256",
+      "type": "string"
+    },
+    "worker_pool_audience": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Worker Pool Audience",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "status",
+    "authorization_id",
+    "authorization_sha256",
+    "authorization_payload_sha256",
+    "signature_key_id",
+    "trust_store_id",
+    "trust_store_sha256",
+    "claim_id",
+    "claim_nonce",
+    "claimed_at_unix",
+    "dispatch_nonce",
+    "job_manifest_sha256",
+    "request_sha256",
+    "experiment_sha256",
+    "environment_sha256",
+    "execution_profile_sha256",
+    "resource_profile_sha256",
+    "purpose",
+    "worker_pool_audience",
+    "policy_id",
+    "policy_sha256",
+    "retry_index",
+    "retry_of_authorization_id",
+    "retry_of_claim_sha256",
+    "signature_verified",
+    "execution_started",
+    "authoritative"
+  ],
+  "title": "DispatchAdmissionReceipt",
+  "type": "object"
+}

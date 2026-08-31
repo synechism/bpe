@@ -1,0 +1,26 @@
+{
+  "containment_threshold": 0.95,
+  "denied_training_repository_families": [
+    "bpftime",
+    "cilium",
+    "xdp-tools"
+  ],
+  "detector_version": "bpe.corpus-static-audit.v1",
+  "evaluation_splits": [
+    "development",
+    "calibration",
+    "validation",
+    "sealed_eval",
+    "benchmark"
+  ],
+  "jaccard_threshold": 0.85,
+  "minimum_tokens": 40,
+  "ngram_size": 5,
+  "ngram_version": "bpe.c-token-ngram.v1",
+  "policy_id": "corpus-static-v1",
+  "schema_version": "bpe.corpus-audit-policy.v1",
+  "tokenizer_version": "bpe.c-tokenizer.v1",
+  "training_splits": [
+    "train"
+  ]
+}

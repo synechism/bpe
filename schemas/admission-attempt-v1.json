@@ -1,0 +1,839 @@
+{
+  "$defs": {
+    "AdmissionRole": {
+      "enum": [
+        "original",
+        "revert",
+        "alternative",
+        "public_mutant",
+        "negative_control"
+      ],
+      "title": "AdmissionRole",
+      "type": "string"
+    },
+    "ArtifactRef": {
+      "additionalProperties": false,
+      "properties": {
+        "media_type": {
+          "default": "application/octet-stream",
+          "maxLength": 127,
+          "minLength": 1,
+          "title": "Media Type",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sha256",
+        "size_bytes"
+      ],
+      "title": "ArtifactRef",
+      "type": "object"
+    },
+    "CheckEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "additionalProperties": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "title": "Artifacts",
+          "type": "object"
+        },
+        "check_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Check Id",
+          "type": "string"
+        },
+        "facts": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Facts",
+          "type": "object"
+        },
+        "message": {
+          "default": "",
+          "maxLength": 4096,
+          "title": "Message",
+          "type": "string"
+        },
+        "outcome": {
+          "enum": [
+            "pass",
+            "fail",
+            "timeout"
+          ],
+          "title": "Outcome",
+          "type": "string"
+        },
+        "reason_code": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Reason Code",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "weight": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "maximum": 1000000,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "check_id",
+        "outcome",
+        "reason_code"
+      ],
+      "title": "CheckEvidence",
+      "type": "object"
+    },
+    "EnvironmentFingerprint": {
+      "additionalProperties": false,
+      "properties": {
+        "architecture": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Architecture",
+          "type": "string"
+        },
+        "bpfix_commit": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{40}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bpfix Commit"
+        },
+        "clang_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Clang Sha256",
+          "type": "string"
+        },
+        "clang_version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Clang Version",
+          "type": "string"
+        },
+        "compile_recipe_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Compile Recipe Sha256",
+          "type": "string"
+        },
+        "environment_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Environment Id",
+          "type": "string"
+        },
+        "isolation": {
+          "$ref": "#/$defs/Isolation"
+        },
+        "kernel_btf_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Kernel Btf Sha256",
+          "type": "string"
+        },
+        "kernel_config_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Kernel Config Sha256",
+          "type": "string"
+        },
+        "kernel_image_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Kernel Image Sha256",
+          "type": "string"
+        },
+        "kernel_release": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Kernel Release",
+          "type": "string"
+        },
+        "libbpf_commit": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Libbpf Commit",
+          "type": "string"
+        },
+        "libbpf_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Libbpf Version",
+          "type": "string"
+        },
+        "normalizer_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Normalizer Sha256",
+          "type": "string"
+        },
+        "normalizer_version": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Normalizer Version",
+          "type": "string"
+        },
+        "public_sdk_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Public Sdk Sha256",
+          "type": "string"
+        },
+        "resource_limits_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Resource Limits Sha256",
+          "type": "string"
+        },
+        "rootfs_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Rootfs Sha256",
+          "type": "string"
+        },
+        "runner_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Runner Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "bpe.environment.v1",
+          "default": "bpe.environment.v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "snapshot_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Snapshot Sha256"
+        }
+      },
+      "required": [
+        "environment_id",
+        "isolation",
+        "architecture",
+        "kernel_release",
+        "kernel_image_sha256",
+        "kernel_config_sha256",
+        "kernel_btf_sha256",
+        "rootfs_sha256",
+        "clang_version",
+        "clang_sha256",
+        "libbpf_version",
+        "libbpf_commit",
+        "runner_sha256",
+        "compile_recipe_sha256",
+        "normalizer_version",
+        "normalizer_sha256",
+        "public_sdk_sha256",
+        "resource_limits_sha256"
+      ],
+      "title": "EnvironmentFingerprint",
+      "type": "object"
+    },
+    "EvaluationEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "environment": {
+          "$ref": "#/$defs/EnvironmentFingerprint"
+        },
+        "grader_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Grader Id",
+          "type": "string"
+        },
+        "harness_commit": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Harness Commit",
+          "type": "string"
+        },
+        "observation_artifacts": {
+          "additionalProperties": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "title": "Observation Artifacts",
+          "type": "object"
+        },
+        "origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "request": {
+          "$ref": "#/$defs/EvaluationRequest"
+        },
+        "schema_version": {
+          "const": "bpe.evidence.v1",
+          "default": "bpe.evidence.v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "stages": {
+          "items": {
+            "$ref": "#/$defs/StageEvidence"
+          },
+          "title": "Stages",
+          "type": "array"
+        }
+      },
+      "required": [
+        "origin",
+        "request",
+        "environment",
+        "harness_commit",
+        "grader_id",
+        "stages"
+      ],
+      "title": "EvaluationEvidence",
+      "type": "object"
+    },
+    "EvaluationRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt_index": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Attempt Index",
+          "type": "integer"
+        },
+        "candidate": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "checkpoint_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Checkpoint Artifact Sha256",
+          "type": "string"
+        },
+        "checkpoint_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Checkpoint Id",
+          "type": "string"
+        },
+        "diagnostic_condition": {
+          "default": "none",
+          "enum": [
+            "none",
+            "raw",
+            "bpfix"
+          ],
+          "title": "Diagnostic Condition",
+          "type": "string"
+        },
+        "environment_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Environment Id",
+          "type": "string"
+        },
+        "episode_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Episode Id",
+          "type": "string"
+        },
+        "experiment_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Experiment Id",
+          "type": "string"
+        },
+        "experiment_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Experiment Manifest Sha256",
+          "type": "string"
+        },
+        "generation_seed": {
+          "minimum": 0,
+          "title": "Generation Seed",
+          "type": "integer"
+        },
+        "model_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Model Artifact Sha256",
+          "type": "string"
+        },
+        "model_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Model Id",
+          "type": "string"
+        },
+        "parent_request_id": {
+          "anyOf": [
+            {
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Request Id"
+        },
+        "request_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Request Id",
+          "type": "string"
+        },
+        "sample_index": {
+          "minimum": 0,
+          "title": "Sample Index",
+          "type": "integer"
+        },
+        "sampling_config_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sampling Config Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "bpe.request.v1",
+          "default": "bpe.request.v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "suite_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Suite Id",
+          "type": "string"
+        },
+        "suite_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Suite Manifest Sha256",
+          "type": "string"
+        },
+        "task_bundle_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Task Bundle Sha256",
+          "type": "string"
+        },
+        "task_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Id",
+          "type": "string"
+        },
+        "task_version": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Version",
+          "type": "string"
+        },
+        "training_seed": {
+          "minimum": 0,
+          "title": "Training Seed",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "request_id",
+        "experiment_id",
+        "experiment_manifest_sha256",
+        "model_id",
+        "model_artifact_sha256",
+        "checkpoint_id",
+        "checkpoint_artifact_sha256",
+        "sampling_config_sha256",
+        "episode_id",
+        "suite_id",
+        "suite_manifest_sha256",
+        "task_id",
+        "task_version",
+        "task_bundle_sha256",
+        "candidate",
+        "environment_id",
+        "training_seed",
+        "sample_index",
+        "generation_seed"
+      ],
+      "title": "EvaluationRequest",
+      "type": "object"
+    },
+    "Grade": {
+      "additionalProperties": false,
+      "properties": {
+        "benchmark_score": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Benchmark Score"
+        },
+        "candidate_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Candidate Sha256",
+          "type": "string"
+        },
+        "comparable": {
+          "title": "Comparable",
+          "type": "boolean"
+        },
+        "contract_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Contract Sha256",
+          "type": "string"
+        },
+        "evidence_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evidence Sha256",
+          "type": "string"
+        },
+        "failure_reason": {
+          "anyOf": [
+            {
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Failure Reason"
+        },
+        "first_failure": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Stage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "grader_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Grader Id",
+          "type": "string"
+        },
+        "policy_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Policy Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "bpe.grade.v1",
+          "default": "bpe.grade.v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "stage_outcomes": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Outcome"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Stage"
+          },
+          "title": "Stage Outcomes",
+          "type": "object"
+        },
+        "strict_success": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Strict Success"
+        },
+        "task_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Id",
+          "type": "string"
+        },
+        "training_reward": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": -1,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Training Reward"
+        }
+      },
+      "required": [
+        "policy_id",
+        "grader_id",
+        "task_id",
+        "candidate_sha256",
+        "evidence_sha256",
+        "contract_sha256",
+        "comparable",
+        "strict_success",
+        "benchmark_score",
+        "training_reward",
+        "first_failure",
+        "failure_reason",
+        "stage_outcomes"
+      ],
+      "title": "Grade",
+      "type": "object"
+    },
+    "Isolation": {
+      "enum": [
+        "microvm",
+        "native_linux",
+        "synthetic"
+      ],
+      "title": "Isolation",
+      "type": "string"
+    },
+    "JsonValue": {},
+    "Origin": {
+      "enum": [
+        "microvm",
+        "native_linux",
+        "recorded",
+        "synthetic"
+      ],
+      "title": "Origin",
+      "type": "string"
+    },
+    "Outcome": {
+      "enum": [
+        "pass",
+        "fail",
+        "timeout",
+        "skipped",
+        "infra_error",
+        "unsupported"
+      ],
+      "title": "Outcome",
+      "type": "string"
+    },
+    "ReplayAnchor": {
+      "additionalProperties": false,
+      "properties": {
+        "contract_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Contract Sha256",
+          "type": "string"
+        },
+        "evidence_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evidence Sha256",
+          "type": "string"
+        },
+        "grade_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Grade Sha256",
+          "type": "string"
+        },
+        "manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Manifest Sha256",
+          "type": "string"
+        },
+        "policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Policy Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "manifest_sha256",
+        "evidence_sha256",
+        "grade_sha256",
+        "contract_sha256",
+        "policy_sha256"
+      ],
+      "title": "ReplayAnchor",
+      "type": "object"
+    },
+    "ReplayManifest": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "additionalProperties": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "title": "Artifacts",
+          "type": "object"
+        },
+        "contract": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "events": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "evidence": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "grade": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "policy": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "schema_version": {
+          "const": "bpe.replay.v1",
+          "default": "bpe.replay.v1",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evidence",
+        "grade",
+        "contract",
+        "events",
+        "policy"
+      ],
+      "title": "ReplayManifest",
+      "type": "object"
+    },
+    "Stage": {
+      "enum": [
+        "ingest",
+        "compile",
+        "object_policy",
+        "verifier",
+        "functional",
+        "semantics"
+      ],
+      "title": "Stage",
+      "type": "string"
+    },
+    "StageEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "additionalProperties": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "title": "Artifacts",
+          "type": "object"
+        },
+        "checks": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/CheckEvidence"
+          },
+          "maxItems": 4096,
+          "title": "Checks",
+          "type": "array"
+        },
+        "duration_ms": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "exit_code": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Exit Code"
+        },
+        "facts": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Facts",
+          "type": "object"
+        },
+        "message": {
+          "default": "",
+          "maxLength": 4096,
+          "title": "Message",
+          "type": "string"
+        },
+        "outcome": {
+          "$ref": "#/$defs/Outcome"
+        },
+        "reason_code": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Reason Code",
+          "type": "string"
+        },
+        "stage": {
+          "$ref": "#/$defs/Stage"
+        }
+      },
+      "required": [
+        "stage",
+        "outcome",
+        "reason_code"
+      ],
+      "title": "StageEvidence",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One role-labelled replay receipt supplied to the admission gate.",
+  "properties": {
+    "anchor": {
+      "$ref": "#/$defs/ReplayAnchor"
+    },
+    "control_id": {
+      "anyOf": [
+        {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Control Id"
+    },
+    "evidence": {
+      "$ref": "#/$defs/EvaluationEvidence"
+    },
+    "grade": {
+      "$ref": "#/$defs/Grade"
+    },
+    "manifest": {
+      "$ref": "#/$defs/ReplayManifest"
+    },
+    "role": {
+      "$ref": "#/$defs/AdmissionRole"
+    },
+    "schema_version": {
+      "const": "bpe.admission-attempt.v1",
+      "default": "bpe.admission-attempt.v1",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "role",
+    "evidence",
+    "grade",
+    "manifest",
+    "anchor"
+  ],
+  "title": "AdmissionAttempt",
+  "type": "object"
+}

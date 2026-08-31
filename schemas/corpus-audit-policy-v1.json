@@ -1,0 +1,120 @@
+{
+  "additionalProperties": false,
+  "description": "Frozen policy for the conservative, blocking static contamination detector.",
+  "properties": {
+    "containment_threshold": {
+      "default": 0.95,
+      "exclusiveMinimum": 0,
+      "maximum": 0.99,
+      "title": "Containment Threshold",
+      "type": "number"
+    },
+    "denied_training_repository_families": {
+      "default": [
+        "bpftime",
+        "cilium",
+        "xdp-tools"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "title": "Denied Training Repository Families",
+      "type": "array"
+    },
+    "detector_version": {
+      "const": "bpe.corpus-static-audit.v1",
+      "default": "bpe.corpus-static-audit.v1",
+      "title": "Detector Version",
+      "type": "string"
+    },
+    "evaluation_splits": {
+      "default": [
+        "development",
+        "calibration",
+        "validation",
+        "sealed_eval",
+        "benchmark"
+      ],
+      "items": {
+        "enum": [
+          "train",
+          "development",
+          "calibration",
+          "validation",
+          "sealed_eval",
+          "benchmark"
+        ],
+        "type": "string"
+      },
+      "title": "Evaluation Splits",
+      "type": "array"
+    },
+    "jaccard_threshold": {
+      "default": 0.85,
+      "exclusiveMinimum": 0,
+      "maximum": 0.95,
+      "title": "Jaccard Threshold",
+      "type": "number"
+    },
+    "minimum_tokens": {
+      "default": 40,
+      "maximum": 4096,
+      "minimum": 16,
+      "title": "Minimum Tokens",
+      "type": "integer"
+    },
+    "ngram_size": {
+      "default": 5,
+      "maximum": 7,
+      "minimum": 3,
+      "title": "Ngram Size",
+      "type": "integer"
+    },
+    "ngram_version": {
+      "const": "bpe.c-token-ngram.v1",
+      "default": "bpe.c-token-ngram.v1",
+      "title": "Ngram Version",
+      "type": "string"
+    },
+    "policy_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.corpus-audit-policy.v1",
+      "default": "bpe.corpus-audit-policy.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "tokenizer_version": {
+      "const": "bpe.c-tokenizer.v1",
+      "default": "bpe.c-tokenizer.v1",
+      "title": "Tokenizer Version",
+      "type": "string"
+    },
+    "training_splits": {
+      "default": [
+        "train"
+      ],
+      "items": {
+        "enum": [
+          "train",
+          "development",
+          "calibration",
+          "validation",
+          "sealed_eval",
+          "benchmark"
+        ],
+        "type": "string"
+      },
+      "title": "Training Splits",
+      "type": "array"
+    }
+  },
+  "required": [
+    "policy_id"
+  ],
+  "title": "CorpusAuditPolicy",
+  "type": "object"
+}

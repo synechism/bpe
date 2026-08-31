@@ -1,0 +1,352 @@
+{
+  "additionalProperties": false,
+  "description": "Self-reported proof of an empty cgroup lifecycle, never launch authority.",
+  "properties": {
+    "authoritative": {
+      "const": false,
+      "title": "Authoritative",
+      "type": "boolean"
+    },
+    "base_page_size_bytes": {
+      "const": 4096,
+      "title": "Base Page Size Bytes",
+      "type": "integer"
+    },
+    "candidate_bytes_accessed": {
+      "const": false,
+      "title": "Candidate Bytes Accessed",
+      "type": "boolean"
+    },
+    "cgroup_kill_empty_write_verified": {
+      "const": true,
+      "title": "Cgroup Kill Empty Write Verified",
+      "type": "boolean"
+    },
+    "cgroup_kill_interface_verified": {
+      "const": true,
+      "title": "Cgroup Kill Interface Verified",
+      "type": "boolean"
+    },
+    "cleanup_duration_ms": {
+      "maximum": 5000,
+      "minimum": 0,
+      "title": "Cleanup Duration Ms",
+      "type": "integer"
+    },
+    "clone3_qualified": {
+      "const": false,
+      "title": "Clone3 Qualified",
+      "type": "boolean"
+    },
+    "controller_readback_verified": {
+      "const": true,
+      "title": "Controller Readback Verified",
+      "type": "boolean"
+    },
+    "cpu_burst_us": {
+      "const": 0,
+      "title": "Cpu Burst Us",
+      "type": "integer"
+    },
+    "cpu_period_us": {
+      "const": 100000,
+      "title": "Cpu Period Us",
+      "type": "integer"
+    },
+    "cpu_quota_us": {
+      "const": 100000,
+      "title": "Cpu Quota Us",
+      "type": "integer"
+    },
+    "cpu_time_enforced": {
+      "const": false,
+      "title": "Cpu Time Enforced",
+      "type": "boolean"
+    },
+    "delegated_owner_verified": {
+      "const": true,
+      "title": "Delegated Owner Verified",
+      "type": "boolean"
+    },
+    "delegated_root_empty_verified": {
+      "const": true,
+      "title": "Delegated Root Empty Verified",
+      "type": "boolean"
+    },
+    "delegated_root_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Delegated Root Id",
+      "type": "string"
+    },
+    "delegated_root_without_children_verified": {
+      "const": true,
+      "title": "Delegated Root Without Children Verified",
+      "type": "boolean"
+    },
+    "delegation_marker_verified": {
+      "const": true,
+      "title": "Delegation Marker Verified",
+      "type": "boolean"
+    },
+    "dying_descendants_reclaimed": {
+      "const": false,
+      "title": "Dying Descendants Reclaimed",
+      "type": "boolean"
+    },
+    "execution_authorized": {
+      "const": false,
+      "title": "Execution Authorized",
+      "type": "boolean"
+    },
+    "execution_started": {
+      "const": false,
+      "title": "Execution Started",
+      "type": "boolean"
+    },
+    "filesystem": {
+      "const": "cgroup2-v2",
+      "title": "Filesystem",
+      "type": "string"
+    },
+    "filesystem_isolation_enforced": {
+      "const": false,
+      "title": "Filesystem Isolation Enforced",
+      "type": "boolean"
+    },
+    "filesystem_magic_verified": {
+      "const": true,
+      "title": "Filesystem Magic Verified",
+      "type": "boolean"
+    },
+    "leaf_cgroup_type": {
+      "const": "domain",
+      "title": "Leaf Cgroup Type",
+      "type": "string"
+    },
+    "leaf_identity_verified_before_removal": {
+      "const": true,
+      "title": "Leaf Identity Verified Before Removal",
+      "type": "boolean"
+    },
+    "leaf_max_depth": {
+      "const": 0,
+      "title": "Leaf Max Depth",
+      "type": "integer"
+    },
+    "leaf_max_descendants": {
+      "const": 0,
+      "title": "Leaf Max Descendants",
+      "type": "integer"
+    },
+    "leaf_name_removed": {
+      "const": true,
+      "title": "Leaf Name Removed",
+      "type": "boolean"
+    },
+    "limits_exercised": {
+      "const": false,
+      "title": "Limits Exercised",
+      "type": "boolean"
+    },
+    "memory_max_bytes": {
+      "maximum": 68719476736,
+      "minimum": 67108864,
+      "title": "Memory Max Bytes",
+      "type": "integer"
+    },
+    "memory_oom_group": {
+      "const": true,
+      "title": "Memory Oom Group",
+      "type": "boolean"
+    },
+    "memory_swap_max_bytes": {
+      "const": 0,
+      "title": "Memory Swap Max Bytes",
+      "type": "integer"
+    },
+    "network_isolation_enforced": {
+      "const": false,
+      "title": "Network Isolation Enforced",
+      "type": "boolean"
+    },
+    "output_limits_enforced": {
+      "const": false,
+      "title": "Output Limits Enforced",
+      "type": "boolean"
+    },
+    "pidfd_qualified": {
+      "const": false,
+      "title": "Pidfd Qualified",
+      "type": "boolean"
+    },
+    "pids_max": {
+      "maximum": 4096,
+      "minimum": 1,
+      "title": "Pids Max",
+      "type": "integer"
+    },
+    "policy_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Policy Sha256",
+      "type": "string"
+    },
+    "populated_zero_after_kill": {
+      "const": true,
+      "title": "Populated Zero After Kill",
+      "type": "boolean"
+    },
+    "populated_zero_before_cleanup": {
+      "const": true,
+      "title": "Populated Zero Before Cleanup",
+      "type": "boolean"
+    },
+    "process_created": {
+      "const": false,
+      "title": "Process Created",
+      "type": "boolean"
+    },
+    "process_creation_probed": {
+      "const": false,
+      "title": "Process Creation Probed",
+      "type": "boolean"
+    },
+    "qualification_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Qualification Id",
+      "type": "string"
+    },
+    "qualification_nonce": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Qualification Nonce",
+      "type": "string"
+    },
+    "required_controllers": {
+      "maxItems": 3,
+      "minItems": 3,
+      "prefixItems": [
+        {
+          "const": "cpu",
+          "type": "string"
+        },
+        {
+          "const": "memory",
+          "type": "string"
+        },
+        {
+          "const": "pids",
+          "type": "string"
+        }
+      ],
+      "title": "Required Controllers",
+      "type": "array"
+    },
+    "required_controllers_available": {
+      "const": true,
+      "title": "Required Controllers Available",
+      "type": "boolean"
+    },
+    "resource_profile_fully_enforced": {
+      "const": false,
+      "title": "Resource Profile Fully Enforced",
+      "type": "boolean"
+    },
+    "resource_profile_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Resource Profile Id",
+      "type": "string"
+    },
+    "resource_profile_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Resource Profile Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.linux-cgroup-v2-qualification-report.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "status": {
+      "const": "qualified_without_execution",
+      "title": "Status",
+      "type": "string"
+    },
+    "subtree_control_exact_verified": {
+      "const": true,
+      "title": "Subtree Control Exact Verified",
+      "type": "boolean"
+    },
+    "wall_timeout_enforced": {
+      "const": false,
+      "title": "Wall Timeout Enforced",
+      "type": "boolean"
+    },
+    "worker_pool_audience": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Worker Pool Audience",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "status",
+    "qualification_id",
+    "qualification_nonce",
+    "policy_id",
+    "policy_sha256",
+    "resource_profile_id",
+    "resource_profile_sha256",
+    "worker_pool_audience",
+    "delegated_root_id",
+    "filesystem",
+    "filesystem_magic_verified",
+    "delegation_marker_verified",
+    "delegated_owner_verified",
+    "delegated_root_empty_verified",
+    "delegated_root_without_children_verified",
+    "required_controllers",
+    "required_controllers_available",
+    "subtree_control_exact_verified",
+    "leaf_cgroup_type",
+    "memory_max_bytes",
+    "memory_swap_max_bytes",
+    "pids_max",
+    "cpu_quota_us",
+    "cpu_period_us",
+    "cpu_burst_us",
+    "base_page_size_bytes",
+    "memory_oom_group",
+    "leaf_max_depth",
+    "leaf_max_descendants",
+    "controller_readback_verified",
+    "cgroup_kill_interface_verified",
+    "cgroup_kill_empty_write_verified",
+    "populated_zero_before_cleanup",
+    "populated_zero_after_kill",
+    "leaf_identity_verified_before_removal",
+    "leaf_name_removed",
+    "dying_descendants_reclaimed",
+    "cleanup_duration_ms",
+    "process_creation_probed",
+    "clone3_qualified",
+    "pidfd_qualified",
+    "process_created",
+    "execution_started",
+    "candidate_bytes_accessed",
+    "limits_exercised",
+    "wall_timeout_enforced",
+    "cpu_time_enforced",
+    "output_limits_enforced",
+    "filesystem_isolation_enforced",
+    "network_isolation_enforced",
+    "resource_profile_fully_enforced",
+    "execution_authorized",
+    "authoritative"
+  ],
+  "title": "LinuxCgroupV2QualificationReport",
+  "type": "object"
+}

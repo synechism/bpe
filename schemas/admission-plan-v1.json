@@ -1,0 +1,162 @@
+{
+  "$defs": {
+    "CandidateIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sha256",
+        "size_bytes"
+      ],
+      "title": "CandidateIdentity",
+      "type": "object"
+    },
+    "PlannedNegativeControl": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate": {
+          "$ref": "#/$defs/CandidateIdentity"
+        },
+        "control_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Control Id",
+          "type": "string"
+        },
+        "expected_first_failure": {
+          "enum": [
+            "functional",
+            "semantics"
+          ],
+          "title": "Expected First Failure",
+          "type": "string"
+        }
+      },
+      "required": [
+        "control_id",
+        "candidate",
+        "expected_first_failure"
+      ],
+      "title": "PlannedNegativeControl",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Precommitted identity and exact repair-task role matrix.",
+  "properties": {
+    "alternative_candidates": {
+      "items": {
+        "$ref": "#/$defs/CandidateIdentity"
+      },
+      "maxItems": 1024,
+      "minItems": 1,
+      "title": "Alternative Candidates",
+      "type": "array"
+    },
+    "environment_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Environment Id",
+      "type": "string"
+    },
+    "environment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Environment Sha256",
+      "type": "string"
+    },
+    "grader_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Grader Id",
+      "type": "string"
+    },
+    "harness_commit": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Harness Commit",
+      "type": "string"
+    },
+    "negative_controls": {
+      "items": {
+        "$ref": "#/$defs/PlannedNegativeControl"
+      },
+      "maxItems": 1024,
+      "minItems": 1,
+      "title": "Negative Controls",
+      "type": "array"
+    },
+    "original_repeats": {
+      "default": 2,
+      "maximum": 64,
+      "minimum": 2,
+      "title": "Original Repeats",
+      "type": "integer"
+    },
+    "public_mutant_candidate": {
+      "$ref": "#/$defs/CandidateIdentity"
+    },
+    "reference_candidate": {
+      "$ref": "#/$defs/CandidateIdentity"
+    },
+    "reward_policy_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Reward Policy Id",
+      "type": "string"
+    },
+    "reward_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Reward Policy Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.admission-plan.v1",
+      "default": "bpe.admission-plan.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scoring_contract_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Scoring Contract Sha256",
+      "type": "string"
+    },
+    "task_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Task Bundle Sha256",
+      "type": "string"
+    },
+    "task_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Task Id",
+      "type": "string"
+    },
+    "task_version": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Task Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "task_id",
+    "task_version",
+    "task_bundle_sha256",
+    "scoring_contract_sha256",
+    "reward_policy_id",
+    "reward_policy_sha256",
+    "environment_id",
+    "environment_sha256",
+    "grader_id",
+    "harness_commit",
+    "reference_candidate",
+    "public_mutant_candidate",
+    "alternative_candidates",
+    "negative_controls"
+  ],
+  "title": "AdmissionPlan",
+  "type": "object"
+}

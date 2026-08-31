@@ -1,0 +1,125 @@
+{
+  "$defs": {
+    "ArtifactRef": {
+      "additionalProperties": false,
+      "properties": {
+        "media_type": {
+          "default": "application/octet-stream",
+          "maxLength": 127,
+          "minLength": 1,
+          "title": "Media Type",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sha256",
+        "size_bytes"
+      ],
+      "title": "ArtifactRef",
+      "type": "object"
+    },
+    "ExpectedCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "check_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Check Id",
+          "type": "string"
+        },
+        "input_artifacts": {
+          "patternProperties": {
+            "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$": {
+              "$ref": "#/$defs/ArtifactRef"
+            }
+          },
+          "title": "Input Artifacts",
+          "type": "object"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "stage": {
+          "enum": [
+            "object_policy",
+            "functional",
+            "semantics"
+          ],
+          "title": "Stage",
+          "type": "string"
+        },
+        "weight": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "maximum": 1000000,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "stage",
+        "check_id"
+      ],
+      "title": "ExpectedCheck",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "checks": {
+      "items": {
+        "$ref": "#/$defs/ExpectedCheck"
+      },
+      "maxItems": 8192,
+      "minItems": 3,
+      "title": "Checks",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "bpe.scoring-contract.v1",
+      "default": "bpe.scoring-contract.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "strict_policy_id": {
+      "const": "strict-success-v1",
+      "default": "strict-success-v1",
+      "title": "Strict Policy Id",
+      "type": "string"
+    },
+    "task_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Task Bundle Sha256",
+      "type": "string"
+    },
+    "task_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Task Id",
+      "type": "string"
+    },
+    "task_version": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Task Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "task_id",
+    "task_version",
+    "task_bundle_sha256",
+    "checks"
+  ],
+  "title": "ScoringContract",
+  "type": "object"
+}

@@ -1,0 +1,180 @@
+{
+  "$defs": {
+    "CandidateContract": {
+      "additionalProperties": false,
+      "properties": {
+        "allow_markdown_fence": {
+          "default": true,
+          "title": "Allow Markdown Fence",
+          "type": "boolean"
+        },
+        "fixed_filename": {
+          "const": "candidate.c",
+          "default": "candidate.c",
+          "title": "Fixed Filename",
+          "type": "string"
+        },
+        "format": {
+          "const": "single_c_source",
+          "default": "single_c_source",
+          "title": "Format",
+          "type": "string"
+        },
+        "max_response_bytes": {
+          "default": 65536,
+          "exclusiveMinimum": 0,
+          "maximum": 1048576,
+          "title": "Max Response Bytes",
+          "type": "integer"
+        }
+      },
+      "title": "CandidateContract",
+      "type": "object"
+    },
+    "FileRef": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "size_bytes"
+      ],
+      "title": "FileRef",
+      "type": "object"
+    },
+    "ProgramContract": {
+      "additionalProperties": false,
+      "properties": {
+        "entrypoint": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Entrypoint",
+          "type": "string"
+        },
+        "max_programs": {
+          "default": 1,
+          "maximum": 16,
+          "minimum": 1,
+          "title": "Max Programs",
+          "type": "integer"
+        },
+        "program_type": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Program Type",
+          "type": "string"
+        },
+        "section": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Section",
+          "type": "string"
+        }
+      },
+      "required": [
+        "program_type",
+        "section",
+        "entrypoint"
+      ],
+      "title": "ProgramContract",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "candidate_contract": {
+      "$ref": "#/$defs/CandidateContract"
+    },
+    "environment_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Environment Id",
+      "type": "string"
+    },
+    "family": {
+      "enum": [
+        "repair",
+        "generation"
+      ],
+      "title": "Family",
+      "type": "string"
+    },
+    "max_attempts": {
+      "default": 3,
+      "maximum": 16,
+      "minimum": 1,
+      "title": "Max Attempts",
+      "type": "integer"
+    },
+    "program": {
+      "$ref": "#/$defs/ProgramContract"
+    },
+    "prompt": {
+      "$ref": "#/$defs/FileRef"
+    },
+    "public_sdk_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Public Sdk Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.public-task.v1",
+      "default": "bpe.public-task.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "starter_source": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/FileRef"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "task_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Task Id",
+      "type": "string"
+    },
+    "version": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Version",
+      "type": "string"
+    },
+    "whole_attempt_timeout_seconds": {
+      "default": 30,
+      "maximum": 600,
+      "minimum": 1,
+      "title": "Whole Attempt Timeout Seconds",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "task_id",
+    "version",
+    "family",
+    "prompt",
+    "candidate_contract",
+    "program",
+    "public_sdk_id",
+    "environment_id"
+  ],
+  "title": "PublicTask",
+  "type": "object"
+}

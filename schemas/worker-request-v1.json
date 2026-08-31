@@ -1,0 +1,28 @@
+{
+  "additionalProperties": false,
+  "description": "The only request admitted by the Phase 0 worker protocol.",
+  "properties": {
+    "method": {
+      "const": "capabilities",
+      "title": "Method",
+      "type": "string"
+    },
+    "request_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.worker-request.v1",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "request_id",
+    "method"
+  ],
+  "title": "CapabilitiesRequest",
+  "type": "object"
+}

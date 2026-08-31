@@ -1,0 +1,360 @@
+{
+  "$defs": {
+    "ContentIdentity": {
+      "additionalProperties": false,
+      "description": "Exact byte identity for a program or stored case fixture.",
+      "properties": {
+        "media_type": {
+          "maxLength": 127,
+          "minLength": 1,
+          "title": "Media Type",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "maximum": 16777216,
+          "minimum": 1,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sha256",
+        "size_bytes",
+        "media_type"
+      ],
+      "title": "ContentIdentity",
+      "type": "object"
+    },
+    "CounterTrace": {
+      "additionalProperties": false,
+      "properties": {
+        "after": {
+          "maximum": 18446744073709551615,
+          "minimum": 0,
+          "title": "After",
+          "type": "integer"
+        },
+        "before": {
+          "maximum": 18446744073709551615,
+          "minimum": 0,
+          "title": "Before",
+          "type": "integer"
+        },
+        "counter_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Counter Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "counter_id",
+        "before",
+        "after"
+      ],
+      "title": "CounterTrace",
+      "type": "object"
+    },
+    "EventStreamTrace": {
+      "additionalProperties": false,
+      "properties": {
+        "records": {
+          "items": {
+            "maxLength": 33554432,
+            "minLength": 2,
+            "pattern": "^(?:[0-9a-f]{2})+$",
+            "type": "string"
+          },
+          "maxItems": 16384,
+          "title": "Records",
+          "type": "array"
+        },
+        "stream_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Stream Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stream_id",
+        "records"
+      ],
+      "title": "EventStreamTrace",
+      "type": "object"
+    },
+    "MapEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "maxLength": 33554432,
+          "minLength": 2,
+          "pattern": "^(?:[0-9a-f]{2})+$",
+          "title": "Key",
+          "type": "string"
+        },
+        "value": {
+          "maxLength": 33554432,
+          "minLength": 2,
+          "pattern": "^(?:[0-9a-f]{2})+$",
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "value"
+      ],
+      "title": "MapEntry",
+      "type": "object"
+    },
+    "MapStateTrace": {
+      "additionalProperties": false,
+      "properties": {
+        "after": {
+          "items": {
+            "$ref": "#/$defs/MapEntry"
+          },
+          "maxItems": 16384,
+          "title": "After",
+          "type": "array"
+        },
+        "before": {
+          "items": {
+            "$ref": "#/$defs/MapEntry"
+          },
+          "maxItems": 16384,
+          "title": "Before",
+          "type": "array"
+        },
+        "map_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Map Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "map_id",
+        "before",
+        "after"
+      ],
+      "title": "MapStateTrace",
+      "type": "object"
+    },
+    "XdpCaseInput": {
+      "additionalProperties": false,
+      "description": "The exact stored input supplied independently to both program executions.",
+      "properties": {
+        "driver": {
+          "const": "bpf_prog_run/xdp@1",
+          "title": "Driver",
+          "type": "string"
+        },
+        "fixture": {
+          "$ref": "#/$defs/ContentIdentity"
+        },
+        "repeat": {
+          "const": 1,
+          "title": "Repeat",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "fixture",
+        "driver",
+        "repeat"
+      ],
+      "title": "XdpCaseInput",
+      "type": "object"
+    },
+    "XdpCaseTrace": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "input": {
+          "$ref": "#/$defs/XdpCaseInput"
+        },
+        "observation": {
+          "$ref": "#/$defs/XdpRawObservation"
+        }
+      },
+      "required": [
+        "case_id",
+        "input",
+        "observation"
+      ],
+      "title": "XdpCaseTrace",
+      "type": "object"
+    },
+    "XdpRawObservation": {
+      "additionalProperties": false,
+      "description": "Unnormalized outputs from one fresh-object, repeat-one execution.",
+      "properties": {
+        "context_bytes": {
+          "anyOf": [
+            {
+              "maxLength": 33554432,
+              "pattern": "^(?:[0-9a-f]{2})*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Context Bytes"
+        },
+        "counters": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/CounterTrace"
+          },
+          "maxItems": 16384,
+          "title": "Counters",
+          "type": "array"
+        },
+        "events": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/EventStreamTrace"
+          },
+          "maxItems": 16384,
+          "title": "Events",
+          "type": "array"
+        },
+        "maps": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/MapStateTrace"
+          },
+          "maxItems": 16384,
+          "title": "Maps",
+          "type": "array"
+        },
+        "packet_bytes": {
+          "anyOf": [
+            {
+              "maxLength": 33554432,
+              "pattern": "^(?:[0-9a-f]{2})*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Packet Bytes"
+        },
+        "retval": {
+          "maximum": 4294967295,
+          "minimum": 0,
+          "title": "Retval",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "retval",
+        "packet_bytes",
+        "context_bytes"
+      ],
+      "title": "XdpRawObservation",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A content-addressable raw trace emitted by a future trusted runner.",
+  "properties": {
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/XdpCaseTrace"
+      },
+      "maxItems": 256,
+      "minItems": 1,
+      "title": "Cases",
+      "type": "array"
+    },
+    "environment_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Environment Id",
+      "type": "string"
+    },
+    "environment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Environment Sha256",
+      "type": "string"
+    },
+    "evaluation_plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evaluation Plan Sha256",
+      "type": "string"
+    },
+    "grader_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Grader Id",
+      "type": "string"
+    },
+    "harness_commit": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Harness Commit",
+      "type": "string"
+    },
+    "profile": {
+      "const": "xdp-bpf-prog-test-run-trace-v1",
+      "title": "Profile",
+      "type": "string"
+    },
+    "program": {
+      "$ref": "#/$defs/ContentIdentity"
+    },
+    "role": {
+      "enum": [
+        "candidate",
+        "reference"
+      ],
+      "title": "Role",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.xdp-trace.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "task_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Task Bundle Sha256",
+      "type": "string"
+    },
+    "task_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Task Id",
+      "type": "string"
+    },
+    "task_version": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Task Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "profile",
+    "role",
+    "task_id",
+    "task_version",
+    "task_bundle_sha256",
+    "evaluation_plan_sha256",
+    "grader_id",
+    "environment_id",
+    "environment_sha256",
+    "harness_commit",
+    "program",
+    "cases"
+  ],
+  "title": "XdpTrace",
+  "type": "object"
+}

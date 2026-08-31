@@ -1,0 +1,395 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "authoritative": {
+      "const": false,
+      "title": "Authoritative",
+      "type": "boolean"
+    },
+    "candidate_bytes_accessed": {
+      "const": false,
+      "title": "Candidate Bytes Accessed",
+      "type": "boolean"
+    },
+    "claim_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Claim Id",
+      "type": "string"
+    },
+    "claim_ledger_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Claim Ledger Id",
+      "type": "string"
+    },
+    "claim_nonce": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Claim Nonce",
+      "type": "string"
+    },
+    "claim_scope": {
+      "const": "single-configured-worker-ledger-v1",
+      "title": "Claim Scope",
+      "type": "string"
+    },
+    "claimed_at_unix": {
+      "minimum": 0,
+      "title": "Claimed At Unix",
+      "type": "integer"
+    },
+    "cleanup_timeout_ms": {
+      "const": 5000,
+      "title": "Cleanup Timeout Ms",
+      "type": "integer"
+    },
+    "delegated_root_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Delegated Root Id",
+      "type": "string"
+    },
+    "evaluation_job_accessed": {
+      "const": false,
+      "title": "Evaluation Job Accessed",
+      "type": "boolean"
+    },
+    "execution_started": {
+      "const": false,
+      "title": "Execution Started",
+      "type": "boolean"
+    },
+    "external_fixture_executable_accessed": {
+      "const": false,
+      "title": "External Fixture Executable Accessed",
+      "type": "boolean"
+    },
+    "fixture_child_exec_attempted": {
+      "const": false,
+      "title": "Fixture Child Exec Attempted",
+      "type": "boolean"
+    },
+    "fixture_child_process_created": {
+      "const": false,
+      "title": "Fixture Child Process Created",
+      "type": "boolean"
+    },
+    "fixture_kind": {
+      "const": "builtin-noexec-fixed-v1",
+      "title": "Fixture Kind",
+      "type": "string"
+    },
+    "fixture_protocol_id": {
+      "const": "bpe.clone3-inert-fixture-protocol.v1",
+      "title": "Fixture Protocol Id",
+      "type": "string"
+    },
+    "fixture_timeout_ms": {
+      "maximum": 30000,
+      "minimum": 5000,
+      "title": "Fixture Timeout Ms",
+      "type": "integer"
+    },
+    "intent_expires_at_unix": {
+      "minimum": 0,
+      "title": "Intent Expires At Unix",
+      "type": "integer"
+    },
+    "intent_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Intent Id",
+      "type": "string"
+    },
+    "intent_issued_at_unix": {
+      "minimum": 0,
+      "title": "Intent Issued At Unix",
+      "type": "integer"
+    },
+    "intent_nonce": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Intent Nonce",
+      "type": "string"
+    },
+    "intent_not_before_unix": {
+      "minimum": 0,
+      "title": "Intent Not Before Unix",
+      "type": "integer"
+    },
+    "intent_payload_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Intent Payload Sha256",
+      "type": "string"
+    },
+    "intent_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Intent Sha256",
+      "type": "string"
+    },
+    "launch_attempt_consumed": {
+      "const": false,
+      "title": "Launch Attempt Consumed",
+      "type": "boolean"
+    },
+    "launch_authorized": {
+      "const": false,
+      "title": "Launch Authorized",
+      "type": "boolean"
+    },
+    "launch_ledger_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Launch Ledger Id",
+      "type": "string"
+    },
+    "launcher_artifact_accessed": {
+      "const": false,
+      "title": "Launcher Artifact Accessed",
+      "type": "boolean"
+    },
+    "launcher_artifact_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Launcher Artifact Id",
+      "type": "string"
+    },
+    "launcher_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Launcher Artifact Sha256",
+      "type": "string"
+    },
+    "launcher_kind": {
+      "const": "spawned-one-shot-executable-v1",
+      "title": "Launcher Kind",
+      "type": "string"
+    },
+    "launcher_launch_method": {
+      "const": "fixed-one-shot-executable-v1",
+      "title": "Launcher Launch Method",
+      "type": "string"
+    },
+    "launcher_process_created": {
+      "const": false,
+      "title": "Launcher Process Created",
+      "type": "boolean"
+    },
+    "launcher_protocol_version": {
+      "const": "bpe.clone3-inert-launcher-protocol.v1",
+      "title": "Launcher Protocol Version",
+      "type": "string"
+    },
+    "launcher_seccomp_policy_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Launcher Seccomp Policy Id",
+      "type": "string"
+    },
+    "launcher_seccomp_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Launcher Seccomp Policy Sha256",
+      "type": "string"
+    },
+    "maximum_claims": {
+      "const": 1,
+      "title": "Maximum Claims",
+      "type": "integer"
+    },
+    "maximum_launch_attempts": {
+      "const": 1,
+      "title": "Maximum Launch Attempts",
+      "type": "integer"
+    },
+    "one_shot_claim_committed": {
+      "const": true,
+      "title": "One Shot Claim Committed",
+      "type": "boolean"
+    },
+    "operation": {
+      "const": "qualify-clone3-inert-noexec-v1",
+      "title": "Operation",
+      "type": "string"
+    },
+    "policy_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Policy Sha256",
+      "type": "string"
+    },
+    "process_created": {
+      "const": false,
+      "title": "Process Created",
+      "type": "boolean"
+    },
+    "purpose": {
+      "const": "inert_fixture_qualification",
+      "title": "Purpose",
+      "type": "string"
+    },
+    "resource_profile_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Resource Profile Id",
+      "type": "string"
+    },
+    "resource_profile_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Resource Profile Sha256",
+      "type": "string"
+    },
+    "retry_permitted": {
+      "const": false,
+      "title": "Retry Permitted",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "bpe.inert-fixture-intent-claim-receipt.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "separate_launch_ledger_required": {
+      "const": true,
+      "title": "Separate Launch Ledger Required",
+      "type": "boolean"
+    },
+    "signature_key_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Signature Key Id",
+      "type": "string"
+    },
+    "signature_verified": {
+      "const": true,
+      "title": "Signature Verified",
+      "type": "boolean"
+    },
+    "signed_authoritative_ready": {
+      "const": false,
+      "title": "Signed Authoritative Ready",
+      "type": "boolean"
+    },
+    "signed_candidate_access_permitted": {
+      "const": false,
+      "title": "Signed Candidate Access Permitted",
+      "type": "boolean"
+    },
+    "signed_evaluation_job_access_permitted": {
+      "const": false,
+      "title": "Signed Evaluation Job Access Permitted",
+      "type": "boolean"
+    },
+    "signed_external_fixture_executable_permitted": {
+      "const": false,
+      "title": "Signed External Fixture Executable Permitted",
+      "type": "boolean"
+    },
+    "signed_fixture_child_exec_permitted": {
+      "const": false,
+      "title": "Signed Fixture Child Exec Permitted",
+      "type": "boolean"
+    },
+    "signed_fixture_child_process_permitted": {
+      "const": true,
+      "title": "Signed Fixture Child Process Permitted",
+      "type": "boolean"
+    },
+    "signed_launcher_process_permitted": {
+      "const": true,
+      "title": "Signed Launcher Process Permitted",
+      "type": "boolean"
+    },
+    "status": {
+      "const": "claimed_not_started",
+      "title": "Status",
+      "type": "string"
+    },
+    "total_timeout_ms": {
+      "maximum": 35000,
+      "minimum": 10000,
+      "title": "Total Timeout Ms",
+      "type": "integer"
+    },
+    "trust_store_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Trust Store Id",
+      "type": "string"
+    },
+    "trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Trust Store Sha256",
+      "type": "string"
+    },
+    "worker_instance_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Worker Instance Id",
+      "type": "string"
+    },
+    "worker_pool_audience": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Worker Pool Audience",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "status",
+    "intent_id",
+    "intent_sha256",
+    "intent_payload_sha256",
+    "signature_key_id",
+    "trust_store_id",
+    "trust_store_sha256",
+    "claim_id",
+    "claim_nonce",
+    "claimed_at_unix",
+    "intent_nonce",
+    "intent_issued_at_unix",
+    "intent_not_before_unix",
+    "intent_expires_at_unix",
+    "purpose",
+    "operation",
+    "policy_id",
+    "policy_sha256",
+    "worker_pool_audience",
+    "worker_instance_id",
+    "claim_ledger_id",
+    "launch_ledger_id",
+    "claim_scope",
+    "delegated_root_id",
+    "launcher_kind",
+    "launcher_artifact_id",
+    "launcher_artifact_sha256",
+    "launcher_seccomp_policy_id",
+    "launcher_seccomp_policy_sha256",
+    "launcher_protocol_version",
+    "launcher_launch_method",
+    "fixture_kind",
+    "fixture_protocol_id",
+    "resource_profile_id",
+    "resource_profile_sha256",
+    "fixture_timeout_ms",
+    "cleanup_timeout_ms",
+    "total_timeout_ms",
+    "maximum_claims",
+    "maximum_launch_attempts",
+    "retry_permitted",
+    "signature_verified",
+    "one_shot_claim_committed",
+    "signed_launcher_process_permitted",
+    "signed_fixture_child_process_permitted",
+    "signed_fixture_child_exec_permitted",
+    "signed_external_fixture_executable_permitted",
+    "signed_candidate_access_permitted",
+    "signed_evaluation_job_access_permitted",
+    "signed_authoritative_ready",
+    "separate_launch_ledger_required",
+    "launch_authorized",
+    "launch_attempt_consumed",
+    "launcher_artifact_accessed",
+    "launcher_process_created",
+    "fixture_child_process_created",
+    "fixture_child_exec_attempted",
+    "process_created",
+    "execution_started",
+    "external_fixture_executable_accessed",
+    "candidate_bytes_accessed",
+    "evaluation_job_accessed",
+    "authoritative"
+  ],
+  "title": "InertFixtureIntentClaimReceipt",
+  "type": "object"
+}

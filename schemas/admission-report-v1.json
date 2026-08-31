@@ -1,0 +1,208 @@
+{
+  "$defs": {
+    "AdmissionReplayDigest": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Candidate Sha256",
+          "type": "string"
+        },
+        "control_id": {
+          "anyOf": [
+            {
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Control Id"
+        },
+        "evidence_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evidence Sha256",
+          "type": "string"
+        },
+        "grade_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Grade Sha256",
+          "type": "string"
+        },
+        "replay_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Replay Manifest Sha256",
+          "type": "string"
+        },
+        "request_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Request Id",
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/$defs/AdmissionRole"
+        }
+      },
+      "required": [
+        "role",
+        "request_id",
+        "candidate_sha256",
+        "evidence_sha256",
+        "grade_sha256",
+        "replay_manifest_sha256"
+      ],
+      "title": "AdmissionReplayDigest",
+      "type": "object"
+    },
+    "AdmissionRole": {
+      "enum": [
+        "original",
+        "revert",
+        "alternative",
+        "public_mutant",
+        "negative_control"
+      ],
+      "title": "AdmissionRole",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A successful Phase 0 contract check, never an authoritative admission.",
+  "properties": {
+    "attempt_set_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Attempt Set Sha256",
+      "type": "string"
+    },
+    "authoritative": {
+      "const": false,
+      "default": false,
+      "title": "Authoritative",
+      "type": "boolean"
+    },
+    "environment_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Environment Id",
+      "type": "string"
+    },
+    "environment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Environment Sha256",
+      "type": "string"
+    },
+    "fresh_snapshot_instances_verified": {
+      "const": false,
+      "default": false,
+      "title": "Fresh Snapshot Instances Verified",
+      "type": "boolean"
+    },
+    "grader_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Grader Id",
+      "type": "string"
+    },
+    "harness_commit": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Harness Commit",
+      "type": "string"
+    },
+    "phase": {
+      "const": "phase0",
+      "default": "phase0",
+      "title": "Phase",
+      "type": "string"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "private_grader_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Private Grader Sha256",
+      "type": "string"
+    },
+    "public_task_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Public Task Sha256",
+      "type": "string"
+    },
+    "reference_behavior_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Reference Behavior Sha256",
+      "type": "string"
+    },
+    "replays": {
+      "items": {
+        "$ref": "#/$defs/AdmissionReplayDigest"
+      },
+      "minItems": 1,
+      "title": "Replays",
+      "type": "array"
+    },
+    "reward_policy_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Reward Policy Id",
+      "type": "string"
+    },
+    "reward_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Reward Policy Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.admission-report.v1",
+      "default": "bpe.admission-report.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scoring_contract_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Scoring Contract Sha256",
+      "type": "string"
+    },
+    "status": {
+      "const": "provisional",
+      "default": "provisional",
+      "title": "Status",
+      "type": "string"
+    },
+    "task_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Task Bundle Sha256",
+      "type": "string"
+    },
+    "task_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Task Id",
+      "type": "string"
+    },
+    "task_version": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Task Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "plan_sha256",
+    "task_id",
+    "task_version",
+    "public_task_sha256",
+    "private_grader_sha256",
+    "task_bundle_sha256",
+    "scoring_contract_sha256",
+    "reward_policy_id",
+    "reward_policy_sha256",
+    "environment_id",
+    "environment_sha256",
+    "grader_id",
+    "harness_commit",
+    "reference_behavior_sha256",
+    "attempt_set_sha256",
+    "replays"
+  ],
+  "title": "AdmissionReport",
+  "type": "object"
+}

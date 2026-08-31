@@ -1,0 +1,23 @@
+{
+  "schema_version": "bpe.suite.v1",
+  "suite_id": "smoke-v1",
+  "strict_policy_id": "strict-success-v1",
+  "environment_id": "linux-6.15.11-clang18-x86_64-v1",
+  "family": "repair",
+  "root_cause_taxonomy": [
+    "missing_null_check"
+  ],
+  "tasks": [
+    {
+      "task_id": "smoke.missing-null",
+      "task_version": "1.0.0",
+      "task_bundle_sha256": "a6ac6b90298dabe42bd2a557afb194c1449d764713ff32c36efe51f5ed3416de",
+      "evaluation_plan_sha256": "e11bb1a9bc6e3f4945d1fc62588e708fc4f95b0fb04fe2fd029e95d9c6fdd1a2",
+      "scoring_contract_sha256": "3fd14b74a5793c731003c7921c924fd65c0e2d883fa7549d589002d799a9ef6e",
+      "family": "repair",
+      "root_cause": "missing_null_check",
+      "program_type": "xdp",
+      "cluster_id": "synthetic/bpe-smoke"
+    }
+  ]
+}

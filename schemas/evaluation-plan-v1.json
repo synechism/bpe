@@ -1,0 +1,324 @@
+{
+  "$defs": {
+    "ArtifactRef": {
+      "additionalProperties": false,
+      "properties": {
+        "media_type": {
+          "default": "application/octet-stream",
+          "maxLength": 127,
+          "minLength": 1,
+          "title": "Media Type",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sha256",
+        "size_bytes"
+      ],
+      "title": "ArtifactRef",
+      "type": "object"
+    },
+    "AssertionSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/JsonValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "kind": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Kind",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "weight": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "maximum": 1000000,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "kind"
+      ],
+      "title": "AssertionSpec",
+      "type": "object"
+    },
+    "CandidateContract": {
+      "additionalProperties": false,
+      "properties": {
+        "allow_markdown_fence": {
+          "default": true,
+          "title": "Allow Markdown Fence",
+          "type": "boolean"
+        },
+        "fixed_filename": {
+          "const": "candidate.c",
+          "default": "candidate.c",
+          "title": "Fixed Filename",
+          "type": "string"
+        },
+        "format": {
+          "const": "single_c_source",
+          "default": "single_c_source",
+          "title": "Format",
+          "type": "string"
+        },
+        "max_response_bytes": {
+          "default": 65536,
+          "exclusiveMinimum": 0,
+          "maximum": 1048576,
+          "title": "Max Response Bytes",
+          "type": "integer"
+        }
+      },
+      "title": "CandidateContract",
+      "type": "object"
+    },
+    "EvaluationFunctionalCase": {
+      "additionalProperties": false,
+      "description": "A functional case with a content reference and no filesystem pathname.",
+      "properties": {
+        "assertions": {
+          "items": {
+            "$ref": "#/$defs/AssertionSpec"
+          },
+          "maxItems": 256,
+          "minItems": 1,
+          "title": "Assertions",
+          "type": "array"
+        },
+        "case_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "input": {
+          "$ref": "#/$defs/ArtifactRef"
+        }
+      },
+      "required": [
+        "case_id",
+        "input",
+        "assertions"
+      ],
+      "title": "EvaluationFunctionalCase",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "ProgramContract": {
+      "additionalProperties": false,
+      "properties": {
+        "entrypoint": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Entrypoint",
+          "type": "string"
+        },
+        "max_programs": {
+          "default": 1,
+          "maximum": 16,
+          "minimum": 1,
+          "title": "Max Programs",
+          "type": "integer"
+        },
+        "program_type": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Program Type",
+          "type": "string"
+        },
+        "section": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Section",
+          "type": "string"
+        }
+      },
+      "required": [
+        "program_type",
+        "section",
+        "entrypoint"
+      ],
+      "title": "ProgramContract",
+      "type": "object"
+    },
+    "SemanticObligation": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "kind": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Kind",
+          "type": "string"
+        },
+        "obligation_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Obligation Id",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "obligation_id",
+        "kind",
+        "description"
+      ],
+      "title": "SemanticObligation",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The exact task logic needed for one candidate evaluation.",
+  "properties": {
+    "candidate_contract": {
+      "$ref": "#/$defs/CandidateContract"
+    },
+    "environment_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Environment Id",
+      "type": "string"
+    },
+    "family": {
+      "enum": [
+        "repair",
+        "generation"
+      ],
+      "title": "Family",
+      "type": "string"
+    },
+    "functional_cases": {
+      "items": {
+        "$ref": "#/$defs/EvaluationFunctionalCase"
+      },
+      "maxItems": 256,
+      "minItems": 1,
+      "title": "Functional Cases",
+      "type": "array"
+    },
+    "max_attempts": {
+      "maximum": 16,
+      "minimum": 1,
+      "title": "Max Attempts",
+      "type": "integer"
+    },
+    "private_grader_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Private Grader Sha256",
+      "type": "string"
+    },
+    "profile": {
+      "const": "xdp-bpf-prog-test-run-v1",
+      "title": "Profile",
+      "type": "string"
+    },
+    "program": {
+      "$ref": "#/$defs/ProgramContract"
+    },
+    "public_sdk_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Public Sdk Id",
+      "type": "string"
+    },
+    "public_task_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Public Task Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.evaluation-plan.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "semantic_obligations": {
+      "items": {
+        "$ref": "#/$defs/SemanticObligation"
+      },
+      "maxItems": 1024,
+      "minItems": 1,
+      "title": "Semantic Obligations",
+      "type": "array"
+    },
+    "strict_scoring_policy_id": {
+      "const": "strict-success-v1",
+      "title": "Strict Scoring Policy Id",
+      "type": "string"
+    },
+    "task_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Task Bundle Sha256",
+      "type": "string"
+    },
+    "task_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Task Id",
+      "type": "string"
+    },
+    "task_version": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Task Version",
+      "type": "string"
+    },
+    "whole_attempt_timeout_seconds": {
+      "maximum": 600,
+      "minimum": 1,
+      "title": "Whole Attempt Timeout Seconds",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "schema_version",
+    "profile",
+    "task_id",
+    "task_version",
+    "family",
+    "public_task_sha256",
+    "private_grader_sha256",
+    "task_bundle_sha256",
+    "environment_id",
+    "candidate_contract",
+    "program",
+    "public_sdk_id",
+    "max_attempts",
+    "whole_attempt_timeout_seconds",
+    "functional_cases",
+    "semantic_obligations",
+    "strict_scoring_policy_id"
+  ],
+  "title": "EvaluationPlan",
+  "type": "object"
+}

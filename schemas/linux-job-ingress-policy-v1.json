@@ -1,0 +1,166 @@
+{
+  "additionalProperties": false,
+  "description": "Signed policy for the only supported spool-to-worker copy strategy.",
+  "properties": {
+    "authoritative_ready": {
+      "const": false,
+      "title": "Authoritative Ready",
+      "type": "boolean"
+    },
+    "copy_method": {
+      "const": "verified-bounded-byte-copy-v1",
+      "title": "Copy Method",
+      "type": "string"
+    },
+    "execution_permitted": {
+      "const": false,
+      "title": "Execution Permitted",
+      "type": "boolean"
+    },
+    "host_architecture": {
+      "const": "x86_64",
+      "title": "Host Architecture",
+      "type": "string"
+    },
+    "host_platform": {
+      "const": "linux",
+      "title": "Host Platform",
+      "type": "string"
+    },
+    "max_blob_bytes": {
+      "const": 16777216,
+      "title": "Max Blob Bytes",
+      "type": "integer"
+    },
+    "max_blobs": {
+      "const": 256,
+      "title": "Max Blobs",
+      "type": "integer"
+    },
+    "max_manifest_bytes": {
+      "const": 262144,
+      "title": "Max Manifest Bytes",
+      "type": "integer"
+    },
+    "max_total_blob_bytes": {
+      "const": 134217728,
+      "title": "Max Total Blob Bytes",
+      "type": "integer"
+    },
+    "openat2_eagain_retries": {
+      "const": 3,
+      "title": "Openat2 Eagain Retries",
+      "type": "integer"
+    },
+    "policy_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "publish_method": {
+      "const": "renameat2-noreplace-v1",
+      "title": "Publish Method",
+      "type": "string"
+    },
+    "regular_file_open_method": {
+      "const": "openat2-opath-procfd-reopen-v1",
+      "title": "Regular File Open Method",
+      "type": "string"
+    },
+    "resolve_beneath": {
+      "const": true,
+      "title": "Resolve Beneath",
+      "type": "boolean"
+    },
+    "resolve_no_magiclinks": {
+      "const": true,
+      "title": "Resolve No Magiclinks",
+      "type": "boolean"
+    },
+    "resolve_no_symlinks": {
+      "const": true,
+      "title": "Resolve No Symlinks",
+      "type": "boolean"
+    },
+    "resolve_no_xdev": {
+      "const": true,
+      "title": "Resolve No Xdev",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "bpe.linux-job-ingress-policy.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_layout": {
+      "const": "sha256-job-directory-v1",
+      "title": "Source Layout",
+      "type": "string"
+    },
+    "source_open_method": {
+      "const": "openat2-v1",
+      "title": "Source Open Method",
+      "type": "string"
+    },
+    "source_root_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Source Root Id",
+      "type": "string"
+    },
+    "trusted_procfs_required": {
+      "const": true,
+      "title": "Trusted Procfs Required",
+      "type": "boolean"
+    },
+    "worker_directory_mode": {
+      "const": "0700",
+      "title": "Worker Directory Mode",
+      "type": "string"
+    },
+    "worker_file_mode": {
+      "const": "0600",
+      "title": "Worker File Mode",
+      "type": "string"
+    },
+    "worker_pool_audience": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Worker Pool Audience",
+      "type": "string"
+    },
+    "worker_root_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Worker Root Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "policy_id",
+    "worker_pool_audience",
+    "source_root_id",
+    "worker_root_id",
+    "host_platform",
+    "host_architecture",
+    "source_layout",
+    "source_open_method",
+    "regular_file_open_method",
+    "trusted_procfs_required",
+    "resolve_beneath",
+    "resolve_no_xdev",
+    "resolve_no_symlinks",
+    "resolve_no_magiclinks",
+    "openat2_eagain_retries",
+    "max_manifest_bytes",
+    "max_blobs",
+    "max_blob_bytes",
+    "max_total_blob_bytes",
+    "copy_method",
+    "publish_method",
+    "worker_directory_mode",
+    "worker_file_mode",
+    "execution_permitted",
+    "authoritative_ready"
+  ],
+  "title": "LinuxJobIngressPolicy",
+  "type": "object"
+}

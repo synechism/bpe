@@ -1,0 +1,765 @@
+{
+  "$defs": {
+    "AssertionComparison": {
+      "additionalProperties": false,
+      "properties": {
+        "actual_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Actual Sha256",
+          "type": "string"
+        },
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "expected_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Expected Sha256",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "retval",
+            "packet_bytes",
+            "context_bytes",
+            "map_snapshot",
+            "map_delta",
+            "ordered_events",
+            "counter"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "matched": {
+          "title": "Matched",
+          "type": "boolean"
+        },
+        "required": {
+          "title": "Required",
+          "type": "boolean"
+        },
+        "weight": {
+          "exclusiveMinimum": 0,
+          "maximum": 1000000,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "kind",
+        "required",
+        "weight",
+        "matched",
+        "expected_sha256",
+        "actual_sha256"
+      ],
+      "title": "AssertionComparison",
+      "type": "object"
+    },
+    "ContentIdentity": {
+      "additionalProperties": false,
+      "description": "Exact byte identity for a program or stored case fixture.",
+      "properties": {
+        "media_type": {
+          "maxLength": 127,
+          "minLength": 1,
+          "title": "Media Type",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "maximum": 16777216,
+          "minimum": 1,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sha256",
+        "size_bytes",
+        "media_type"
+      ],
+      "title": "ContentIdentity",
+      "type": "object"
+    },
+    "ContextBytesObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "context_bytes",
+          "title": "Kind",
+          "type": "string"
+        },
+        "value": {
+          "maxLength": 33554432,
+          "pattern": "^(?:[0-9a-f]{2})*$",
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "assertion_id",
+        "value"
+      ],
+      "title": "ContextBytesObservation",
+      "type": "object"
+    },
+    "CounterObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "counter_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Counter Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "counter",
+          "title": "Kind",
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "final",
+            "delta"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "value": {
+          "maximum": 18446744073709551615,
+          "minimum": -18446744073709551615,
+          "title": "Value",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "assertion_id",
+        "counter_id",
+        "mode",
+        "value"
+      ],
+      "title": "CounterObservation",
+      "type": "object"
+    },
+    "FirstDivergence": {
+      "additionalProperties": false,
+      "properties": {
+        "actual_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Actual Sha256",
+          "type": "string"
+        },
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "assertion_index": {
+          "exclusiveMaximum": 256,
+          "minimum": 0,
+          "title": "Assertion Index",
+          "type": "integer"
+        },
+        "case_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "case_index": {
+          "exclusiveMaximum": 256,
+          "minimum": 0,
+          "title": "Case Index",
+          "type": "integer"
+        },
+        "expected_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Expected Sha256",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "retval",
+            "packet_bytes",
+            "context_bytes",
+            "map_snapshot",
+            "map_delta",
+            "ordered_events",
+            "counter"
+          ],
+          "title": "Kind",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_index",
+        "assertion_index",
+        "case_id",
+        "assertion_id",
+        "kind",
+        "expected_sha256",
+        "actual_sha256"
+      ],
+      "title": "FirstDivergence",
+      "type": "object"
+    },
+    "MapChange": {
+      "additionalProperties": false,
+      "properties": {
+        "after": {
+          "anyOf": [
+            {
+              "maxLength": 33554432,
+              "minLength": 2,
+              "pattern": "^(?:[0-9a-f]{2})+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "After"
+        },
+        "before": {
+          "anyOf": [
+            {
+              "maxLength": 33554432,
+              "minLength": 2,
+              "pattern": "^(?:[0-9a-f]{2})+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Before"
+        },
+        "key": {
+          "maxLength": 33554432,
+          "minLength": 2,
+          "pattern": "^(?:[0-9a-f]{2})+$",
+          "title": "Key",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "inserted",
+            "updated",
+            "deleted"
+          ],
+          "title": "Kind",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "key",
+        "before",
+        "after"
+      ],
+      "title": "MapChange",
+      "type": "object"
+    },
+    "MapDeltaObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "changes": {
+          "items": {
+            "$ref": "#/$defs/MapChange"
+          },
+          "maxItems": 16384,
+          "title": "Changes",
+          "type": "array"
+        },
+        "kind": {
+          "const": "map_delta",
+          "title": "Kind",
+          "type": "string"
+        },
+        "map_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Map Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "assertion_id",
+        "map_id",
+        "changes"
+      ],
+      "title": "MapDeltaObservation",
+      "type": "object"
+    },
+    "MapEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "maxLength": 33554432,
+          "minLength": 2,
+          "pattern": "^(?:[0-9a-f]{2})+$",
+          "title": "Key",
+          "type": "string"
+        },
+        "value": {
+          "maxLength": 33554432,
+          "minLength": 2,
+          "pattern": "^(?:[0-9a-f]{2})+$",
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "value"
+      ],
+      "title": "MapEntry",
+      "type": "object"
+    },
+    "MapSnapshotObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/MapEntry"
+          },
+          "maxItems": 16384,
+          "title": "Entries",
+          "type": "array"
+        },
+        "kind": {
+          "const": "map_snapshot",
+          "title": "Kind",
+          "type": "string"
+        },
+        "map_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Map Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "assertion_id",
+        "map_id",
+        "entries"
+      ],
+      "title": "MapSnapshotObservation",
+      "type": "object"
+    },
+    "NormalizedObservation": {
+      "additionalProperties": false,
+      "description": "The exact comparison projection deterministically derived for one case.",
+      "properties": {
+        "assertions": {
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "context_bytes": "#/$defs/ContextBytesObservation",
+                "counter": "#/$defs/CounterObservation",
+                "map_delta": "#/$defs/MapDeltaObservation",
+                "map_snapshot": "#/$defs/MapSnapshotObservation",
+                "ordered_events": "#/$defs/OrderedEventsObservation",
+                "packet_bytes": "#/$defs/PacketBytesObservation",
+                "retval": "#/$defs/RetvalObservation"
+              },
+              "propertyName": "kind"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/RetvalObservation"
+              },
+              {
+                "$ref": "#/$defs/PacketBytesObservation"
+              },
+              {
+                "$ref": "#/$defs/ContextBytesObservation"
+              },
+              {
+                "$ref": "#/$defs/MapSnapshotObservation"
+              },
+              {
+                "$ref": "#/$defs/MapDeltaObservation"
+              },
+              {
+                "$ref": "#/$defs/OrderedEventsObservation"
+              },
+              {
+                "$ref": "#/$defs/CounterObservation"
+              }
+            ]
+          },
+          "maxItems": 256,
+          "minItems": 1,
+          "title": "Assertions",
+          "type": "array"
+        },
+        "case_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "input": {
+          "$ref": "#/$defs/XdpCaseInput"
+        },
+        "normalizations_applied": {
+          "default": [],
+          "items": {
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+            "type": "string"
+          },
+          "maxItems": 256,
+          "title": "Normalizations Applied",
+          "type": "array"
+        }
+      },
+      "required": [
+        "case_id",
+        "input",
+        "assertions"
+      ],
+      "title": "NormalizedObservation",
+      "type": "object"
+    },
+    "OracleCaseResult": {
+      "additionalProperties": false,
+      "properties": {
+        "assertions": {
+          "items": {
+            "$ref": "#/$defs/AssertionComparison"
+          },
+          "maxItems": 256,
+          "minItems": 1,
+          "title": "Assertions",
+          "type": "array"
+        },
+        "candidate_observation_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Candidate Observation Sha256",
+          "type": "string"
+        },
+        "case_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "input": {
+          "$ref": "#/$defs/XdpCaseInput"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "reference_observation_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Reference Observation Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "input",
+        "candidate_observation_sha256",
+        "reference_observation_sha256",
+        "assertions",
+        "passed"
+      ],
+      "title": "OracleCaseResult",
+      "type": "object"
+    },
+    "OrderedEventsObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "ordered_events",
+          "title": "Kind",
+          "type": "string"
+        },
+        "records": {
+          "items": {
+            "maxLength": 33554432,
+            "minLength": 2,
+            "pattern": "^(?:[0-9a-f]{2})+$",
+            "type": "string"
+          },
+          "maxItems": 16384,
+          "title": "Records",
+          "type": "array"
+        },
+        "stream_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Stream Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "assertion_id",
+        "stream_id",
+        "records"
+      ],
+      "title": "OrderedEventsObservation",
+      "type": "object"
+    },
+    "PacketBytesObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "packet_bytes",
+          "title": "Kind",
+          "type": "string"
+        },
+        "value": {
+          "maxLength": 33554432,
+          "pattern": "^(?:[0-9a-f]{2})*$",
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "assertion_id",
+        "value"
+      ],
+      "title": "PacketBytesObservation",
+      "type": "object"
+    },
+    "RetvalObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "retval",
+          "title": "Kind",
+          "type": "string"
+        },
+        "value": {
+          "maximum": 4294967295,
+          "minimum": 0,
+          "title": "Value",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "assertion_id",
+        "value"
+      ],
+      "title": "RetvalObservation",
+      "type": "object"
+    },
+    "XdpCaseInput": {
+      "additionalProperties": false,
+      "description": "The exact stored input supplied independently to both program executions.",
+      "properties": {
+        "driver": {
+          "const": "bpf_prog_run/xdp@1",
+          "title": "Driver",
+          "type": "string"
+        },
+        "fixture": {
+          "$ref": "#/$defs/ContentIdentity"
+        },
+        "repeat": {
+          "const": 1,
+          "title": "Repeat",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "fixture",
+        "driver",
+        "repeat"
+      ],
+      "title": "XdpCaseInput",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Replayable result of comparing a candidate trace to a reference trace.",
+  "properties": {
+    "candidate_observations": {
+      "items": {
+        "$ref": "#/$defs/NormalizedObservation"
+      },
+      "maxItems": 256,
+      "minItems": 1,
+      "title": "Candidate Observations",
+      "type": "array"
+    },
+    "candidate_program": {
+      "$ref": "#/$defs/ContentIdentity"
+    },
+    "candidate_trace_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Candidate Trace Sha256",
+      "type": "string"
+    },
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/OracleCaseResult"
+      },
+      "maxItems": 256,
+      "minItems": 1,
+      "title": "Cases",
+      "type": "array"
+    },
+    "contract_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Contract Sha256",
+      "type": "string"
+    },
+    "environment_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Environment Id",
+      "type": "string"
+    },
+    "environment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Environment Sha256",
+      "type": "string"
+    },
+    "evaluation_plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evaluation Plan Sha256",
+      "type": "string"
+    },
+    "first_divergence": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/FirstDivergence"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "grader_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Grader Id",
+      "type": "string"
+    },
+    "harness_commit": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Harness Commit",
+      "type": "string"
+    },
+    "normalizer_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Normalizer Sha256",
+      "type": "string"
+    },
+    "normalizer_version": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Normalizer Version",
+      "type": "string"
+    },
+    "reference_observations": {
+      "items": {
+        "$ref": "#/$defs/NormalizedObservation"
+      },
+      "maxItems": 256,
+      "minItems": 1,
+      "title": "Reference Observations",
+      "type": "array"
+    },
+    "reference_program": {
+      "$ref": "#/$defs/ContentIdentity"
+    },
+    "reference_trace_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Reference Trace Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.oracle-report.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "strict_success": {
+      "title": "Strict Success",
+      "type": "boolean"
+    },
+    "task_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Task Bundle Sha256",
+      "type": "string"
+    },
+    "task_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Task Id",
+      "type": "string"
+    },
+    "task_version": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Task Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "contract_sha256",
+    "candidate_trace_sha256",
+    "reference_trace_sha256",
+    "task_id",
+    "task_version",
+    "task_bundle_sha256",
+    "evaluation_plan_sha256",
+    "grader_id",
+    "environment_id",
+    "environment_sha256",
+    "harness_commit",
+    "normalizer_version",
+    "normalizer_sha256",
+    "candidate_program",
+    "reference_program",
+    "candidate_observations",
+    "reference_observations",
+    "cases",
+    "strict_success",
+    "first_divergence"
+  ],
+  "title": "OracleReport",
+  "type": "object"
+}

@@ -1,0 +1,299 @@
+{
+  "$defs": {
+    "InertFixtureIntentPayload": {
+      "additionalProperties": false,
+      "description": "Short-lived authority for exactly one fixed built-in fixture claim.",
+      "properties": {
+        "authoritative_ready": {
+          "const": false,
+          "title": "Authoritative Ready",
+          "type": "boolean"
+        },
+        "candidate_access_permitted": {
+          "const": false,
+          "title": "Candidate Access Permitted",
+          "type": "boolean"
+        },
+        "claim_ledger_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Claim Ledger Id",
+          "type": "string"
+        },
+        "claim_scope": {
+          "const": "single-configured-worker-ledger-v1",
+          "title": "Claim Scope",
+          "type": "string"
+        },
+        "cleanup_timeout_ms": {
+          "const": 5000,
+          "title": "Cleanup Timeout Ms",
+          "type": "integer"
+        },
+        "delegated_root_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Delegated Root Id",
+          "type": "string"
+        },
+        "evaluation_job_access_permitted": {
+          "const": false,
+          "title": "Evaluation Job Access Permitted",
+          "type": "boolean"
+        },
+        "expires_at_unix": {
+          "minimum": 0,
+          "title": "Expires At Unix",
+          "type": "integer"
+        },
+        "external_fixture_executable_permitted": {
+          "const": false,
+          "title": "External Fixture Executable Permitted",
+          "type": "boolean"
+        },
+        "fixture_child_exec_permitted": {
+          "const": false,
+          "title": "Fixture Child Exec Permitted",
+          "type": "boolean"
+        },
+        "fixture_child_process_permitted": {
+          "const": true,
+          "title": "Fixture Child Process Permitted",
+          "type": "boolean"
+        },
+        "fixture_kind": {
+          "const": "builtin-noexec-fixed-v1",
+          "title": "Fixture Kind",
+          "type": "string"
+        },
+        "fixture_protocol_id": {
+          "const": "bpe.clone3-inert-fixture-protocol.v1",
+          "title": "Fixture Protocol Id",
+          "type": "string"
+        },
+        "fixture_timeout_ms": {
+          "maximum": 30000,
+          "minimum": 5000,
+          "title": "Fixture Timeout Ms",
+          "type": "integer"
+        },
+        "intent_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Intent Id",
+          "type": "string"
+        },
+        "intent_nonce": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Intent Nonce",
+          "type": "string"
+        },
+        "issued_at_unix": {
+          "minimum": 0,
+          "title": "Issued At Unix",
+          "type": "integer"
+        },
+        "launch_ledger_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Launch Ledger Id",
+          "type": "string"
+        },
+        "launcher_artifact_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Launcher Artifact Id",
+          "type": "string"
+        },
+        "launcher_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Launcher Artifact Sha256",
+          "type": "string"
+        },
+        "launcher_kind": {
+          "const": "spawned-one-shot-executable-v1",
+          "title": "Launcher Kind",
+          "type": "string"
+        },
+        "launcher_launch_method": {
+          "const": "fixed-one-shot-executable-v1",
+          "title": "Launcher Launch Method",
+          "type": "string"
+        },
+        "launcher_process_permitted": {
+          "const": true,
+          "title": "Launcher Process Permitted",
+          "type": "boolean"
+        },
+        "launcher_protocol_version": {
+          "const": "bpe.clone3-inert-launcher-protocol.v1",
+          "title": "Launcher Protocol Version",
+          "type": "string"
+        },
+        "launcher_seccomp_policy_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Launcher Seccomp Policy Id",
+          "type": "string"
+        },
+        "launcher_seccomp_policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Launcher Seccomp Policy Sha256",
+          "type": "string"
+        },
+        "maximum_claims": {
+          "const": 1,
+          "title": "Maximum Claims",
+          "type": "integer"
+        },
+        "maximum_launch_attempts": {
+          "const": 1,
+          "title": "Maximum Launch Attempts",
+          "type": "integer"
+        },
+        "not_before_unix": {
+          "minimum": 0,
+          "title": "Not Before Unix",
+          "type": "integer"
+        },
+        "operation": {
+          "const": "qualify-clone3-inert-noexec-v1",
+          "title": "Operation",
+          "type": "string"
+        },
+        "policy_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Policy Id",
+          "type": "string"
+        },
+        "policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Policy Sha256",
+          "type": "string"
+        },
+        "purpose": {
+          "const": "inert_fixture_qualification",
+          "title": "Purpose",
+          "type": "string"
+        },
+        "resource_profile_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Resource Profile Id",
+          "type": "string"
+        },
+        "resource_profile_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Resource Profile Sha256",
+          "type": "string"
+        },
+        "retry_permitted": {
+          "const": false,
+          "title": "Retry Permitted",
+          "type": "boolean"
+        },
+        "schema_version": {
+          "const": "bpe.inert-fixture-intent-payload.v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "total_timeout_ms": {
+          "maximum": 35000,
+          "minimum": 10000,
+          "title": "Total Timeout Ms",
+          "type": "integer"
+        },
+        "worker_instance_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Worker Instance Id",
+          "type": "string"
+        },
+        "worker_pool_audience": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Worker Pool Audience",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "intent_id",
+        "intent_nonce",
+        "purpose",
+        "operation",
+        "policy_id",
+        "policy_sha256",
+        "worker_pool_audience",
+        "worker_instance_id",
+        "claim_ledger_id",
+        "launch_ledger_id",
+        "claim_scope",
+        "delegated_root_id",
+        "launcher_kind",
+        "launcher_artifact_id",
+        "launcher_artifact_sha256",
+        "launcher_seccomp_policy_id",
+        "launcher_seccomp_policy_sha256",
+        "launcher_protocol_version",
+        "launcher_launch_method",
+        "fixture_kind",
+        "fixture_protocol_id",
+        "resource_profile_id",
+        "resource_profile_sha256",
+        "fixture_timeout_ms",
+        "cleanup_timeout_ms",
+        "total_timeout_ms",
+        "issued_at_unix",
+        "not_before_unix",
+        "expires_at_unix",
+        "maximum_claims",
+        "maximum_launch_attempts",
+        "retry_permitted",
+        "launcher_process_permitted",
+        "fixture_child_process_permitted",
+        "fixture_child_exec_permitted",
+        "external_fixture_executable_permitted",
+        "candidate_access_permitted",
+        "evaluation_job_access_permitted",
+        "authoritative_ready"
+      ],
+      "title": "InertFixtureIntentPayload",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "algorithm": {
+      "const": "Ed25519",
+      "title": "Algorithm",
+      "type": "string"
+    },
+    "key_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Key Id",
+      "type": "string"
+    },
+    "payload": {
+      "$ref": "#/$defs/InertFixtureIntentPayload"
+    },
+    "payload_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Payload Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.signed-inert-fixture-intent.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "signature_base64url": {
+      "maxLength": 86,
+      "minLength": 86,
+      "pattern": "^[A-Za-z0-9_-]{85}[AQgw]$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "algorithm",
+    "key_id",
+    "payload",
+    "payload_sha256",
+    "signature_base64url"
+  ],
+  "title": "SignedInertFixtureIntent",
+  "type": "object"
+}

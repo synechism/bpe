@@ -1,0 +1,117 @@
+{
+  "additionalProperties": false,
+  "description": "Typed process and filesystem ceilings; no opaque command or environment surface.",
+  "properties": {
+    "core_dumps_enabled": {
+      "const": false,
+      "title": "Core Dumps Enabled",
+      "type": "boolean"
+    },
+    "cpu_time_seconds": {
+      "maximum": 600,
+      "minimum": 1,
+      "title": "Cpu Time Seconds",
+      "type": "integer"
+    },
+    "file_size_bytes": {
+      "maximum": 1073741824,
+      "minimum": 1024,
+      "title": "File Size Bytes",
+      "type": "integer"
+    },
+    "memory_bytes": {
+      "maximum": 68719476736,
+      "minimum": 67108864,
+      "title": "Memory Bytes",
+      "type": "integer"
+    },
+    "network_enabled": {
+      "const": false,
+      "title": "Network Enabled",
+      "type": "boolean"
+    },
+    "open_files_max": {
+      "maximum": 65536,
+      "minimum": 8,
+      "title": "Open Files Max",
+      "type": "integer"
+    },
+    "pids_max": {
+      "maximum": 4096,
+      "minimum": 1,
+      "title": "Pids Max",
+      "type": "integer"
+    },
+    "profile_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Profile Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.execution-resource-profile.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "stack_bytes": {
+      "maximum": 67108864,
+      "minimum": 65536,
+      "title": "Stack Bytes",
+      "type": "integer"
+    },
+    "stderr_bytes": {
+      "maximum": 16777216,
+      "minimum": 0,
+      "title": "Stderr Bytes",
+      "type": "integer"
+    },
+    "stdout_bytes": {
+      "maximum": 16777216,
+      "minimum": 0,
+      "title": "Stdout Bytes",
+      "type": "integer"
+    },
+    "swap_bytes": {
+      "const": 0,
+      "title": "Swap Bytes",
+      "type": "integer"
+    },
+    "tmpfs_bytes": {
+      "maximum": 17179869184,
+      "minimum": 1048576,
+      "title": "Tmpfs Bytes",
+      "type": "integer"
+    },
+    "tmpfs_inodes": {
+      "maximum": 1000000,
+      "minimum": 16,
+      "title": "Tmpfs Inodes",
+      "type": "integer"
+    },
+    "wall_timeout_ms": {
+      "maximum": 600000,
+      "minimum": 100,
+      "title": "Wall Timeout Ms",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "schema_version",
+    "profile_id",
+    "wall_timeout_ms",
+    "cpu_time_seconds",
+    "memory_bytes",
+    "swap_bytes",
+    "pids_max",
+    "open_files_max",
+    "file_size_bytes",
+    "stack_bytes",
+    "stdout_bytes",
+    "stderr_bytes",
+    "tmpfs_bytes",
+    "tmpfs_inodes",
+    "network_enabled",
+    "core_dumps_enabled"
+  ],
+  "title": "ExecutionResourceProfile",
+  "type": "object"
+}

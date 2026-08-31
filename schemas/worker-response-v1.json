@@ -1,0 +1,258 @@
+{
+  "$defs": {
+    "CapabilitiesSuccessResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "capabilities": {
+          "$ref": "#/$defs/WorkerCapabilities"
+        },
+        "request_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Request Id",
+          "type": "string"
+        },
+        "request_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Request Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "bpe.worker-response.v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "status": {
+          "const": "success",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "request_id",
+        "request_sha256",
+        "status",
+        "capabilities"
+      ],
+      "title": "CapabilitiesSuccessResponse",
+      "type": "object"
+    },
+    "WorkerCapabilities": {
+      "additionalProperties": false,
+      "properties": {
+        "architecture": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Architecture",
+          "type": "string"
+        },
+        "bpftool_path": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Bpftool Path"
+        },
+        "btf_available": {
+          "title": "Btf Available",
+          "type": "boolean"
+        },
+        "can_compile_bpf": {
+          "const": false,
+          "title": "Can Compile Bpf",
+          "type": "boolean"
+        },
+        "can_load_bpf": {
+          "const": false,
+          "title": "Can Load Bpf",
+          "type": "boolean"
+        },
+        "clang_path": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Clang Path"
+        },
+        "compiler_prerequisites_present": {
+          "title": "Compiler Prerequisites Present",
+          "type": "boolean"
+        },
+        "kernel_release": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Kernel Release",
+          "type": "string"
+        },
+        "loader_prerequisites_present": {
+          "title": "Loader Prerequisites Present",
+          "type": "boolean"
+        },
+        "official_benchmark_eligible": {
+          "const": false,
+          "title": "Official Benchmark Eligible",
+          "type": "boolean"
+        },
+        "platform": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Platform",
+          "type": "string"
+        },
+        "reasons": {
+          "items": {
+            "maxLength": 512,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 32,
+          "title": "Reasons",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "bpe.worker-capabilities.v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "worker_execution_implemented": {
+          "const": false,
+          "title": "Worker Execution Implemented",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schema_version",
+        "platform",
+        "architecture",
+        "kernel_release",
+        "clang_path",
+        "bpftool_path",
+        "btf_available",
+        "compiler_prerequisites_present",
+        "loader_prerequisites_present",
+        "worker_execution_implemented",
+        "can_compile_bpf",
+        "can_load_bpf",
+        "official_benchmark_eligible",
+        "reasons"
+      ],
+      "title": "WorkerCapabilities",
+      "type": "object"
+    },
+    "WorkerErrorResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/WorkerProtocolError"
+        },
+        "request_id": {
+          "anyOf": [
+            {
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Request Id"
+        },
+        "request_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Request Sha256"
+        },
+        "schema_version": {
+          "const": "bpe.worker-response.v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "status": {
+          "const": "error",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "request_id",
+        "request_sha256",
+        "status",
+        "error"
+      ],
+      "title": "WorkerErrorResponse",
+      "type": "object"
+    },
+    "WorkerProtocolError": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/WorkerProtocolErrorCode"
+        },
+        "message": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "WorkerProtocolError",
+      "type": "object"
+    },
+    "WorkerProtocolErrorCode": {
+      "description": "Stable machine-readable failures exposed by the Phase 0 endpoint.",
+      "enum": [
+        "invalid_request",
+        "unsupported_method",
+        "capability_probe_failed",
+        "invalid_encoding",
+        "invalid_frame",
+        "invalid_json",
+        "frame_too_large",
+        "internal_error"
+      ],
+      "title": "WorkerProtocolErrorCode",
+      "type": "string"
+    }
+  },
+  "description": "Schema-export wrapper for the discriminated response union.",
+  "discriminator": {
+    "mapping": {
+      "error": "#/$defs/WorkerErrorResponse",
+      "success": "#/$defs/CapabilitiesSuccessResponse"
+    },
+    "propertyName": "status"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/CapabilitiesSuccessResponse"
+    },
+    {
+      "$ref": "#/$defs/WorkerErrorResponse"
+    }
+  ],
+  "title": "WorkerResponseEnvelope"
+}

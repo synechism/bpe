@@ -1,0 +1,136 @@
+{
+  "$defs": {
+    "SuiteTask": {
+      "additionalProperties": false,
+      "properties": {
+        "cluster_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Cluster Id",
+          "type": "string"
+        },
+        "evaluation_plan_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evaluation Plan Sha256",
+          "type": "string"
+        },
+        "family": {
+          "enum": [
+            "repair",
+            "generation"
+          ],
+          "title": "Family",
+          "type": "string"
+        },
+        "program_type": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Program Type",
+          "type": "string"
+        },
+        "root_cause": {
+          "anyOf": [
+            {
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Root Cause"
+        },
+        "scoring_contract_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Scoring Contract Sha256",
+          "type": "string"
+        },
+        "task_bundle_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Task Bundle Sha256",
+          "type": "string"
+        },
+        "task_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Id",
+          "type": "string"
+        },
+        "task_version": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id",
+        "task_version",
+        "task_bundle_sha256",
+        "evaluation_plan_sha256",
+        "scoring_contract_sha256",
+        "family",
+        "root_cause",
+        "program_type",
+        "cluster_id"
+      ],
+      "title": "SuiteTask",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "environment_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Environment Id",
+      "type": "string"
+    },
+    "family": {
+      "enum": [
+        "repair",
+        "generation"
+      ],
+      "title": "Family",
+      "type": "string"
+    },
+    "root_cause_taxonomy": {
+      "default": [],
+      "items": {
+        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+        "type": "string"
+      },
+      "title": "Root Cause Taxonomy",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "bpe.suite.v1",
+      "default": "bpe.suite.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "strict_policy_id": {
+      "const": "strict-success-v1",
+      "default": "strict-success-v1",
+      "title": "Strict Policy Id",
+      "type": "string"
+    },
+    "suite_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Suite Id",
+      "type": "string"
+    },
+    "tasks": {
+      "items": {
+        "$ref": "#/$defs/SuiteTask"
+      },
+      "maxItems": 100000,
+      "minItems": 1,
+      "title": "Tasks",
+      "type": "array"
+    }
+  },
+  "required": [
+    "suite_id",
+    "environment_id",
+    "family",
+    "tasks"
+  ],
+  "title": "SuiteManifest",
+  "type": "object"
+}

@@ -1,0 +1,75 @@
+[build-system]
+requires = ["hatchling==1.32.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bpe"
+version = "0.1.0"
+description = "A replayable, adversarial grader for verifier-safe eBPF synthesis"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "BPE contributors" }]
+dependencies = [
+  "cryptography>=45,<52",
+  "pydantic>=2.11,<3",
+]
+
+[project.urls]
+Repository = "https://github.com/synechism/bpe"
+Issues = "https://github.com/synechism/bpe/issues"
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=1.15",
+  "pytest>=8.3",
+  "ruff>=0.11",
+]
+
+[project.scripts]
+bpe = "bpe.cli:main"
+bpe-worker = "bpe.worker_cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bpe"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/.gitignore",
+  "/CONTRIBUTING.md",
+  "/LICENSE",
+  "/Makefile",
+  "/README.md",
+  "/SECURITY.md",
+  "/docs",
+  "/policies",
+  "/pyproject.toml",
+  "/schemas",
+  "/scripts",
+  "/src",
+  "/suites",
+  "/tasks/**/public",
+  "/uv.lock",
+  "/worker",
+]
+exclude = [
+  "/.github",
+  "/tests",
+  "/tasks/**/grader",
+]
+
+[tool.pytest.ini_options]
+addopts = "-ra --strict-config --strict-markers"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+packages = ["bpe"]

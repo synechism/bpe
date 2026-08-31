@@ -1,0 +1,159 @@
+{
+  "$defs": {
+    "CorpusProvenance": {
+      "additionalProperties": false,
+      "description": "Required upstream identity for one corpus source artifact.",
+      "properties": {
+        "commit": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Commit",
+          "type": "string"
+        },
+        "license": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "License",
+          "type": "string"
+        },
+        "repository": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "title": "Repository",
+          "type": "string"
+        },
+        "source_path": {
+          "title": "Source Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "repository",
+        "commit",
+        "source_path",
+        "license"
+      ],
+      "title": "CorpusProvenance",
+      "type": "object"
+    },
+    "CorpusSource": {
+      "additionalProperties": false,
+      "description": "One fully enumerated C source artifact and its split/lineage identity.",
+      "properties": {
+        "clone_group": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Clone Group",
+          "type": "string"
+        },
+        "contamination_group": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Contamination Group",
+          "type": "string"
+        },
+        "language": {
+          "const": "c",
+          "default": "c",
+          "title": "Language",
+          "type": "string"
+        },
+        "lineage_group": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Lineage Group",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/CorpusProvenance"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "maximum": 16777216,
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        },
+        "source_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "split": {
+          "enum": [
+            "train",
+            "development",
+            "calibration",
+            "validation",
+            "sealed_eval",
+            "benchmark"
+          ],
+          "title": "Split",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "path",
+        "sha256",
+        "size_bytes",
+        "split",
+        "contamination_group",
+        "lineage_group",
+        "clone_group",
+        "provenance"
+      ],
+      "title": "CorpusSource",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Frozen, closed-tree manifest for a candidate corpus or separate benchmark.",
+  "properties": {
+    "corpus_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Corpus Id",
+      "type": "string"
+    },
+    "manifest_kind": {
+      "enum": [
+        "corpus",
+        "benchmark"
+      ],
+      "title": "Manifest Kind",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.corpus-manifest.v1",
+      "default": "bpe.corpus-manifest.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/CorpusSource"
+      },
+      "maxItems": 100000,
+      "minItems": 1,
+      "title": "Sources",
+      "type": "array"
+    },
+    "tree_mode": {
+      "const": "closed",
+      "default": "closed",
+      "title": "Tree Mode",
+      "type": "string"
+    }
+  },
+  "required": [
+    "manifest_kind",
+    "corpus_id",
+    "sources"
+  ],
+  "title": "CorpusManifest",
+  "type": "object"
+}

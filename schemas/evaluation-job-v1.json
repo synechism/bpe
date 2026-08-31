@@ -1,0 +1,1267 @@
+{
+  "$defs": {
+    "ArtifactRef": {
+      "additionalProperties": false,
+      "properties": {
+        "media_type": {
+          "default": "application/octet-stream",
+          "maxLength": 127,
+          "minLength": 1,
+          "title": "Media Type",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sha256",
+        "size_bytes"
+      ],
+      "title": "ArtifactRef",
+      "type": "object"
+    },
+    "AssertionSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/JsonValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "kind": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Kind",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "weight": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "maximum": 1000000,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "kind"
+      ],
+      "title": "AssertionSpec",
+      "type": "object"
+    },
+    "CandidateContract": {
+      "additionalProperties": false,
+      "properties": {
+        "allow_markdown_fence": {
+          "default": true,
+          "title": "Allow Markdown Fence",
+          "type": "boolean"
+        },
+        "fixed_filename": {
+          "const": "candidate.c",
+          "default": "candidate.c",
+          "title": "Fixed Filename",
+          "type": "string"
+        },
+        "format": {
+          "const": "single_c_source",
+          "default": "single_c_source",
+          "title": "Format",
+          "type": "string"
+        },
+        "max_response_bytes": {
+          "default": 65536,
+          "exclusiveMinimum": 0,
+          "maximum": 1048576,
+          "title": "Max Response Bytes",
+          "type": "integer"
+        }
+      },
+      "title": "CandidateContract",
+      "type": "object"
+    },
+    "EnvironmentFingerprint": {
+      "additionalProperties": false,
+      "properties": {
+        "architecture": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Architecture",
+          "type": "string"
+        },
+        "bpfix_commit": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{40}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bpfix Commit"
+        },
+        "clang_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Clang Sha256",
+          "type": "string"
+        },
+        "clang_version": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Clang Version",
+          "type": "string"
+        },
+        "compile_recipe_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Compile Recipe Sha256",
+          "type": "string"
+        },
+        "environment_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Environment Id",
+          "type": "string"
+        },
+        "isolation": {
+          "$ref": "#/$defs/Isolation"
+        },
+        "kernel_btf_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Kernel Btf Sha256",
+          "type": "string"
+        },
+        "kernel_config_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Kernel Config Sha256",
+          "type": "string"
+        },
+        "kernel_image_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Kernel Image Sha256",
+          "type": "string"
+        },
+        "kernel_release": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Kernel Release",
+          "type": "string"
+        },
+        "libbpf_commit": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Libbpf Commit",
+          "type": "string"
+        },
+        "libbpf_version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Libbpf Version",
+          "type": "string"
+        },
+        "normalizer_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Normalizer Sha256",
+          "type": "string"
+        },
+        "normalizer_version": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Normalizer Version",
+          "type": "string"
+        },
+        "public_sdk_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Public Sdk Sha256",
+          "type": "string"
+        },
+        "resource_limits_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Resource Limits Sha256",
+          "type": "string"
+        },
+        "rootfs_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Rootfs Sha256",
+          "type": "string"
+        },
+        "runner_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Runner Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "bpe.environment.v1",
+          "default": "bpe.environment.v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "snapshot_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Snapshot Sha256"
+        }
+      },
+      "required": [
+        "environment_id",
+        "isolation",
+        "architecture",
+        "kernel_release",
+        "kernel_image_sha256",
+        "kernel_config_sha256",
+        "kernel_btf_sha256",
+        "rootfs_sha256",
+        "clang_version",
+        "clang_sha256",
+        "libbpf_version",
+        "libbpf_commit",
+        "runner_sha256",
+        "compile_recipe_sha256",
+        "normalizer_version",
+        "normalizer_sha256",
+        "public_sdk_sha256",
+        "resource_limits_sha256"
+      ],
+      "title": "EnvironmentFingerprint",
+      "type": "object"
+    },
+    "EvaluationFunctionalCase": {
+      "additionalProperties": false,
+      "description": "A functional case with a content reference and no filesystem pathname.",
+      "properties": {
+        "assertions": {
+          "items": {
+            "$ref": "#/$defs/AssertionSpec"
+          },
+          "maxItems": 256,
+          "minItems": 1,
+          "title": "Assertions",
+          "type": "array"
+        },
+        "case_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "input": {
+          "$ref": "#/$defs/ArtifactRef"
+        }
+      },
+      "required": [
+        "case_id",
+        "input",
+        "assertions"
+      ],
+      "title": "EvaluationFunctionalCase",
+      "type": "object"
+    },
+    "EvaluationPlan": {
+      "additionalProperties": false,
+      "description": "The exact task logic needed for one candidate evaluation.",
+      "properties": {
+        "candidate_contract": {
+          "$ref": "#/$defs/CandidateContract"
+        },
+        "environment_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Environment Id",
+          "type": "string"
+        },
+        "family": {
+          "enum": [
+            "repair",
+            "generation"
+          ],
+          "title": "Family",
+          "type": "string"
+        },
+        "functional_cases": {
+          "items": {
+            "$ref": "#/$defs/EvaluationFunctionalCase"
+          },
+          "maxItems": 256,
+          "minItems": 1,
+          "title": "Functional Cases",
+          "type": "array"
+        },
+        "max_attempts": {
+          "maximum": 16,
+          "minimum": 1,
+          "title": "Max Attempts",
+          "type": "integer"
+        },
+        "private_grader_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Private Grader Sha256",
+          "type": "string"
+        },
+        "profile": {
+          "const": "xdp-bpf-prog-test-run-v1",
+          "title": "Profile",
+          "type": "string"
+        },
+        "program": {
+          "$ref": "#/$defs/ProgramContract"
+        },
+        "public_sdk_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Public Sdk Id",
+          "type": "string"
+        },
+        "public_task_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Public Task Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "bpe.evaluation-plan.v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "semantic_obligations": {
+          "items": {
+            "$ref": "#/$defs/SemanticObligation"
+          },
+          "maxItems": 1024,
+          "minItems": 1,
+          "title": "Semantic Obligations",
+          "type": "array"
+        },
+        "strict_scoring_policy_id": {
+          "const": "strict-success-v1",
+          "title": "Strict Scoring Policy Id",
+          "type": "string"
+        },
+        "task_bundle_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Task Bundle Sha256",
+          "type": "string"
+        },
+        "task_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Id",
+          "type": "string"
+        },
+        "task_version": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Version",
+          "type": "string"
+        },
+        "whole_attempt_timeout_seconds": {
+          "maximum": 600,
+          "minimum": 1,
+          "title": "Whole Attempt Timeout Seconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "profile",
+        "task_id",
+        "task_version",
+        "family",
+        "public_task_sha256",
+        "private_grader_sha256",
+        "task_bundle_sha256",
+        "environment_id",
+        "candidate_contract",
+        "program",
+        "public_sdk_id",
+        "max_attempts",
+        "whole_attempt_timeout_seconds",
+        "functional_cases",
+        "semantic_obligations",
+        "strict_scoring_policy_id"
+      ],
+      "title": "EvaluationPlan",
+      "type": "object"
+    },
+    "EvaluationRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt_index": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Attempt Index",
+          "type": "integer"
+        },
+        "candidate": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "checkpoint_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Checkpoint Artifact Sha256",
+          "type": "string"
+        },
+        "checkpoint_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Checkpoint Id",
+          "type": "string"
+        },
+        "diagnostic_condition": {
+          "default": "none",
+          "enum": [
+            "none",
+            "raw",
+            "bpfix"
+          ],
+          "title": "Diagnostic Condition",
+          "type": "string"
+        },
+        "environment_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Environment Id",
+          "type": "string"
+        },
+        "episode_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Episode Id",
+          "type": "string"
+        },
+        "experiment_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Experiment Id",
+          "type": "string"
+        },
+        "experiment_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Experiment Manifest Sha256",
+          "type": "string"
+        },
+        "generation_seed": {
+          "minimum": 0,
+          "title": "Generation Seed",
+          "type": "integer"
+        },
+        "model_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Model Artifact Sha256",
+          "type": "string"
+        },
+        "model_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Model Id",
+          "type": "string"
+        },
+        "parent_request_id": {
+          "anyOf": [
+            {
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Request Id"
+        },
+        "request_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Request Id",
+          "type": "string"
+        },
+        "sample_index": {
+          "minimum": 0,
+          "title": "Sample Index",
+          "type": "integer"
+        },
+        "sampling_config_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sampling Config Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "bpe.request.v1",
+          "default": "bpe.request.v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "suite_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Suite Id",
+          "type": "string"
+        },
+        "suite_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Suite Manifest Sha256",
+          "type": "string"
+        },
+        "task_bundle_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Task Bundle Sha256",
+          "type": "string"
+        },
+        "task_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Id",
+          "type": "string"
+        },
+        "task_version": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Version",
+          "type": "string"
+        },
+        "training_seed": {
+          "minimum": 0,
+          "title": "Training Seed",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "request_id",
+        "experiment_id",
+        "experiment_manifest_sha256",
+        "model_id",
+        "model_artifact_sha256",
+        "checkpoint_id",
+        "checkpoint_artifact_sha256",
+        "sampling_config_sha256",
+        "episode_id",
+        "suite_id",
+        "suite_manifest_sha256",
+        "task_id",
+        "task_version",
+        "task_bundle_sha256",
+        "candidate",
+        "environment_id",
+        "training_seed",
+        "sample_index",
+        "generation_seed"
+      ],
+      "title": "EvaluationRequest",
+      "type": "object"
+    },
+    "ExpectedCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "check_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Check Id",
+          "type": "string"
+        },
+        "input_artifacts": {
+          "patternProperties": {
+            "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$": {
+              "$ref": "#/$defs/ArtifactRef"
+            }
+          },
+          "title": "Input Artifacts",
+          "type": "object"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "stage": {
+          "enum": [
+            "object_policy",
+            "functional",
+            "semantics"
+          ],
+          "title": "Stage",
+          "type": "string"
+        },
+        "weight": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "maximum": 1000000,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "stage",
+        "check_id"
+      ],
+      "title": "ExpectedCheck",
+      "type": "object"
+    },
+    "ExperimentManifest": {
+      "additionalProperties": false,
+      "properties": {
+        "diagnostic_condition": {
+          "enum": [
+            "none",
+            "raw",
+            "bpfix"
+          ],
+          "title": "Diagnostic Condition",
+          "type": "string"
+        },
+        "environment_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Environment Sha256",
+          "type": "string"
+        },
+        "expected_grader_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Expected Grader Id",
+          "type": "string"
+        },
+        "experiment_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Experiment Id",
+          "type": "string"
+        },
+        "harness_commit": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Harness Commit",
+          "type": "string"
+        },
+        "model_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Model Artifact Sha256",
+          "type": "string"
+        },
+        "model_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Model Id",
+          "type": "string"
+        },
+        "reported_k": {
+          "items": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "minItems": 1,
+          "title": "Reported K",
+          "type": "array"
+        },
+        "reward_policy_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Reward Policy Id",
+          "type": "string"
+        },
+        "reward_policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Reward Policy Sha256",
+          "type": "string"
+        },
+        "sampling_config_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sampling Config Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "bpe.experiment.v1",
+          "default": "bpe.experiment.v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "seed_plans": {
+          "items": {
+            "$ref": "#/$defs/SeedPlan"
+          },
+          "minItems": 1,
+          "title": "Seed Plans",
+          "type": "array"
+        },
+        "suite_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Suite Id",
+          "type": "string"
+        },
+        "suite_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Suite Manifest Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "experiment_id",
+        "suite_id",
+        "suite_manifest_sha256",
+        "model_id",
+        "model_artifact_sha256",
+        "sampling_config_sha256",
+        "diagnostic_condition",
+        "reward_policy_id",
+        "reward_policy_sha256",
+        "environment_sha256",
+        "harness_commit",
+        "expected_grader_id",
+        "seed_plans",
+        "reported_k"
+      ],
+      "title": "ExperimentManifest",
+      "type": "object"
+    },
+    "Isolation": {
+      "enum": [
+        "microvm",
+        "native_linux",
+        "synthetic"
+      ],
+      "title": "Isolation",
+      "type": "string"
+    },
+    "JobBlobRef": {
+      "additionalProperties": false,
+      "description": "Physical CAS identity; semantic media types remain on their role references.",
+      "properties": {
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "maximum": 16777216,
+          "minimum": 1,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sha256",
+        "size_bytes"
+      ],
+      "title": "JobBlobRef",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "ProgramContract": {
+      "additionalProperties": false,
+      "properties": {
+        "entrypoint": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Entrypoint",
+          "type": "string"
+        },
+        "max_programs": {
+          "default": 1,
+          "maximum": 16,
+          "minimum": 1,
+          "title": "Max Programs",
+          "type": "integer"
+        },
+        "program_type": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Program Type",
+          "type": "string"
+        },
+        "section": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Section",
+          "type": "string"
+        }
+      },
+      "required": [
+        "program_type",
+        "section",
+        "entrypoint"
+      ],
+      "title": "ProgramContract",
+      "type": "object"
+    },
+    "RewardPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "compile_failure_reward": {
+          "default": -0.5,
+          "maximum": 1,
+          "minimum": -1,
+          "title": "Compile Failure Reward",
+          "type": "number"
+        },
+        "description": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "explicit_hack_reason_prefix": {
+          "default": "HACK_",
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Explicit Hack Reason Prefix",
+          "type": "string"
+        },
+        "explicit_hack_reward": {
+          "default": -1.0,
+          "maximum": 0,
+          "minimum": -1,
+          "title": "Explicit Hack Reward",
+          "type": "number"
+        },
+        "functional_reward_cap": {
+          "default": 0.1,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Functional Reward Cap",
+          "type": "number"
+        },
+        "ingest_failure_reward": {
+          "default": -1.0,
+          "maximum": 1,
+          "minimum": -1,
+          "title": "Ingest Failure Reward",
+          "type": "number"
+        },
+        "object_policy_failure_reward": {
+          "default": -0.25,
+          "maximum": 1,
+          "minimum": -1,
+          "title": "Object Policy Failure Reward",
+          "type": "number"
+        },
+        "policy_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Policy Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "bpe.reward-policy.v1",
+          "default": "bpe.reward-policy.v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "semantics_reward_cap": {
+          "default": 0.6,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Semantics Reward Cap",
+          "type": "number"
+        },
+        "success_reward": {
+          "default": 1.0,
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Success Reward",
+          "type": "number"
+        },
+        "verifier_failure_reward": {
+          "default": 0.0,
+          "maximum": 1,
+          "minimum": -1,
+          "title": "Verifier Failure Reward",
+          "type": "number"
+        }
+      },
+      "required": [
+        "policy_id",
+        "description"
+      ],
+      "title": "RewardPolicy",
+      "type": "object"
+    },
+    "ScoringContract": {
+      "additionalProperties": false,
+      "properties": {
+        "checks": {
+          "items": {
+            "$ref": "#/$defs/ExpectedCheck"
+          },
+          "maxItems": 8192,
+          "minItems": 3,
+          "title": "Checks",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "bpe.scoring-contract.v1",
+          "default": "bpe.scoring-contract.v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "strict_policy_id": {
+          "const": "strict-success-v1",
+          "default": "strict-success-v1",
+          "title": "Strict Policy Id",
+          "type": "string"
+        },
+        "task_bundle_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Task Bundle Sha256",
+          "type": "string"
+        },
+        "task_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Id",
+          "type": "string"
+        },
+        "task_version": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id",
+        "task_version",
+        "task_bundle_sha256",
+        "checks"
+      ],
+      "title": "ScoringContract",
+      "type": "object"
+    },
+    "SeedPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "checkpoint_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Checkpoint Artifact Sha256",
+          "type": "string"
+        },
+        "checkpoint_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Checkpoint Id",
+          "type": "string"
+        },
+        "generation_seeds": {
+          "items": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "minItems": 1,
+          "title": "Generation Seeds",
+          "type": "array"
+        },
+        "training_seed": {
+          "minimum": 0,
+          "title": "Training Seed",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "training_seed",
+        "checkpoint_id",
+        "checkpoint_artifact_sha256",
+        "generation_seeds"
+      ],
+      "title": "SeedPlan",
+      "type": "object"
+    },
+    "SemanticObligation": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "kind": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Kind",
+          "type": "string"
+        },
+        "obligation_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Obligation Id",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "obligation_id",
+        "kind",
+        "description"
+      ],
+      "title": "SemanticObligation",
+      "type": "object"
+    },
+    "SuiteManifest": {
+      "additionalProperties": false,
+      "properties": {
+        "environment_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Environment Id",
+          "type": "string"
+        },
+        "family": {
+          "enum": [
+            "repair",
+            "generation"
+          ],
+          "title": "Family",
+          "type": "string"
+        },
+        "root_cause_taxonomy": {
+          "default": [],
+          "items": {
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+            "type": "string"
+          },
+          "title": "Root Cause Taxonomy",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "bpe.suite.v1",
+          "default": "bpe.suite.v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "strict_policy_id": {
+          "const": "strict-success-v1",
+          "default": "strict-success-v1",
+          "title": "Strict Policy Id",
+          "type": "string"
+        },
+        "suite_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Suite Id",
+          "type": "string"
+        },
+        "tasks": {
+          "items": {
+            "$ref": "#/$defs/SuiteTask"
+          },
+          "maxItems": 100000,
+          "minItems": 1,
+          "title": "Tasks",
+          "type": "array"
+        }
+      },
+      "required": [
+        "suite_id",
+        "environment_id",
+        "family",
+        "tasks"
+      ],
+      "title": "SuiteManifest",
+      "type": "object"
+    },
+    "SuiteTask": {
+      "additionalProperties": false,
+      "properties": {
+        "cluster_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Cluster Id",
+          "type": "string"
+        },
+        "evaluation_plan_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evaluation Plan Sha256",
+          "type": "string"
+        },
+        "family": {
+          "enum": [
+            "repair",
+            "generation"
+          ],
+          "title": "Family",
+          "type": "string"
+        },
+        "program_type": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Program Type",
+          "type": "string"
+        },
+        "root_cause": {
+          "anyOf": [
+            {
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Root Cause"
+        },
+        "scoring_contract_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Scoring Contract Sha256",
+          "type": "string"
+        },
+        "task_bundle_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Task Bundle Sha256",
+          "type": "string"
+        },
+        "task_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Id",
+          "type": "string"
+        },
+        "task_version": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id",
+        "task_version",
+        "task_bundle_sha256",
+        "evaluation_plan_sha256",
+        "scoring_contract_sha256",
+        "family",
+        "root_cause",
+        "program_type",
+        "cluster_id"
+      ],
+      "title": "SuiteTask",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Canonical manifest for a prepared, explicitly non-dispatchable job.",
+  "properties": {
+    "authoritative": {
+      "const": false,
+      "title": "Authoritative",
+      "type": "boolean"
+    },
+    "blobs": {
+      "items": {
+        "$ref": "#/$defs/JobBlobRef"
+      },
+      "maxItems": 256,
+      "minItems": 1,
+      "title": "Blobs",
+      "type": "array"
+    },
+    "contract": {
+      "$ref": "#/$defs/ScoringContract"
+    },
+    "contract_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Contract Sha256",
+      "type": "string"
+    },
+    "environment": {
+      "$ref": "#/$defs/EnvironmentFingerprint"
+    },
+    "environment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Environment Sha256",
+      "type": "string"
+    },
+    "execution_authorized": {
+      "const": false,
+      "title": "Execution Authorized",
+      "type": "boolean"
+    },
+    "expected_grader_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Grader Id",
+      "type": "string"
+    },
+    "experiment": {
+      "$ref": "#/$defs/ExperimentManifest"
+    },
+    "experiment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Experiment Sha256",
+      "type": "string"
+    },
+    "harness_commit": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Harness Commit",
+      "type": "string"
+    },
+    "plan": {
+      "$ref": "#/$defs/EvaluationPlan"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "request": {
+      "$ref": "#/$defs/EvaluationRequest"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "restore_nonce": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Restore Nonce",
+      "type": "string"
+    },
+    "reward_policy": {
+      "$ref": "#/$defs/RewardPolicy"
+    },
+    "reward_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Reward Policy Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.evaluation-job.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "status": {
+      "const": "prepared",
+      "title": "Status",
+      "type": "string"
+    },
+    "suite": {
+      "$ref": "#/$defs/SuiteManifest"
+    },
+    "suite_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Suite Sha256",
+      "type": "string"
+    },
+    "total_blob_bytes": {
+      "maximum": 134217728,
+      "minimum": 1,
+      "title": "Total Blob Bytes",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "schema_version",
+    "status",
+    "request",
+    "request_sha256",
+    "suite",
+    "suite_sha256",
+    "experiment",
+    "experiment_sha256",
+    "environment",
+    "environment_sha256",
+    "reward_policy",
+    "reward_policy_sha256",
+    "harness_commit",
+    "expected_grader_id",
+    "restore_nonce",
+    "plan",
+    "plan_sha256",
+    "contract",
+    "contract_sha256",
+    "blobs",
+    "total_blob_bytes",
+    "execution_authorized",
+    "authoritative"
+  ],
+  "title": "EvaluationJobManifest",
+  "type": "object"
+}

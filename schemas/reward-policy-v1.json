@@ -1,0 +1,90 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "compile_failure_reward": {
+      "default": -0.5,
+      "maximum": 1,
+      "minimum": -1,
+      "title": "Compile Failure Reward",
+      "type": "number"
+    },
+    "description": {
+      "maxLength": 1024,
+      "minLength": 1,
+      "title": "Description",
+      "type": "string"
+    },
+    "explicit_hack_reason_prefix": {
+      "default": "HACK_",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Explicit Hack Reason Prefix",
+      "type": "string"
+    },
+    "explicit_hack_reward": {
+      "default": -1.0,
+      "maximum": 0,
+      "minimum": -1,
+      "title": "Explicit Hack Reward",
+      "type": "number"
+    },
+    "functional_reward_cap": {
+      "default": 0.1,
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Functional Reward Cap",
+      "type": "number"
+    },
+    "ingest_failure_reward": {
+      "default": -1.0,
+      "maximum": 1,
+      "minimum": -1,
+      "title": "Ingest Failure Reward",
+      "type": "number"
+    },
+    "object_policy_failure_reward": {
+      "default": -0.25,
+      "maximum": 1,
+      "minimum": -1,
+      "title": "Object Policy Failure Reward",
+      "type": "number"
+    },
+    "policy_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.reward-policy.v1",
+      "default": "bpe.reward-policy.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "semantics_reward_cap": {
+      "default": 0.6,
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Semantics Reward Cap",
+      "type": "number"
+    },
+    "success_reward": {
+      "default": 1.0,
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Success Reward",
+      "type": "number"
+    },
+    "verifier_failure_reward": {
+      "default": 0.0,
+      "maximum": 1,
+      "minimum": -1,
+      "title": "Verifier Failure Reward",
+      "type": "number"
+    }
+  },
+  "required": [
+    "policy_id",
+    "description"
+  ],
+  "title": "RewardPolicy",
+  "type": "object"
+}

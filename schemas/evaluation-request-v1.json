@@ -1,0 +1,186 @@
+{
+  "$defs": {
+    "ArtifactRef": {
+      "additionalProperties": false,
+      "properties": {
+        "media_type": {
+          "default": "application/octet-stream",
+          "maxLength": 127,
+          "minLength": 1,
+          "title": "Media Type",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sha256",
+        "size_bytes"
+      ],
+      "title": "ArtifactRef",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "attempt_index": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Attempt Index",
+      "type": "integer"
+    },
+    "candidate": {
+      "$ref": "#/$defs/ArtifactRef"
+    },
+    "checkpoint_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Checkpoint Artifact Sha256",
+      "type": "string"
+    },
+    "checkpoint_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Checkpoint Id",
+      "type": "string"
+    },
+    "diagnostic_condition": {
+      "default": "none",
+      "enum": [
+        "none",
+        "raw",
+        "bpfix"
+      ],
+      "title": "Diagnostic Condition",
+      "type": "string"
+    },
+    "environment_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Environment Id",
+      "type": "string"
+    },
+    "episode_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Episode Id",
+      "type": "string"
+    },
+    "experiment_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Experiment Id",
+      "type": "string"
+    },
+    "experiment_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Experiment Manifest Sha256",
+      "type": "string"
+    },
+    "generation_seed": {
+      "minimum": 0,
+      "title": "Generation Seed",
+      "type": "integer"
+    },
+    "model_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Model Artifact Sha256",
+      "type": "string"
+    },
+    "model_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Model Id",
+      "type": "string"
+    },
+    "parent_request_id": {
+      "anyOf": [
+        {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Parent Request Id"
+    },
+    "request_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "sample_index": {
+      "minimum": 0,
+      "title": "Sample Index",
+      "type": "integer"
+    },
+    "sampling_config_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sampling Config Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.request.v1",
+      "default": "bpe.request.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "suite_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Suite Id",
+      "type": "string"
+    },
+    "suite_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Suite Manifest Sha256",
+      "type": "string"
+    },
+    "task_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Task Bundle Sha256",
+      "type": "string"
+    },
+    "task_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Task Id",
+      "type": "string"
+    },
+    "task_version": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Task Version",
+      "type": "string"
+    },
+    "training_seed": {
+      "minimum": 0,
+      "title": "Training Seed",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "request_id",
+    "experiment_id",
+    "experiment_manifest_sha256",
+    "model_id",
+    "model_artifact_sha256",
+    "checkpoint_id",
+    "checkpoint_artifact_sha256",
+    "sampling_config_sha256",
+    "episode_id",
+    "suite_id",
+    "suite_manifest_sha256",
+    "task_id",
+    "task_version",
+    "task_bundle_sha256",
+    "candidate",
+    "environment_id",
+    "training_seed",
+    "sample_index",
+    "generation_seed"
+  ],
+  "title": "EvaluationRequest",
+  "type": "object"
+}

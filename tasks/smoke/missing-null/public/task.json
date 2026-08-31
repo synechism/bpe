@@ -1,0 +1,32 @@
+{
+  "candidate_contract": {
+    "allow_markdown_fence": true,
+    "fixed_filename": "candidate.c",
+    "format": "single_c_source",
+    "max_response_bytes": 65536
+  },
+  "environment_id": "linux-6.15.11-clang18-x86_64-v1",
+  "family": "repair",
+  "max_attempts": 3,
+  "program": {
+    "entrypoint": "count_packets",
+    "max_programs": 1,
+    "program_type": "xdp",
+    "section": "xdp"
+  },
+  "prompt": {
+    "path": "prompt.md",
+    "sha256": "fb9f992e8916b56dbd3f78e9bd44bbf4ac07653ea773af4f197079d19516bb1c",
+    "size_bytes": 336
+  },
+  "public_sdk_id": "bpe-xdp-sdk-v1",
+  "schema_version": "bpe.public-task.v1",
+  "starter_source": {
+    "path": "broken.c",
+    "sha256": "a69e8527c30ae98987e66fa09d104b3198532dacd879c77ea56ce9f37a608b35",
+    "size_bytes": 454
+  },
+  "task_id": "smoke.missing-null",
+  "version": "1.0.0",
+  "whole_attempt_timeout_seconds": 30
+}

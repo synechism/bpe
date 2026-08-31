@@ -1,0 +1,149 @@
+{
+  "$defs": {
+    "SeedPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "checkpoint_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Checkpoint Artifact Sha256",
+          "type": "string"
+        },
+        "checkpoint_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Checkpoint Id",
+          "type": "string"
+        },
+        "generation_seeds": {
+          "items": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "minItems": 1,
+          "title": "Generation Seeds",
+          "type": "array"
+        },
+        "training_seed": {
+          "minimum": 0,
+          "title": "Training Seed",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "training_seed",
+        "checkpoint_id",
+        "checkpoint_artifact_sha256",
+        "generation_seeds"
+      ],
+      "title": "SeedPlan",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "diagnostic_condition": {
+      "enum": [
+        "none",
+        "raw",
+        "bpfix"
+      ],
+      "title": "Diagnostic Condition",
+      "type": "string"
+    },
+    "environment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Environment Sha256",
+      "type": "string"
+    },
+    "expected_grader_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Grader Id",
+      "type": "string"
+    },
+    "experiment_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Experiment Id",
+      "type": "string"
+    },
+    "harness_commit": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Harness Commit",
+      "type": "string"
+    },
+    "model_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Model Artifact Sha256",
+      "type": "string"
+    },
+    "model_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Model Id",
+      "type": "string"
+    },
+    "reported_k": {
+      "items": {
+        "minimum": 1,
+        "type": "integer"
+      },
+      "minItems": 1,
+      "title": "Reported K",
+      "type": "array"
+    },
+    "reward_policy_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Reward Policy Id",
+      "type": "string"
+    },
+    "reward_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Reward Policy Sha256",
+      "type": "string"
+    },
+    "sampling_config_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sampling Config Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.experiment.v1",
+      "default": "bpe.experiment.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "seed_plans": {
+      "items": {
+        "$ref": "#/$defs/SeedPlan"
+      },
+      "minItems": 1,
+      "title": "Seed Plans",
+      "type": "array"
+    },
+    "suite_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Suite Id",
+      "type": "string"
+    },
+    "suite_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Suite Manifest Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "experiment_id",
+    "suite_id",
+    "suite_manifest_sha256",
+    "model_id",
+    "model_artifact_sha256",
+    "sampling_config_sha256",
+    "diagnostic_condition",
+    "reward_policy_id",
+    "reward_policy_sha256",
+    "environment_sha256",
+    "harness_commit",
+    "expected_grader_id",
+    "seed_plans",
+    "reported_k"
+  ],
+  "title": "ExperimentManifest",
+  "type": "object"
+}

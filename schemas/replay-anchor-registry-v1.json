@@ -1,0 +1,83 @@
+{
+  "$defs": {
+    "ReplayAnchor": {
+      "additionalProperties": false,
+      "properties": {
+        "contract_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Contract Sha256",
+          "type": "string"
+        },
+        "evidence_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evidence Sha256",
+          "type": "string"
+        },
+        "grade_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Grade Sha256",
+          "type": "string"
+        },
+        "manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Manifest Sha256",
+          "type": "string"
+        },
+        "policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Policy Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "manifest_sha256",
+        "evidence_sha256",
+        "grade_sha256",
+        "contract_sha256",
+        "policy_sha256"
+      ],
+      "title": "ReplayAnchor",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "anchors": {
+      "items": {
+        "$ref": "#/$defs/ReplayAnchor"
+      },
+      "minItems": 1,
+      "title": "Anchors",
+      "type": "array"
+    },
+    "experiment_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Experiment Manifest Sha256",
+      "type": "string"
+    },
+    "issuer": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Issuer",
+      "type": "string"
+    },
+    "registry_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Registry Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.replay-anchor-registry.v1",
+      "default": "bpe.replay-anchor-registry.v1",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "registry_id",
+    "issuer",
+    "experiment_manifest_sha256",
+    "anchors"
+  ],
+  "title": "ReplayAnchorRegistry",
+  "type": "object"
+}

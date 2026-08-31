@@ -1,0 +1,489 @@
+{
+  "$defs": {
+    "AnchorPartition": {
+      "enum": [
+        "calibration",
+        "validation"
+      ],
+      "title": "AnchorPartition",
+      "type": "string"
+    },
+    "AnchorQualificationResult": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Anchor Id",
+          "type": "string"
+        },
+        "behavior_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Behavior Sha256",
+          "type": "string"
+        },
+        "candidate": {
+          "$ref": "#/$defs/CandidateIdentity"
+        },
+        "failed_checks": {
+          "items": {
+            "$ref": "#/$defs/CheckIdentity"
+          },
+          "maxItems": 8192,
+          "title": "Failed Checks",
+          "type": "array"
+        },
+        "first_failure": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Stage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "partition": {
+          "$ref": "#/$defs/AnchorPartition"
+        },
+        "replays": {
+          "items": {
+            "$ref": "#/$defs/QualificationReplayDigest"
+          },
+          "maxItems": 16,
+          "minItems": 2,
+          "title": "Replays",
+          "type": "array"
+        },
+        "role": {
+          "$ref": "#/$defs/AnchorRole"
+        },
+        "strict_success": {
+          "title": "Strict Success",
+          "type": "boolean"
+        },
+        "task_bundle_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Task Bundle Sha256",
+          "type": "string"
+        },
+        "task_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Id",
+          "type": "string"
+        },
+        "task_version": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Version",
+          "type": "string"
+        },
+        "training_reward": {
+          "maximum": 1,
+          "minimum": -1,
+          "title": "Training Reward",
+          "type": "number"
+        }
+      },
+      "required": [
+        "anchor_id",
+        "partition",
+        "role",
+        "task_id",
+        "task_version",
+        "task_bundle_sha256",
+        "candidate",
+        "strict_success",
+        "first_failure",
+        "training_reward",
+        "failed_checks",
+        "behavior_sha256",
+        "replays"
+      ],
+      "title": "AnchorQualificationResult",
+      "type": "object"
+    },
+    "AnchorRole": {
+      "enum": [
+        "mutant",
+        "no_op",
+        "delete_operation",
+        "hardcode",
+        "zero_work",
+        "partial_fix",
+        "reference",
+        "alternative"
+      ],
+      "title": "AnchorRole",
+      "type": "string"
+    },
+    "CandidateIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sha256",
+        "size_bytes"
+      ],
+      "title": "CandidateIdentity",
+      "type": "object"
+    },
+    "CheckIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "check_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Check Id",
+          "type": "string"
+        },
+        "stage": {
+          "enum": [
+            "functional",
+            "semantics"
+          ],
+          "title": "Stage",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stage",
+        "check_id"
+      ],
+      "title": "CheckIdentity",
+      "type": "object"
+    },
+    "QualificationReplayDigest": {
+      "additionalProperties": false,
+      "properties": {
+        "evaluation_job_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evaluation Job Manifest Sha256",
+          "type": "string"
+        },
+        "evidence_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evidence Sha256",
+          "type": "string"
+        },
+        "grade_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Grade Sha256",
+          "type": "string"
+        },
+        "repeat_index": {
+          "maximum": 15,
+          "minimum": 0,
+          "title": "Repeat Index",
+          "type": "integer"
+        },
+        "replay_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Replay Manifest Sha256",
+          "type": "string"
+        },
+        "request_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Request Id",
+          "type": "string"
+        },
+        "restore_nonce": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Restore Nonce",
+          "type": "string"
+        }
+      },
+      "required": [
+        "repeat_index",
+        "request_id",
+        "evaluation_job_manifest_sha256",
+        "restore_nonce",
+        "evidence_sha256",
+        "grade_sha256",
+        "replay_manifest_sha256"
+      ],
+      "title": "QualificationReplayDigest",
+      "type": "object"
+    },
+    "QualificationWitness": {
+      "additionalProperties": false,
+      "properties": {
+        "check": {
+          "$ref": "#/$defs/CheckIdentity"
+        },
+        "partition": {
+          "$ref": "#/$defs/AnchorPartition"
+        },
+        "task_bundle_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Task Bundle Sha256",
+          "type": "string"
+        },
+        "task_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Id",
+          "type": "string"
+        },
+        "task_version": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "partition",
+        "task_id",
+        "task_version",
+        "task_bundle_sha256",
+        "check"
+      ],
+      "title": "QualificationWitness",
+      "type": "object"
+    },
+    "RewardOrderingResult": {
+      "additionalProperties": false,
+      "properties": {
+        "better_anchor_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Better Anchor Id",
+          "type": "string"
+        },
+        "better_reward": {
+          "maximum": 1,
+          "minimum": -1,
+          "title": "Better Reward",
+          "type": "number"
+        },
+        "observed_margin": {
+          "exclusiveMinimum": 0,
+          "maximum": 2,
+          "title": "Observed Margin",
+          "type": "number"
+        },
+        "partition": {
+          "$ref": "#/$defs/AnchorPartition"
+        },
+        "required_minimum_margin": {
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Required Minimum Margin",
+          "type": "number"
+        },
+        "worse_anchor_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Worse Anchor Id",
+          "type": "string"
+        },
+        "worse_reward": {
+          "maximum": 1,
+          "minimum": -1,
+          "title": "Worse Reward",
+          "type": "number"
+        }
+      },
+      "required": [
+        "partition",
+        "better_anchor_id",
+        "worse_anchor_id",
+        "better_reward",
+        "worse_reward",
+        "observed_margin",
+        "required_minimum_margin"
+      ],
+      "title": "RewardOrderingResult",
+      "type": "object"
+    },
+    "Stage": {
+      "enum": [
+        "ingest",
+        "compile",
+        "object_policy",
+        "verifier",
+        "functional",
+        "semantics"
+      ],
+      "title": "Stage",
+      "type": "string"
+    },
+    "WitnessCoverage": {
+      "additionalProperties": false,
+      "properties": {
+        "killed_by_anchor_ids": {
+          "items": {
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Killed By Anchor Ids",
+          "type": "array"
+        },
+        "witness": {
+          "$ref": "#/$defs/QualificationWitness"
+        }
+      },
+      "required": [
+        "witness",
+        "killed_by_anchor_ids"
+      ],
+      "title": "WitnessCoverage",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A successful structural Phase 0 qualification receipt.",
+  "properties": {
+    "anchor_results": {
+      "items": {
+        "$ref": "#/$defs/AnchorQualificationResult"
+      },
+      "maxItems": 4096,
+      "minItems": 32,
+      "title": "Anchor Results",
+      "type": "array"
+    },
+    "attempt_set_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Attempt Set Sha256",
+      "type": "string"
+    },
+    "authoritative": {
+      "const": false,
+      "default": false,
+      "title": "Authoritative",
+      "type": "boolean"
+    },
+    "calibration_task_bundles": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "maxItems": 512,
+      "minItems": 2,
+      "title": "Calibration Task Bundles",
+      "type": "array"
+    },
+    "environment_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Environment Id",
+      "type": "string"
+    },
+    "environment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Environment Sha256",
+      "type": "string"
+    },
+    "grader_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Grader Id",
+      "type": "string"
+    },
+    "harness_commit": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Harness Commit",
+      "type": "string"
+    },
+    "phase": {
+      "const": "phase0",
+      "default": "phase0",
+      "title": "Phase",
+      "type": "string"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "qualification_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Qualification Id",
+      "type": "string"
+    },
+    "reward_orderings": {
+      "items": {
+        "$ref": "#/$defs/RewardOrderingResult"
+      },
+      "maxItems": 65536,
+      "minItems": 40,
+      "title": "Reward Orderings",
+      "type": "array"
+    },
+    "reward_policy_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Reward Policy Id",
+      "type": "string"
+    },
+    "reward_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Reward Policy Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.grader-qualification-report.v1",
+      "default": "bpe.grader-qualification-report.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "status": {
+      "const": "provisional",
+      "default": "provisional",
+      "title": "Status",
+      "type": "string"
+    },
+    "suite_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Suite Id",
+      "type": "string"
+    },
+    "suite_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Suite Manifest Sha256",
+      "type": "string"
+    },
+    "validation_task_bundles": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "maxItems": 512,
+      "minItems": 2,
+      "title": "Validation Task Bundles",
+      "type": "array"
+    },
+    "witness_coverage": {
+      "items": {
+        "$ref": "#/$defs/WitnessCoverage"
+      },
+      "maxItems": 65536,
+      "minItems": 2,
+      "title": "Witness Coverage",
+      "type": "array"
+    }
+  },
+  "required": [
+    "qualification_id",
+    "plan_sha256",
+    "suite_id",
+    "suite_manifest_sha256",
+    "reward_policy_id",
+    "reward_policy_sha256",
+    "environment_id",
+    "environment_sha256",
+    "grader_id",
+    "harness_commit",
+    "calibration_task_bundles",
+    "validation_task_bundles",
+    "anchor_results",
+    "witness_coverage",
+    "reward_orderings",
+    "attempt_set_sha256"
+  ],
+  "title": "GraderQualificationReport",
+  "type": "object"
+}

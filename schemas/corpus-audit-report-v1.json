@@ -1,0 +1,319 @@
+{
+  "$defs": {
+    "CorpusAuditIssue": {
+      "additionalProperties": false,
+      "description": "A blocking static hit, skipped scan, or detector error.",
+      "properties": {
+        "code": {
+          "pattern": "^[A-Z][A-Z0-9_]{2,63}$",
+          "title": "Code",
+          "type": "string"
+        },
+        "containment": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Containment"
+        },
+        "jaccard": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Jaccard"
+        },
+        "kind": {
+          "enum": [
+            "hit",
+            "skip",
+            "error"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "severity": {
+          "const": "error",
+          "default": "error",
+          "title": "Severity",
+          "type": "string"
+        },
+        "source_refs": {
+          "default": [],
+          "items": {
+            "maxLength": 512,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Source Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "code",
+        "message"
+      ],
+      "title": "CorpusAuditIssue",
+      "type": "object"
+    },
+    "CorpusFingerprint": {
+      "additionalProperties": false,
+      "description": "Deterministic comment/format-insensitive identity for one scanned C artifact.",
+      "properties": {
+        "corpus_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Corpus Id",
+          "type": "string"
+        },
+        "ngram_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Ngram Sha256",
+          "type": "string"
+        },
+        "source_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "token_count": {
+          "minimum": 0,
+          "title": "Token Count",
+          "type": "integer"
+        },
+        "token_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Token Sha256",
+          "type": "string"
+        },
+        "unique_ngram_count": {
+          "minimum": 0,
+          "title": "Unique Ngram Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "corpus_id",
+        "source_id",
+        "token_count",
+        "unique_ngram_count",
+        "token_sha256",
+        "ngram_sha256"
+      ],
+      "title": "CorpusFingerprint",
+      "type": "object"
+    },
+    "CorpusSimilarity": {
+      "additionalProperties": false,
+      "description": "Reported token n-gram similarity for one train/evaluation-like pair.",
+      "properties": {
+        "blocking": {
+          "title": "Blocking",
+          "type": "boolean"
+        },
+        "containment": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Containment",
+          "type": "number"
+        },
+        "evaluation_corpus_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Evaluation Corpus Id",
+          "type": "string"
+        },
+        "evaluation_ngram_count": {
+          "minimum": 1,
+          "title": "Evaluation Ngram Count",
+          "type": "integer"
+        },
+        "evaluation_source_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Evaluation Source Id",
+          "type": "string"
+        },
+        "jaccard": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Jaccard",
+          "type": "number"
+        },
+        "shared_ngram_count": {
+          "minimum": 0,
+          "title": "Shared Ngram Count",
+          "type": "integer"
+        },
+        "training_corpus_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Training Corpus Id",
+          "type": "string"
+        },
+        "training_ngram_count": {
+          "minimum": 1,
+          "title": "Training Ngram Count",
+          "type": "integer"
+        },
+        "training_source_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Training Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "training_corpus_id",
+        "training_source_id",
+        "evaluation_corpus_id",
+        "evaluation_source_id",
+        "training_ngram_count",
+        "evaluation_ngram_count",
+        "shared_ngram_count",
+        "jaccard",
+        "containment",
+        "blocking"
+      ],
+      "title": "CorpusSimilarity",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Static-only audit result; it is not a claim that a corpus is training-ready.\n\nToken n-grams cannot prove absence of fork, vendored, renamed, semantic, or AST-level\ncontamination.  A passing report therefore means only that this frozen static detector\ncompleted without a hit, skip, or error for the exact bound inputs.",
+  "properties": {
+    "audit_inputs_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Audit Inputs Sha256",
+      "type": "string"
+    },
+    "benchmark_corpus_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Benchmark Corpus Id",
+      "type": "string"
+    },
+    "benchmark_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Benchmark Manifest Sha256",
+      "type": "string"
+    },
+    "comparisons": {
+      "items": {
+        "$ref": "#/$defs/CorpusSimilarity"
+      },
+      "title": "Comparisons",
+      "type": "array"
+    },
+    "corpus_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Corpus Id",
+      "type": "string"
+    },
+    "corpus_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Corpus Manifest Sha256",
+      "type": "string"
+    },
+    "detector_version": {
+      "const": "bpe.corpus-static-audit.v1",
+      "default": "bpe.corpus-static-audit.v1",
+      "title": "Detector Version",
+      "type": "string"
+    },
+    "evaluated_comparison_count": {
+      "minimum": 0,
+      "title": "Evaluated Comparison Count",
+      "type": "integer"
+    },
+    "expected_comparison_count": {
+      "minimum": 0,
+      "title": "Expected Comparison Count",
+      "type": "integer"
+    },
+    "fingerprints": {
+      "items": {
+        "$ref": "#/$defs/CorpusFingerprint"
+      },
+      "title": "Fingerprints",
+      "type": "array"
+    },
+    "fuzzy_eligible_source_count": {
+      "minimum": 0,
+      "title": "Fuzzy Eligible Source Count",
+      "type": "integer"
+    },
+    "issues": {
+      "items": {
+        "$ref": "#/$defs/CorpusAuditIssue"
+      },
+      "title": "Issues",
+      "type": "array"
+    },
+    "policy_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Policy Sha256",
+      "type": "string"
+    },
+    "scanned_source_count": {
+      "minimum": 0,
+      "title": "Scanned Source Count",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "bpe.corpus-audit-report.v1",
+      "default": "bpe.corpus-audit-report.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "static_audit_passed": {
+      "title": "Static Audit Passed",
+      "type": "boolean"
+    },
+    "total_source_count": {
+      "minimum": 0,
+      "title": "Total Source Count",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "corpus_id",
+    "corpus_manifest_sha256",
+    "benchmark_corpus_id",
+    "benchmark_manifest_sha256",
+    "policy_id",
+    "policy_sha256",
+    "audit_inputs_sha256",
+    "total_source_count",
+    "scanned_source_count",
+    "fuzzy_eligible_source_count",
+    "expected_comparison_count",
+    "evaluated_comparison_count",
+    "fingerprints",
+    "comparisons",
+    "issues",
+    "static_audit_passed"
+  ],
+  "title": "CorpusAuditReport",
+  "type": "object"
+}

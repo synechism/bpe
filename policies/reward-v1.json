@@ -1,0 +1,14 @@
+{
+  "compile_failure_reward": -0.5,
+  "description": "Phase 0 shaping: behavior and anti-hack semantics dominate; benchmark success remains binary.",
+  "explicit_hack_reason_prefix": "HACK_",
+  "explicit_hack_reward": -1.0,
+  "functional_reward_cap": 0.1,
+  "ingest_failure_reward": -1.0,
+  "object_policy_failure_reward": -0.25,
+  "policy_id": "reward-v1",
+  "schema_version": "bpe.reward-policy.v1",
+  "semantics_reward_cap": 0.6,
+  "success_reward": 1.0,
+  "verifier_failure_reward": 0.0
+}

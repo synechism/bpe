@@ -1,0 +1,161 @@
+{
+  "$defs": {
+    "Isolation": {
+      "enum": [
+        "microvm",
+        "native_linux",
+        "synthetic"
+      ],
+      "title": "Isolation",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "architecture": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Architecture",
+      "type": "string"
+    },
+    "bpfix_commit": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Bpfix Commit"
+    },
+    "clang_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Clang Sha256",
+      "type": "string"
+    },
+    "clang_version": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Clang Version",
+      "type": "string"
+    },
+    "compile_recipe_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Compile Recipe Sha256",
+      "type": "string"
+    },
+    "environment_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Environment Id",
+      "type": "string"
+    },
+    "isolation": {
+      "$ref": "#/$defs/Isolation"
+    },
+    "kernel_btf_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Kernel Btf Sha256",
+      "type": "string"
+    },
+    "kernel_config_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Kernel Config Sha256",
+      "type": "string"
+    },
+    "kernel_image_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Kernel Image Sha256",
+      "type": "string"
+    },
+    "kernel_release": {
+      "maxLength": 256,
+      "minLength": 1,
+      "title": "Kernel Release",
+      "type": "string"
+    },
+    "libbpf_commit": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Libbpf Commit",
+      "type": "string"
+    },
+    "libbpf_version": {
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Libbpf Version",
+      "type": "string"
+    },
+    "normalizer_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Normalizer Sha256",
+      "type": "string"
+    },
+    "normalizer_version": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Normalizer Version",
+      "type": "string"
+    },
+    "public_sdk_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Public Sdk Sha256",
+      "type": "string"
+    },
+    "resource_limits_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Resource Limits Sha256",
+      "type": "string"
+    },
+    "rootfs_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Rootfs Sha256",
+      "type": "string"
+    },
+    "runner_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Runner Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.environment.v1",
+      "default": "bpe.environment.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "snapshot_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Snapshot Sha256"
+    }
+  },
+  "required": [
+    "environment_id",
+    "isolation",
+    "architecture",
+    "kernel_release",
+    "kernel_image_sha256",
+    "kernel_config_sha256",
+    "kernel_btf_sha256",
+    "rootfs_sha256",
+    "clang_version",
+    "clang_sha256",
+    "libbpf_version",
+    "libbpf_commit",
+    "runner_sha256",
+    "compile_recipe_sha256",
+    "normalizer_version",
+    "normalizer_sha256",
+    "public_sdk_sha256",
+    "resource_limits_sha256"
+  ],
+  "title": "EnvironmentFingerprint",
+  "type": "object"
+}

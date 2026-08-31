@@ -1,0 +1,80 @@
+{
+  "$defs": {
+    "InertFixtureIntentTrustKey": {
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": {
+          "const": "Ed25519",
+          "title": "Algorithm",
+          "type": "string"
+        },
+        "key_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Key Id",
+          "type": "string"
+        },
+        "public_key_base64url": {
+          "maxLength": 43,
+          "minLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$",
+          "title": "Public Key Base64Url",
+          "type": "string"
+        },
+        "revoked": {
+          "default": false,
+          "title": "Revoked",
+          "type": "boolean"
+        },
+        "valid_from_unix": {
+          "minimum": 0,
+          "title": "Valid From Unix",
+          "type": "integer"
+        },
+        "valid_until_unix": {
+          "minimum": 0,
+          "title": "Valid Until Unix",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "key_id",
+        "algorithm",
+        "public_key_base64url",
+        "valid_from_unix",
+        "valid_until_unix"
+      ],
+      "title": "InertFixtureIntentTrustKey",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Role-specific trusted configuration, authenticated out of band.",
+  "properties": {
+    "keys": {
+      "items": {
+        "$ref": "#/$defs/InertFixtureIntentTrustKey"
+      },
+      "maxItems": 64,
+      "minItems": 1,
+      "title": "Keys",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "bpe.inert-fixture-intent-trust-store.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "trust_store_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Trust Store Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "trust_store_id",
+    "keys"
+  ],
+  "title": "InertFixtureIntentTrustStore",
+  "type": "object"
+}

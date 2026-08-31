@@ -1,0 +1,366 @@
+{
+  "$defs": {
+    "AnchorPartition": {
+      "enum": [
+        "calibration",
+        "validation"
+      ],
+      "title": "AnchorPartition",
+      "type": "string"
+    },
+    "AnchorRole": {
+      "enum": [
+        "mutant",
+        "no_op",
+        "delete_operation",
+        "hardcode",
+        "zero_work",
+        "partial_fix",
+        "reference",
+        "alternative"
+      ],
+      "title": "AnchorRole",
+      "type": "string"
+    },
+    "CandidateIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sha256",
+        "size_bytes"
+      ],
+      "title": "CandidateIdentity",
+      "type": "object"
+    },
+    "CheckIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "check_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Check Id",
+          "type": "string"
+        },
+        "stage": {
+          "enum": [
+            "functional",
+            "semantics"
+          ],
+          "title": "Stage",
+          "type": "string"
+        }
+      },
+      "required": [
+        "stage",
+        "check_id"
+      ],
+      "title": "CheckIdentity",
+      "type": "object"
+    },
+    "QualificationAnchorPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "anchor_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Anchor Id",
+          "type": "string"
+        },
+        "candidate": {
+          "$ref": "#/$defs/CandidateIdentity"
+        },
+        "evaluation_plan_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evaluation Plan Sha256",
+          "type": "string"
+        },
+        "expected_failed_checks": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/CheckIdentity"
+          },
+          "maxItems": 8192,
+          "title": "Expected Failed Checks",
+          "type": "array"
+        },
+        "expected_failure_reason": {
+          "anyOf": [
+            {
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Failure Reason"
+        },
+        "expected_first_failure": {
+          "anyOf": [
+            {
+              "enum": [
+                "verifier",
+                "functional",
+                "semantics"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected First Failure"
+        },
+        "jobs": {
+          "items": {
+            "$ref": "#/$defs/QualificationJobPlan"
+          },
+          "maxItems": 16,
+          "minItems": 2,
+          "title": "Jobs",
+          "type": "array"
+        },
+        "partition": {
+          "$ref": "#/$defs/AnchorPartition"
+        },
+        "role": {
+          "$ref": "#/$defs/AnchorRole"
+        },
+        "scoring_contract_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Scoring Contract Sha256",
+          "type": "string"
+        },
+        "task_bundle_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Task Bundle Sha256",
+          "type": "string"
+        },
+        "task_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Id",
+          "type": "string"
+        },
+        "task_version": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "anchor_id",
+        "partition",
+        "role",
+        "task_id",
+        "task_version",
+        "task_bundle_sha256",
+        "evaluation_plan_sha256",
+        "scoring_contract_sha256",
+        "candidate",
+        "jobs"
+      ],
+      "title": "QualificationAnchorPlan",
+      "type": "object"
+    },
+    "QualificationJobPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "job_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Job Manifest Sha256",
+          "type": "string"
+        },
+        "repeat_index": {
+          "maximum": 15,
+          "minimum": 0,
+          "title": "Repeat Index",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "repeat_index",
+        "job_manifest_sha256"
+      ],
+      "title": "QualificationJobPlan",
+      "type": "object"
+    },
+    "QualificationWitness": {
+      "additionalProperties": false,
+      "properties": {
+        "check": {
+          "$ref": "#/$defs/CheckIdentity"
+        },
+        "partition": {
+          "$ref": "#/$defs/AnchorPartition"
+        },
+        "task_bundle_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Task Bundle Sha256",
+          "type": "string"
+        },
+        "task_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Id",
+          "type": "string"
+        },
+        "task_version": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Task Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "partition",
+        "task_id",
+        "task_version",
+        "task_bundle_sha256",
+        "check"
+      ],
+      "title": "QualificationWitness",
+      "type": "object"
+    },
+    "RewardOrderingConstraint": {
+      "additionalProperties": false,
+      "properties": {
+        "better_anchor_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Better Anchor Id",
+          "type": "string"
+        },
+        "minimum_margin": {
+          "default": 0.0,
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Minimum Margin",
+          "type": "number"
+        },
+        "worse_anchor_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Worse Anchor Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "better_anchor_id",
+        "worse_anchor_id"
+      ],
+      "title": "RewardOrderingConstraint",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Frozen calibration/validation anchors and the ordering they must induce.",
+  "properties": {
+    "anchors": {
+      "items": {
+        "$ref": "#/$defs/QualificationAnchorPlan"
+      },
+      "maxItems": 4096,
+      "minItems": 32,
+      "title": "Anchors",
+      "type": "array"
+    },
+    "environment_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Environment Id",
+      "type": "string"
+    },
+    "environment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Environment Sha256",
+      "type": "string"
+    },
+    "grader_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Grader Id",
+      "type": "string"
+    },
+    "harness_commit": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Harness Commit",
+      "type": "string"
+    },
+    "minimum_tasks_per_partition": {
+      "const": 2,
+      "default": 2,
+      "title": "Minimum Tasks Per Partition",
+      "type": "integer"
+    },
+    "qualification_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Qualification Id",
+      "type": "string"
+    },
+    "reward_orderings": {
+      "items": {
+        "$ref": "#/$defs/RewardOrderingConstraint"
+      },
+      "maxItems": 65536,
+      "minItems": 40,
+      "title": "Reward Orderings",
+      "type": "array"
+    },
+    "reward_policy_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Reward Policy Id",
+      "type": "string"
+    },
+    "reward_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Reward Policy Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.grader-qualification-plan.v1",
+      "default": "bpe.grader-qualification-plan.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "suite_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Suite Id",
+      "type": "string"
+    },
+    "suite_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Suite Manifest Sha256",
+      "type": "string"
+    },
+    "witnesses": {
+      "items": {
+        "$ref": "#/$defs/QualificationWitness"
+      },
+      "maxItems": 65536,
+      "minItems": 2,
+      "title": "Witnesses",
+      "type": "array"
+    }
+  },
+  "required": [
+    "qualification_id",
+    "suite_id",
+    "suite_manifest_sha256",
+    "reward_policy_id",
+    "reward_policy_sha256",
+    "environment_id",
+    "environment_sha256",
+    "grader_id",
+    "harness_commit",
+    "anchors",
+    "witnesses",
+    "reward_orderings"
+  ],
+  "title": "GraderQualificationPlan",
+  "type": "object"
+}

@@ -1,0 +1,199 @@
+{
+  "additionalProperties": false,
+  "description": "Deterministic evidence that a claimed job was copied, not executed.",
+  "properties": {
+    "authoritative": {
+      "const": false,
+      "title": "Authoritative",
+      "type": "boolean"
+    },
+    "authorization_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Authorization Id",
+      "type": "string"
+    },
+    "authorization_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Authorization Sha256",
+      "type": "string"
+    },
+    "blob_count": {
+      "maximum": 256,
+      "minimum": 1,
+      "title": "Blob Count",
+      "type": "integer"
+    },
+    "claim_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Claim Id",
+      "type": "string"
+    },
+    "claim_nonce": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Claim Nonce",
+      "type": "string"
+    },
+    "copy_method": {
+      "const": "verified-bounded-byte-copy-v1",
+      "title": "Copy Method",
+      "type": "string"
+    },
+    "dispatch_claim_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Dispatch Claim Receipt Sha256",
+      "type": "string"
+    },
+    "dispatch_nonce": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Dispatch Nonce",
+      "type": "string"
+    },
+    "execution_started": {
+      "const": false,
+      "title": "Execution Started",
+      "type": "boolean"
+    },
+    "ingress_policy_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Ingress Policy Id",
+      "type": "string"
+    },
+    "ingress_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Ingress Policy Sha256",
+      "type": "string"
+    },
+    "job_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Job Manifest Sha256",
+      "type": "string"
+    },
+    "manifest_size_bytes": {
+      "maximum": 262144,
+      "minimum": 1,
+      "title": "Manifest Size Bytes",
+      "type": "integer"
+    },
+    "publish_method": {
+      "const": "renameat2-noreplace-v1",
+      "title": "Publish Method",
+      "type": "string"
+    },
+    "published_without_replacement": {
+      "const": true,
+      "title": "Published Without Replacement",
+      "type": "boolean"
+    },
+    "regular_file_open_method": {
+      "const": "openat2-opath-procfd-reopen-v1",
+      "title": "Regular File Open Method",
+      "type": "string"
+    },
+    "resolve_beneath": {
+      "const": true,
+      "title": "Resolve Beneath",
+      "type": "boolean"
+    },
+    "resolve_no_magiclinks": {
+      "const": true,
+      "title": "Resolve No Magiclinks",
+      "type": "boolean"
+    },
+    "resolve_no_symlinks": {
+      "const": true,
+      "title": "Resolve No Symlinks",
+      "type": "boolean"
+    },
+    "resolve_no_xdev": {
+      "const": true,
+      "title": "Resolve No Xdev",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "bpe.linux-job-ingress-receipt.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_open_method": {
+      "const": "openat2-v1",
+      "title": "Source Open Method",
+      "type": "string"
+    },
+    "source_root_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Source Root Id",
+      "type": "string"
+    },
+    "source_verified": {
+      "const": true,
+      "title": "Source Verified",
+      "type": "boolean"
+    },
+    "status": {
+      "const": "ingressed_not_executed",
+      "title": "Status",
+      "type": "string"
+    },
+    "total_blob_bytes": {
+      "maximum": 134217728,
+      "minimum": 1,
+      "title": "Total Blob Bytes",
+      "type": "integer"
+    },
+    "worker_copy_verified": {
+      "const": true,
+      "title": "Worker Copy Verified",
+      "type": "boolean"
+    },
+    "worker_object_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Worker Object Id",
+      "type": "string"
+    },
+    "worker_pool_audience": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Worker Pool Audience",
+      "type": "string"
+    },
+    "worker_root_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Worker Root Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "status",
+    "worker_object_id",
+    "dispatch_claim_receipt_sha256",
+    "authorization_id",
+    "authorization_sha256",
+    "claim_id",
+    "claim_nonce",
+    "dispatch_nonce",
+    "job_manifest_sha256",
+    "ingress_policy_id",
+    "ingress_policy_sha256",
+    "worker_pool_audience",
+    "source_root_id",
+    "worker_root_id",
+    "source_open_method",
+    "regular_file_open_method",
+    "resolve_beneath",
+    "resolve_no_xdev",
+    "resolve_no_symlinks",
+    "resolve_no_magiclinks",
+    "copy_method",
+    "publish_method",
+    "manifest_size_bytes",
+    "blob_count",
+    "total_blob_bytes",
+    "source_verified",
+    "worker_copy_verified",
+    "published_without_replacement",
+    "execution_started",
+    "authoritative"
+  ],
+  "title": "LinuxJobIngressReceipt",
+  "type": "object"
+}

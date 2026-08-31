@@ -1,0 +1,393 @@
+{
+  "$defs": {
+    "AssertionSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Assertion Id",
+          "type": "string"
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/JsonValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "kind": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Kind",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        },
+        "weight": {
+          "default": 1.0,
+          "exclusiveMinimum": 0,
+          "maximum": 1000000,
+          "title": "Weight",
+          "type": "number"
+        }
+      },
+      "required": [
+        "assertion_id",
+        "kind"
+      ],
+      "title": "AssertionSpec",
+      "type": "object"
+    },
+    "FileRef": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "size_bytes"
+      ],
+      "title": "FileRef",
+      "type": "object"
+    },
+    "FunctionalCase": {
+      "additionalProperties": false,
+      "properties": {
+        "assertions": {
+          "items": {
+            "$ref": "#/$defs/AssertionSpec"
+          },
+          "minItems": 1,
+          "title": "Assertions",
+          "type": "array"
+        },
+        "case_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "driver": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Driver",
+          "type": "string"
+        },
+        "input_ref": {
+          "$ref": "#/$defs/FileRef"
+        }
+      },
+      "required": [
+        "case_id",
+        "driver",
+        "input_ref",
+        "assertions"
+      ],
+      "title": "FunctionalCase",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "MutationRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "operator": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Operator",
+          "type": "string"
+        },
+        "operator_version": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Operator Version",
+          "type": "string"
+        },
+        "parameters": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Parameters",
+          "type": "object"
+        },
+        "seed": {
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "operator",
+        "operator_version",
+        "seed"
+      ],
+      "title": "MutationRecord",
+      "type": "object"
+    },
+    "NegativeControl": {
+      "additionalProperties": false,
+      "properties": {
+        "control_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Control Id",
+          "type": "string"
+        },
+        "expected_first_failure": {
+          "$ref": "#/$defs/Stage"
+        },
+        "kind": {
+          "enum": [
+            "no_op",
+            "delete_operation",
+            "hardcode",
+            "zero_work",
+            "other"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/FileRef"
+        }
+      },
+      "required": [
+        "control_id",
+        "kind",
+        "source",
+        "expected_first_failure"
+      ],
+      "title": "NegativeControl",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "properties": {
+        "commit": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Commit",
+          "type": "string"
+        },
+        "license": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "License",
+          "type": "string"
+        },
+        "original_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Original Sha256",
+          "type": "string"
+        },
+        "repository": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Repository",
+          "type": "string"
+        },
+        "source_path": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "title": "Source Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "repository",
+        "commit",
+        "source_path",
+        "license",
+        "original_sha256"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "SemanticObligation": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "kind": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Kind",
+          "type": "string"
+        },
+        "obligation_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Obligation Id",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "obligation_id",
+        "kind",
+        "description"
+      ],
+      "title": "SemanticObligation",
+      "type": "object"
+    },
+    "Stage": {
+      "enum": [
+        "ingest",
+        "compile",
+        "object_policy",
+        "verifier",
+        "functional",
+        "semantics"
+      ],
+      "title": "Stage",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contamination_group": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Contamination Group",
+      "type": "string"
+    },
+    "functional_cases": {
+      "items": {
+        "$ref": "#/$defs/FunctionalCase"
+      },
+      "minItems": 1,
+      "title": "Functional Cases",
+      "type": "array"
+    },
+    "mutation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/MutationRecord"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "negative_controls": {
+      "items": {
+        "$ref": "#/$defs/NegativeControl"
+      },
+      "minItems": 4,
+      "title": "Negative Controls",
+      "type": "array"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "qualification_partial_fixes": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/FileRef"
+      },
+      "maxItems": 16,
+      "title": "Qualification Partial Fixes",
+      "type": "array"
+    },
+    "reference_source": {
+      "$ref": "#/$defs/FileRef"
+    },
+    "root_cause": {
+      "anyOf": [
+        {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Root Cause"
+    },
+    "schema_version": {
+      "const": "bpe.private-grader.v1",
+      "default": "bpe.private-grader.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "semantic_obligations": {
+      "items": {
+        "$ref": "#/$defs/SemanticObligation"
+      },
+      "minItems": 1,
+      "title": "Semantic Obligations",
+      "type": "array"
+    },
+    "split": {
+      "enum": [
+        "train",
+        "development",
+        "calibration",
+        "validation",
+        "sealed_eval"
+      ],
+      "title": "Split",
+      "type": "string"
+    },
+    "strict_scoring_policy_id": {
+      "const": "strict-success-v1",
+      "default": "strict-success-v1",
+      "title": "Strict Scoring Policy Id",
+      "type": "string"
+    },
+    "task_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Task Id",
+      "type": "string"
+    },
+    "task_version": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Task Version",
+      "type": "string"
+    },
+    "valid_alternatives": {
+      "items": {
+        "$ref": "#/$defs/FileRef"
+      },
+      "minItems": 1,
+      "title": "Valid Alternatives",
+      "type": "array"
+    }
+  },
+  "required": [
+    "task_id",
+    "task_version",
+    "split",
+    "root_cause",
+    "contamination_group",
+    "provenance",
+    "mutation",
+    "reference_source",
+    "valid_alternatives",
+    "functional_cases",
+    "semantic_obligations",
+    "negative_controls"
+  ],
+  "title": "PrivateGrader",
+  "type": "object"
+}

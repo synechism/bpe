@@ -1,0 +1,390 @@
+{
+  "$defs": {
+    "SliceScore": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Name",
+          "type": "string"
+        },
+        "pass_at_k": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Pass At K"
+        },
+        "task_count": {
+          "minimum": 0,
+          "title": "Task Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "task_count",
+        "pass_at_k"
+      ],
+      "title": "SliceScore",
+      "type": "object"
+    },
+    "Stage": {
+      "enum": [
+        "ingest",
+        "compile",
+        "object_policy",
+        "verifier",
+        "functional",
+        "semantics"
+      ],
+      "title": "Stage",
+      "type": "string"
+    },
+    "TrainingSeedScore": {
+      "additionalProperties": false,
+      "properties": {
+        "checkpoint_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Checkpoint Artifact Sha256",
+          "type": "string"
+        },
+        "checkpoint_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Checkpoint Id",
+          "type": "string"
+        },
+        "pass_at_k": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Pass At K",
+          "type": "number"
+        },
+        "task_count": {
+          "minimum": 1,
+          "title": "Task Count",
+          "type": "integer"
+        },
+        "training_seed": {
+          "minimum": 0,
+          "title": "Training Seed",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "training_seed",
+        "checkpoint_id",
+        "checkpoint_artifact_sha256",
+        "task_count",
+        "pass_at_k"
+      ],
+      "title": "TrainingSeedScore",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "bootstrap_95": {
+      "anyOf": [
+        {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            }
+          ],
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Bootstrap 95"
+    },
+    "bootstrap_method": {
+      "enum": [
+        "training-seed-and-root-cause-cluster-bayesian",
+        "training-seed-and-cluster-bayesian"
+      ],
+      "title": "Bootstrap Method",
+      "type": "string"
+    },
+    "bootstrap_samples": {
+      "exclusiveMinimum": 0,
+      "title": "Bootstrap Samples",
+      "type": "integer"
+    },
+    "bootstrap_seed": {
+      "minimum": 0,
+      "title": "Bootstrap Seed",
+      "type": "integer"
+    },
+    "by_program_type": {
+      "items": {
+        "$ref": "#/$defs/SliceScore"
+      },
+      "title": "By Program Type",
+      "type": "array"
+    },
+    "by_root_cause": {
+      "items": {
+        "$ref": "#/$defs/SliceScore"
+      },
+      "title": "By Root Cause",
+      "type": "array"
+    },
+    "diagnostic_condition": {
+      "enum": [
+        "none",
+        "raw",
+        "bpfix"
+      ],
+      "title": "Diagnostic Condition",
+      "type": "string"
+    },
+    "eligible_attempt_count": {
+      "minimum": 0,
+      "title": "Eligible Attempt Count",
+      "type": "integer"
+    },
+    "eligible_task_count": {
+      "minimum": 0,
+      "title": "Eligible Task Count",
+      "type": "integer"
+    },
+    "eligible_training_seed_count": {
+      "minimum": 0,
+      "title": "Eligible Training Seed Count",
+      "type": "integer"
+    },
+    "environment_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Environment Id",
+      "type": "string"
+    },
+    "environment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Environment Sha256",
+      "type": "string"
+    },
+    "excluded_attempt_count": {
+      "minimum": 0,
+      "title": "Excluded Attempt Count",
+      "type": "integer"
+    },
+    "experiment_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Experiment Id",
+      "type": "string"
+    },
+    "experiment_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Experiment Manifest Sha256",
+      "type": "string"
+    },
+    "failure_stage_counts": {
+      "additionalProperties": {
+        "minimum": 0,
+        "type": "integer"
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/Stage"
+      },
+      "title": "Failure Stage Counts",
+      "type": "object"
+    },
+    "family": {
+      "enum": [
+        "repair",
+        "generation"
+      ],
+      "title": "Family",
+      "type": "string"
+    },
+    "grader_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Grader Id",
+      "type": "string"
+    },
+    "harness_commit": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Harness Commit",
+      "type": "string"
+    },
+    "k": {
+      "minimum": 1,
+      "title": "K",
+      "type": "integer"
+    },
+    "model_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Model Artifact Sha256",
+      "type": "string"
+    },
+    "model_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Model Id",
+      "type": "string"
+    },
+    "notes": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Notes",
+      "type": "array"
+    },
+    "official": {
+      "const": false,
+      "default": false,
+      "title": "Official",
+      "type": "boolean"
+    },
+    "pass_at_k": {
+      "anyOf": [
+        {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Pass At K"
+    },
+    "replay_anchor_registry_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Replay Anchor Registry Sha256"
+    },
+    "reward_policy_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Reward Policy Id",
+      "type": "string"
+    },
+    "reward_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Reward Policy Sha256",
+      "type": "string"
+    },
+    "root_cause_macro_pass_at_k": {
+      "anyOf": [
+        {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Root Cause Macro Pass At K"
+    },
+    "samples_per_task_seed": {
+      "minimum": 1,
+      "title": "Samples Per Task Seed",
+      "type": "integer"
+    },
+    "sampling_config_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sampling Config Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "bpe.benchmark-report.v1",
+      "default": "bpe.benchmark-report.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "strict_policy_id": {
+      "const": "strict-success-v1",
+      "default": "strict-success-v1",
+      "title": "Strict Policy Id",
+      "type": "string"
+    },
+    "suite_id": {
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+      "title": "Suite Id",
+      "type": "string"
+    },
+    "suite_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Suite Manifest Sha256",
+      "type": "string"
+    },
+    "training_seed_results": {
+      "items": {
+        "$ref": "#/$defs/TrainingSeedScore"
+      },
+      "title": "Training Seed Results",
+      "type": "array"
+    },
+    "training_seeds": {
+      "items": {
+        "minimum": 0,
+        "type": "integer"
+      },
+      "title": "Training Seeds",
+      "type": "array"
+    }
+  },
+  "required": [
+    "experiment_id",
+    "experiment_manifest_sha256",
+    "replay_anchor_registry_sha256",
+    "suite_id",
+    "suite_manifest_sha256",
+    "family",
+    "grader_id",
+    "reward_policy_id",
+    "reward_policy_sha256",
+    "environment_id",
+    "environment_sha256",
+    "harness_commit",
+    "diagnostic_condition",
+    "model_id",
+    "model_artifact_sha256",
+    "sampling_config_sha256",
+    "k",
+    "samples_per_task_seed",
+    "eligible_task_count",
+    "eligible_training_seed_count",
+    "training_seeds",
+    "eligible_attempt_count",
+    "excluded_attempt_count",
+    "pass_at_k",
+    "root_cause_macro_pass_at_k",
+    "bootstrap_95",
+    "bootstrap_method",
+    "bootstrap_samples",
+    "bootstrap_seed",
+    "by_root_cause",
+    "by_program_type",
+    "training_seed_results",
+    "failure_stage_counts"
+  ],
+  "title": "BenchmarkReport",
+  "type": "object"
+}

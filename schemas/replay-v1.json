@@ -1,0 +1,72 @@
+{
+  "$defs": {
+    "ArtifactRef": {
+      "additionalProperties": false,
+      "properties": {
+        "media_type": {
+          "default": "application/octet-stream",
+          "maxLength": 127,
+          "minLength": 1,
+          "title": "Media Type",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sha256",
+        "size_bytes"
+      ],
+      "title": "ArtifactRef",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "artifacts": {
+      "additionalProperties": {
+        "$ref": "#/$defs/ArtifactRef"
+      },
+      "title": "Artifacts",
+      "type": "object"
+    },
+    "contract": {
+      "$ref": "#/$defs/ArtifactRef"
+    },
+    "events": {
+      "$ref": "#/$defs/ArtifactRef"
+    },
+    "evidence": {
+      "$ref": "#/$defs/ArtifactRef"
+    },
+    "grade": {
+      "$ref": "#/$defs/ArtifactRef"
+    },
+    "policy": {
+      "$ref": "#/$defs/ArtifactRef"
+    },
+    "schema_version": {
+      "const": "bpe.replay.v1",
+      "default": "bpe.replay.v1",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "evidence",
+    "grade",
+    "contract",
+    "events",
+    "policy"
+  ],
+  "title": "ReplayManifest",
+  "type": "object"
+}
