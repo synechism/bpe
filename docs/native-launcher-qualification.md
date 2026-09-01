@@ -86,7 +86,10 @@ fixed `bpe-0.1.0.dist-info` file sets and compares every package member to its c
 Container Python starts with `-S`, disabling `site` and `sitecustomize`, and the report
 producer admits only the exact installed package, metadata, and generated entry-point file
 set beneath `/runtime`; unowned or archive-root startup payloads invalidate the run. Replay
-also reconstructs the exact canonical workflow
+also requires the dependency root to equal the files claimed by its locked distributions.
+Preparation accepts and removes only CFFI's exact unused `bin/cffi-gen-src` installer output
+before the dependency tree becomes read-only; any other unclaimed file invalidates the run.
+Replay also reconstructs the exact canonical workflow
 provenance document from the report's cross-layer fields and requires its byte length and
 digest to match the read-only provenance mount. These bindings make accidental mixing and
 replay drift visible. They do not authenticate the issuer.

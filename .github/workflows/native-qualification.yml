@@ -129,6 +129,29 @@ jobs:
           git_environment = os.environ.copy()
           git_environment["GIT_NO_REPLACE_OBJECTS"] = "1"
 
+          dependency_bin = native_root / "dependencies/bin"
+          dependency_bin_metadata = dependency_bin.lstat()
+          dependency_bin_entries = tuple(
+              sorted(path.name for path in dependency_bin.iterdir())
+          )
+          if (
+              not stat.S_ISDIR(dependency_bin_metadata.st_mode)
+              or stat.S_ISLNK(dependency_bin_metadata.st_mode)
+              or dependency_bin_entries != ("cffi-gen-src",)
+          ):
+              raise RuntimeError(
+                  "dependency installer produced an unexpected console-script tree"
+              )
+          dependency_script = dependency_bin / "cffi-gen-src"
+          dependency_script_metadata = dependency_script.lstat()
+          if (
+              not stat.S_ISREG(dependency_script_metadata.st_mode)
+              or stat.S_ISLNK(dependency_script_metadata.st_mode)
+          ):
+              raise RuntimeError("CFFI console script is not a regular file")
+          dependency_script.unlink()
+          dependency_bin.rmdir()
+
           def run(*arguments: str) -> str:
               return subprocess.run(
                   arguments,
