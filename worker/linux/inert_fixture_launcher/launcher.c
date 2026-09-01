@@ -314,8 +314,7 @@ static bool bpe_validate_control_fd(struct bpe_runtime *runtime) {
         local_address.ss_family != AF_UNIX || peer_address.ss_family != AF_UNIX) {
         return false;
     }
-    received = recv(BPE_INERT_CONTROL_FD, &unexpected, sizeof(unexpected),
-                    MSG_DONTWAIT | MSG_PEEK);
+    received = recv(BPE_INERT_CONTROL_FD, &unexpected, sizeof(unexpected), MSG_DONTWAIT);
     if (received == 0) {
         runtime->peer_open = false;
         return false;

@@ -82,6 +82,9 @@ five contiguous records with sequence numbers 0 through 4: `HELLO`, `CHILD_READY
 `CHILD_SIGNALED`, `CHILD_OBSERVED`, and `FINAL`. A failure emits at most one terminal
 `ERROR`, whose `value0` is the achieved-bit subset, `value1` is zero, and bounded errno is
 zero or at most Linux `MAX_ERRNO` 4095. No frame contains text or a path.
+Startup validation consumes the first prohibited inbound record before failing so the fixed
+single-record adversary observes an empty transcript followed by orderly peer EOF, never a
+record derived from attacker-controlled content.
 
 The parent remains responsible for the signed dynamic timeout. The C launcher has only a
 five-second startup descriptor-scan ceiling, a 30-second fixed post-`HELLO` fixture-sequence
