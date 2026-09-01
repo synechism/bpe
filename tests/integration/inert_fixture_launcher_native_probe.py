@@ -1179,11 +1179,23 @@ def _runtime_dependency_evidence(
         dependency_root,
         label="dependency tree",
     )
-    if dependency_tree_files != dependency_files or dependency_tree_size_bytes != sum(
+    recorded_dependency_size_bytes = sum(
         item.total_bytes for item in frozen if item.root == "dependencies"
+    )
+    if (
+        dependency_tree_files != dependency_files
+        or dependency_tree_size_bytes != recorded_dependency_size_bytes
     ):
+        unexpected = tuple(sorted(dependency_tree_files - dependency_files))
+        missing = tuple(sorted(dependency_files - dependency_tree_files))
         raise RuntimeError(
-            "dependency root contains files outside the recorded distributions"
+            "dependency root differs from recorded distributions: "
+            f"unexpected_count={len(unexpected)}, "
+            f"unexpected_sample={unexpected[:16]!r}, "
+            f"missing_count={len(missing)}, "
+            f"missing_sample={missing[:16]!r}, "
+            f"tree_size_bytes={dependency_tree_size_bytes}, "
+            f"recorded_size_bytes={recorded_dependency_size_bytes}"
         )
     runtime_tree_sha256, runtime_tree_size_bytes = _runtime_root_evidence(
         runtime_root
