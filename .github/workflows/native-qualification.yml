@@ -491,23 +491,100 @@ jobs:
           test "$(uname -m)" = x86_64
           test "$(docker info --format '{{.Architecture}}')" = x86_64
           launcher_sha256=$(sha256sum "$NATIVE_QUALIFICATION_ROOT/launcher" | awk '{print $1}')
-          docker run --rm --read-only --platform linux/amd64 --privileged \
-            --cgroupns=private --network=none \
-            --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/dist/$NATIVE_QUALIFICATION_WHEEL_FILENAME,target=/dist/$NATIVE_QUALIFICATION_WHEEL_FILENAME,readonly" \
-            --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/launcher,target=/launcher,readonly" \
-            --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/source/tests/integration/inert_fixture_launcher_native_probe.py,target=/probe.py,readonly" \
-            --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/dependencies,target=/dependencies,readonly" \
-            --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/provenance,target=/qualification-provenance,readonly" \
-            --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/source,target=/qualification-source,readonly" \
-            --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/output,target=/qualification-output" \
-            --tmpfs /runtime:rw,nosuid,nodev,noexec,mode=0755,size=67108864 \
-            --tmpfs /tmp:rw,nosuid,nodev,noexec,mode=01777,size=67108864 \
-            --env PYTHONPATH=/runtime:/dependencies \
-            --env PYTHONDONTWRITEBYTECODE=1 \
-            --env BPE_LAUNCHER_SHA256="$launcher_sha256" \
-            --env NATIVE_QUALIFICATION_WHEEL_FILENAME \
-            "$NATIVE_QUALIFICATION_IMAGE" \
-            sh -ceu 'PYTHONPATH= python -I -m pip install --target /runtime --no-deps --no-compile --no-cache-dir --disable-pip-version-check "/dist/$NATIVE_QUALIFICATION_WHEEL_FILENAME" >/tmp/bpe-pip.log; exec python -S /probe.py --launcher /launcher --launcher-sha256 "$BPE_LAUNCHER_SHA256"'
+          probe_capture=$(
+            set +e
+            docker run --rm --read-only --log-driver=none --platform linux/amd64 --privileged \
+              --cgroupns=private --network=none \
+              --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/dist/$NATIVE_QUALIFICATION_WHEEL_FILENAME,target=/dist/$NATIVE_QUALIFICATION_WHEEL_FILENAME,readonly" \
+              --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/launcher,target=/launcher,readonly" \
+              --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/source/tests/integration/inert_fixture_launcher_native_probe.py,target=/probe.py,readonly" \
+              --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/dependencies,target=/dependencies,readonly" \
+              --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/provenance,target=/qualification-provenance,readonly" \
+              --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/source,target=/qualification-source,readonly" \
+              --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/output,target=/qualification-output" \
+              --tmpfs /runtime:rw,nosuid,nodev,noexec,mode=0755,size=67108864 \
+              --tmpfs /tmp:rw,nosuid,nodev,noexec,mode=01777,size=67108864 \
+              --env PYTHONPATH=/runtime:/dependencies \
+              --env PYTHONDONTWRITEBYTECODE=1 \
+              --env BPE_LAUNCHER_SHA256="$launcher_sha256" \
+              --env NATIVE_QUALIFICATION_WHEEL_FILENAME \
+              "$NATIVE_QUALIFICATION_IMAGE" \
+              sh -ceu 'PYTHONPATH= python -I -m pip install --target /runtime --no-deps --no-compile --no-cache-dir --disable-pip-version-check "/dist/$NATIVE_QUALIFICATION_WHEEL_FILENAME" >/tmp/bpe-pip.log; exec python -S /probe.py --launcher /launcher --launcher-sha256 "$BPE_LAUNCHER_SHA256"' \
+              2>&1 | tail -c 16384 | base64 | tr -d '\n'
+            pipeline_status=("${PIPESTATUS[@]}")
+            printf '\n%s:%s:%s:%s\n' \
+              "${pipeline_status[0]}" \
+              "${pipeline_status[1]}" \
+              "${pipeline_status[2]}" \
+              "${pipeline_status[3]}"
+          )
+          status_record="${probe_capture##*$'\n'}"
+          encoded_tail="${probe_capture%$'\n'*}"
+          IFS=: read -r probe_status collector_status encoder_status framing_status <<< "$status_record"
+          if ! [[ "$probe_status" =~ ^[0-9]+$ \
+            && "$collector_status" =~ ^[0-9]+$ \
+            && "$encoder_status" =~ ^[0-9]+$ \
+            && "$framing_status" =~ ^[0-9]+$ ]]; then
+            printf '%s\n' \
+              '::error title=Native qualification probe failed::exit=1; tail=<diagnostic-capture-invalid>' \
+              || true
+            exit 1
+          fi
+          if test "$probe_status" -ne 0 \
+            || test "$collector_status" -ne 0 \
+            || test "$encoder_status" -ne 0 \
+            || test "$framing_status" -ne 0; then
+            failure_status="$probe_status"
+            if test "$failure_status" -eq 0; then
+              failure_status=1
+            fi
+            if ! .venv/bin/python - "$encoded_tail" "$failure_status" <<'PY'
+          import base64
+          import sys
+
+          encoded = sys.argv[1]
+          status_text = sys.argv[2]
+          if not status_text.isascii() or not status_text.isdecimal():
+              raise RuntimeError("native probe exit status is not decimal")
+          status = int(status_text)
+          if not 1 <= status <= 255:
+              raise RuntimeError("native probe exit status is out of range")
+          if not encoded.isascii() or len(encoded) > 21_848:
+              raise RuntimeError("native probe diagnostic encoding is oversized")
+          raw = base64.b64decode(encoded, validate=True)
+          if len(raw) > 16_384 or base64.b64encode(raw).decode("ascii") != encoded:
+              raise RuntimeError("native probe diagnostic encoding is noncanonical")
+
+          text = raw.decode("utf-8", errors="backslashreplace")
+          ascii_text = text.encode("ascii", errors="backslashreplace").decode("ascii")
+          escaped: list[str] = []
+          for character in ascii_text:
+              codepoint = ord(character)
+              if character == "\n":
+                  escaped.append("\\n")
+              elif character == "\r":
+                  escaped.append("\\r")
+              elif character == "\t":
+                  escaped.append("\\t")
+              elif 0x20 <= codepoint <= 0x7E:
+                  escaped.append(character)
+              else:
+                  escaped.append(f"\\x{codepoint:02x}")
+          tail = "".join(escaped) or "<empty>"
+          annotation_tail = tail.replace("%", "%25")[-3500:]
+          message = f"exit={status}; tail={annotation_tail}"
+          print(
+              f"::error title=Native qualification probe failed::{message}",
+              flush=True,
+          )
+          PY
+            then
+              printf '%s\n' \
+                "::error title=Native qualification probe failed::exit=$failure_status; tail=<diagnostic-encoder-failed>" \
+                || true
+            fi
+            exit "$failure_status"
+          fi
 
       - name: Validate unsigned native launcher qualification report
         run: |

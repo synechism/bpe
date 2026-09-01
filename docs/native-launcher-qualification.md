@@ -101,6 +101,14 @@ handle reports closed. The final canonical file is created once at a fixed outpu
 any mismatch, ambiguous cleanup, use of evaluator fallback cleanup, or pre-existing output
 causes the run to fail without a qualified report.
 
+On failure only, the controller streams the disposable container output through a fixed-size
+16 KiB tail and emits a single GitHub error annotation containing a bounded, ASCII-escaped
+suffix and the original container exit status. The full output is neither uploaded as an
+artifact nor treated as qualification evidence; the bounded annotation is retained in Actions
+metadata and logs. The container has no network and receives no GitHub credential or secret
+mount, and its daemon-side logging driver is disabled so the uncapped stream is never spooled
+outside the bounded collector.
+
 The privileged producer runs only in a separate `workflow_run` controller after `CI`
 successfully completes for a same-repository push to `main`. Its job-level guard requires
 the downstream repository, event, default-branch ref and controller SHA to match the exact
