@@ -129,6 +129,16 @@ jobs:
           git_environment = os.environ.copy()
           git_environment["GIT_NO_REPLACE_OBJECTS"] = "1"
 
+          dependency_lock = native_root / "dependencies/.lock"
+          dependency_lock_metadata = dependency_lock.lstat()
+          if (
+              not stat.S_ISREG(dependency_lock_metadata.st_mode)
+              or stat.S_ISLNK(dependency_lock_metadata.st_mode)
+              or dependency_lock_metadata.st_size != 0
+          ):
+              raise RuntimeError("dependency installer lock is not an empty regular file")
+          dependency_lock.unlink()
+
           dependency_bin = native_root / "dependencies/bin"
           dependency_bin_metadata = dependency_bin.lstat()
           dependency_bin_entries = tuple(

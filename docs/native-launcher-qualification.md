@@ -87,8 +87,9 @@ Container Python starts with `-S`, disabling `site` and `sitecustomize`, and the
 producer admits only the exact installed package, metadata, and generated entry-point file
 set beneath `/runtime`; unowned or archive-root startup payloads invalidate the run. Replay
 also requires the dependency root to equal the files claimed by its locked distributions.
-Preparation accepts and removes only CFFI's exact unused `bin/cffi-gen-src` installer output
-before the dependency tree becomes read-only; any other unclaimed file invalidates the run.
+Preparation accepts and removes only uv's exact empty `.lock` file and CFFI's exact unused
+`bin/cffi-gen-src` installer output before the dependency tree becomes read-only; any other
+unclaimed file invalidates the run.
 Replay also reconstructs the exact canonical workflow
 provenance document from the report's cross-layer fields and requires its byte length and
 digest to match the read-only provenance mount. These bindings make accidental mixing and
