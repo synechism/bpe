@@ -37,6 +37,7 @@ import bpe.inert_native_qualification as native_qualification
 from bpe.canonical import canonical_json_bytes, sha256_bytes, sha256_json, strict_json_loads
 from bpe.dispatch import ExecutionResourceProfile
 from bpe.inert_artifact import (
+    ELFOSABI_LINUX,
     F_GET_SEALS_LINUX,
     FIXED_SECCOMP_POLICY_ID,
     FIXED_SECCOMP_POLICY_SHA256,
@@ -1225,7 +1226,12 @@ def _require_built_wheel(wheel: Path, expected_sha256: str) -> tuple[int, str]:
 
 def _elf_build_id_sha1(descriptor: int) -> str:
     header = os.pread(descriptor, 64, 0)
-    if len(header) != 64 or header[:16] != b"\x7fELF\x02\x01\x01" + b"\x00" * 9:
+    if (
+        len(header) != 64
+        or header[:7] != b"\x7fELF\x02\x01\x01"
+        or header[7] != ELFOSABI_LINUX
+        or header[8:16] != b"\x00" * 8
+    ):
         raise RuntimeError("launcher is not the fixed ELF64 little-endian ABI")
     section_offset = struct.unpack_from("<Q", header, 0x28)[0]
     section_size = struct.unpack_from("<H", header, 0x3A)[0]
