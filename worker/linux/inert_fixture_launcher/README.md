@@ -138,8 +138,10 @@ RELRO, immediate binding, PIE flag, and SHA-1 build ID.
 The internal evaluator probe `tests/integration/inert_fixture_launcher_native_probe.py`
 is the isolated blocking end-to-end kernel gate. It is not included in public release
 archives. A public artifact therefore cannot by itself prove that this internal gate passed.
-CI is configured to run it as root/PID 1 in a disposable privileged Linux x86-64 container
-with private PID and cgroup namespaces and no network. CI first requires both the runner host and Docker server
+After ordinary CI succeeds for a same-repository `main` push, a separate trusted
+`workflow_run` controller is configured to run it as root/PID 1 in a disposable privileged
+Linux x86-64 container with private PID and cgroup namespaces and no network. The controller
+first requires both the runner host and Docker server
 to report native x86-64, so emulation is not accepted as qualification evidence. The probe
 moves itself into a manager cgroup, creates a new empty sibling leaf per case, constructs the
 exact empty-environment/argv0/descriptor-0-through-4 ABI, drains every `SOCK_SEQPACKET`
@@ -161,9 +163,11 @@ production launcher or its embedded policy. A successful native run must then pa
 exact `HELLO`, `CHILD_READY`, `ERROR` transcript with
 `PIDFD_SIGNAL/PIDFD_SIGNAL_FAILED/EPERM`, kernel exit code, and achieved mask `0x1c3`, before
 independently proving exact reap, an empty/removable leaf, and no reparented child. Passing
-that live case conditionally qualifies the launcher's bounded emergency `cgroup.kill`
-fallback when both its normal pidfd stop and emergency pidfd kill are denied; merely having
-the probe code does not.
+that live case supplies conditional evidence for the launcher's bounded emergency cleanup
+outcome under the fixed-child, trusted-kernel, single-writer assumptions when both its normal
+pidfd stop and emergency pidfd kill are denied. The transcript does not independently prove
+the return from the `cgroup.kill` write; merely having the probe code does not provide any
+run evidence.
 
 This gate cannot run meaningfully in the ordinary unprivileged unit-test environment: it
 requires a writable cgroup-v2 namespace, `CAP_SYS_ADMIN`, `CLONE_INTO_CGROUP`, pidfds,

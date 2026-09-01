@@ -165,7 +165,11 @@ exercise a fixed inert fixture created atomically with
 qualifies pidfd lifecycle handling, one live `cgroup.kill`, reaping, and `populated 0`. Its
 evaluator-only inherited seccomp case denies both normal and emergency
 `pidfd_send_signal`; only the successful native `EPERM`/mask-`0x1c3` case qualifies the
-emergency `cgroup.kill` fallback and exact cleanup. Atomic Python orchestration remains
+emergency cleanup outcome under the fixed-child, trusted-kernel, single-writer assumptions;
+the transcript does not independently prove the return from the emergency `cgroup.kill`
+write. The gate's [native qualification report](native-launcher-qualification.md) preserves
+raw replay inputs and cleanup observations but remains unsigned, freshness-unauthenticated,
+non-durable, and nonauthoritative. Atomic Python orchestration remains
 pending. Bounded signed
 output/deadlines, real resource pressure, and forking-descendant cleanup remain later fixed
 fixtures. Snapshot freshness, candidate execution, executable/argv/environment/dynamic-

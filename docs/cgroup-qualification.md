@@ -209,7 +209,8 @@ execution permission.
 
 ## Native verification boundary
 
-The Linux CI job runs the installed wheel as PID 1 inside a disposable privileged,
+After ordinary CI succeeds for a same-repository `main` push, the separate trusted
+`workflow_run` job runs the rebuilt installed wheel as PID 1 inside a disposable privileged,
 private cgroup namespace. The probe creates separate manager and empty delegate cgroups,
 enables the exact controllers, exercises the complete empty-leaf lifecycle on native
 x86-64 cgroup v2, asserts that the leaf is gone, and verifies the report's nonexecution

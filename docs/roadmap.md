@@ -60,9 +60,13 @@
   Linux CI probe is configured to exercise atomic cgroup birth, pidfd stop/exit observation
   and reaping, a live `cgroup.kill`, and `populated 0`. An evaluator-only inherited seccomp
   case denies both normal and emergency `pidfd_send_signal` calls with `EPERM`; its exact
-  `0x1c3` error transcript and external reap/empty/removal checks make successful cleanup
-  depend on `cgroup.kill`. Qualification requires that gate to pass on a native x86-64
-  host; its code and configuration alone are not evidence. Atomic
+  `0x1c3` error transcript and external reap/empty/removal checks evidence the emergency
+  cleanup outcome under the fixed-child, trusted-kernel, single-writer assumptions. They do
+  not independently prove the return from the emergency `cgroup.kill` write. A successful
+  gate can emit a canonical replayable report only after strict cleanup, but that report is
+  unsigned, freshness-unauthenticated, non-durable, and nonauthoritative. Qualification
+  requires the gate to pass on a native x86-64 host; its code and configuration alone are
+  not evidence. Atomic
   Python orchestration that orders
   preflight, one-shot consumption, retained-cgroup handoff, launch, collection, and terminal
   cleanup is still pending. Wall and output deadlines, real controller pressure, and

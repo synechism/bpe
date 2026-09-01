@@ -1,0 +1,2230 @@
+{
+  "$defs": {
+    "LinuxInertLauncherArtifactPreflightReceipt": {
+      "additionalProperties": false,
+      "description": "Evidence that fixed bytes were sealed and retained, never launch authority.",
+      "properties": {
+        "artifact_digest_verified": {
+          "const": true,
+          "title": "Artifact Digest Verified",
+          "type": "boolean"
+        },
+        "authoritative": {
+          "const": false,
+          "title": "Authoritative",
+          "type": "boolean"
+        },
+        "claim_ledger_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Claim Ledger Id",
+          "type": "string"
+        },
+        "delegated_root_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Delegated Root Id",
+          "type": "string"
+        },
+        "elf_contract": {
+          "const": "elf64-le-x86_64-static-pie-v1",
+          "title": "Elf Contract",
+          "type": "string"
+        },
+        "elf_contract_verified": {
+          "const": true,
+          "title": "Elf Contract Verified",
+          "type": "boolean"
+        },
+        "embedded_seccomp_markers_verified": {
+          "const": true,
+          "title": "Embedded Seccomp Markers Verified",
+          "type": "boolean"
+        },
+        "executable_fd_retained_at_preflight": {
+          "const": true,
+          "title": "Executable Fd Retained At Preflight",
+          "type": "boolean"
+        },
+        "execution_started": {
+          "const": false,
+          "title": "Execution Started",
+          "type": "boolean"
+        },
+        "fixture_child_process_created": {
+          "const": false,
+          "title": "Fixture Child Process Created",
+          "type": "boolean"
+        },
+        "host_architecture": {
+          "const": "x86_64",
+          "title": "Host Architecture",
+          "type": "string"
+        },
+        "host_platform": {
+          "const": "linux",
+          "title": "Host Platform",
+          "type": "string"
+        },
+        "launch_attempt_consumed": {
+          "const": false,
+          "title": "Launch Attempt Consumed",
+          "type": "boolean"
+        },
+        "launch_authorized": {
+          "const": false,
+          "title": "Launch Authorized",
+          "type": "boolean"
+        },
+        "launch_ledger_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Launch Ledger Id",
+          "type": "string"
+        },
+        "launcher_argv_environment": {
+          "const": "argc-one-empty-environment-v1",
+          "title": "Launcher Argv Environment",
+          "type": "string"
+        },
+        "launcher_artifact_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Launcher Artifact Id",
+          "type": "string"
+        },
+        "launcher_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Launcher Artifact Sha256",
+          "type": "string"
+        },
+        "launcher_fd_layout": {
+          "const": "stdio-null-control-3-cgroup-4-v1",
+          "title": "Launcher Fd Layout",
+          "type": "string"
+        },
+        "launcher_launch_method": {
+          "const": "fixed-one-shot-executable-v1",
+          "title": "Launcher Launch Method",
+          "type": "string"
+        },
+        "launcher_process_created": {
+          "const": false,
+          "title": "Launcher Process Created",
+          "type": "boolean"
+        },
+        "launcher_protocol_version": {
+          "const": "bpe.clone3-inert-launcher-protocol.v1",
+          "title": "Launcher Protocol Version",
+          "type": "string"
+        },
+        "launcher_seccomp_policy_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Launcher Seccomp Policy Id",
+          "type": "string"
+        },
+        "launcher_seccomp_policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Launcher Seccomp Policy Sha256",
+          "type": "string"
+        },
+        "policy_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Policy Id",
+          "type": "string"
+        },
+        "policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Policy Sha256",
+          "type": "string"
+        },
+        "preflight_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Preflight Id",
+          "type": "string"
+        },
+        "process_created": {
+          "const": false,
+          "title": "Process Created",
+          "type": "boolean"
+        },
+        "schema_version": {
+          "const": "bpe.linux-inert-launcher-artifact-preflight-receipt.v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "sealed_copy_method": {
+          "const": "memfd-exec-complete-seals-procfd-readonly-v1",
+          "title": "Sealed Copy Method",
+          "type": "string"
+        },
+        "sealed_copy_mode": {
+          "maximum": 65535,
+          "minimum": 0,
+          "title": "Sealed Copy Mode",
+          "type": "integer"
+        },
+        "sealed_copy_nlink": {
+          "const": 0,
+          "title": "Sealed Copy Nlink",
+          "type": "integer"
+        },
+        "sealed_copy_seals": {
+          "const": 63,
+          "title": "Sealed Copy Seals",
+          "type": "integer"
+        },
+        "sealed_copy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sealed Copy Sha256",
+          "type": "string"
+        },
+        "sealed_copy_size_bytes": {
+          "maximum": 16777216,
+          "minimum": 64,
+          "title": "Sealed Copy Size Bytes",
+          "type": "integer"
+        },
+        "sealed_copy_verified": {
+          "const": true,
+          "title": "Sealed Copy Verified",
+          "type": "boolean"
+        },
+        "source_ctime_ns": {
+          "minimum": 0,
+          "title": "Source Ctime Ns",
+          "type": "integer"
+        },
+        "source_device": {
+          "minimum": 0,
+          "title": "Source Device",
+          "type": "integer"
+        },
+        "source_gid": {
+          "minimum": 0,
+          "title": "Source Gid",
+          "type": "integer"
+        },
+        "source_inode": {
+          "minimum": 1,
+          "title": "Source Inode",
+          "type": "integer"
+        },
+        "source_method": {
+          "const": "exact-caller-supplied-readable-fd-v1",
+          "title": "Source Method",
+          "type": "string"
+        },
+        "source_mode": {
+          "maximum": 65535,
+          "minimum": 0,
+          "title": "Source Mode",
+          "type": "integer"
+        },
+        "source_mtime_ns": {
+          "minimum": 0,
+          "title": "Source Mtime Ns",
+          "type": "integer"
+        },
+        "source_nlink": {
+          "const": 1,
+          "title": "Source Nlink",
+          "type": "integer"
+        },
+        "source_not_group_other_writable": {
+          "const": true,
+          "title": "Source Not Group Other Writable",
+          "type": "boolean"
+        },
+        "source_owner_trusted": {
+          "const": true,
+          "title": "Source Owner Trusted",
+          "type": "boolean"
+        },
+        "source_regular_file_verified": {
+          "const": true,
+          "title": "Source Regular File Verified",
+          "type": "boolean"
+        },
+        "source_size_bytes": {
+          "maximum": 16777216,
+          "minimum": 64,
+          "title": "Source Size Bytes",
+          "type": "integer"
+        },
+        "source_stable_during_read": {
+          "const": true,
+          "title": "Source Stable During Read",
+          "type": "boolean"
+        },
+        "source_uid": {
+          "minimum": 0,
+          "title": "Source Uid",
+          "type": "integer"
+        },
+        "status": {
+          "const": "artifact_preflighted_not_launched",
+          "title": "Status",
+          "type": "string"
+        },
+        "worker_instance_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Worker Instance Id",
+          "type": "string"
+        },
+        "worker_pool_audience": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Worker Pool Audience",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "status",
+        "preflight_id",
+        "policy_id",
+        "policy_sha256",
+        "worker_pool_audience",
+        "worker_instance_id",
+        "claim_ledger_id",
+        "launch_ledger_id",
+        "delegated_root_id",
+        "launcher_artifact_id",
+        "launcher_artifact_sha256",
+        "launcher_seccomp_policy_id",
+        "launcher_seccomp_policy_sha256",
+        "host_platform",
+        "host_architecture",
+        "launcher_protocol_version",
+        "launcher_launch_method",
+        "launcher_fd_layout",
+        "launcher_argv_environment",
+        "source_method",
+        "source_device",
+        "source_inode",
+        "source_mode",
+        "source_uid",
+        "source_gid",
+        "source_nlink",
+        "source_size_bytes",
+        "source_mtime_ns",
+        "source_ctime_ns",
+        "source_regular_file_verified",
+        "source_owner_trusted",
+        "source_not_group_other_writable",
+        "source_stable_during_read",
+        "artifact_digest_verified",
+        "elf_contract",
+        "elf_contract_verified",
+        "embedded_seccomp_markers_verified",
+        "sealed_copy_method",
+        "sealed_copy_sha256",
+        "sealed_copy_size_bytes",
+        "sealed_copy_mode",
+        "sealed_copy_nlink",
+        "sealed_copy_seals",
+        "sealed_copy_verified",
+        "executable_fd_retained_at_preflight",
+        "launch_attempt_consumed",
+        "launch_authorized",
+        "launcher_process_created",
+        "fixture_child_process_created",
+        "process_created",
+        "execution_started",
+        "authoritative"
+      ],
+      "title": "LinuxInertLauncherArtifactPreflightReceipt",
+      "type": "object"
+    },
+    "NativeQualificationArtifact": {
+      "additionalProperties": false,
+      "properties": {
+        "build_tools": {
+          "$ref": "#/$defs/NativeQualificationBuildTools"
+        },
+        "case_duplicates": {
+          "items": {
+            "$ref": "#/$defs/NativeQualificationArtifactDuplicate"
+          },
+          "maxItems": 5,
+          "minItems": 5,
+          "title": "Case Duplicates",
+          "type": "array"
+        },
+        "launcher_artifact_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Launcher Artifact Id",
+          "type": "string"
+        },
+        "launcher_build_id_sha1": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Launcher Build Id Sha1",
+          "type": "string"
+        },
+        "launcher_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Launcher Sha256",
+          "type": "string"
+        },
+        "launcher_size_bytes": {
+          "maximum": 16777216,
+          "minimum": 64,
+          "title": "Launcher Size Bytes",
+          "type": "integer"
+        },
+        "launcher_source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Launcher Source Sha256",
+          "type": "string"
+        },
+        "preflight_id": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Preflight Id",
+          "type": "string"
+        },
+        "preflight_receipt": {
+          "$ref": "#/$defs/LinuxInertLauncherArtifactPreflightReceipt"
+        },
+        "sealed_copy_cloexec_verified": {
+          "const": true,
+          "title": "Sealed Copy Cloexec Verified",
+          "type": "boolean"
+        },
+        "sealed_copy_identity_verified": {
+          "const": true,
+          "title": "Sealed Copy Identity Verified",
+          "type": "boolean"
+        },
+        "sealed_copy_readonly_verified": {
+          "const": true,
+          "title": "Sealed Copy Readonly Verified",
+          "type": "boolean"
+        },
+        "sealed_copy_seals": {
+          "const": 63,
+          "title": "Sealed Copy Seals",
+          "type": "integer"
+        },
+        "sealed_copy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sealed Copy Sha256",
+          "type": "string"
+        },
+        "seccomp_policy_id": {
+          "const": "bpe.inert-fixture-launcher-seccomp.v1",
+          "title": "Seccomp Policy Id",
+          "type": "string"
+        },
+        "seccomp_policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Seccomp Policy Sha256",
+          "type": "string"
+        },
+        "source_artifact_unchanged_after_preflight": {
+          "const": true,
+          "title": "Source Artifact Unchanged After Preflight",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "launcher_artifact_id",
+        "launcher_sha256",
+        "launcher_source_sha256",
+        "launcher_size_bytes",
+        "launcher_build_id_sha1",
+        "build_tools",
+        "seccomp_policy_id",
+        "seccomp_policy_sha256",
+        "preflight_receipt",
+        "preflight_id",
+        "sealed_copy_sha256",
+        "sealed_copy_seals",
+        "sealed_copy_readonly_verified",
+        "sealed_copy_cloexec_verified",
+        "sealed_copy_identity_verified",
+        "source_artifact_unchanged_after_preflight",
+        "case_duplicates"
+      ],
+      "title": "NativeQualificationArtifact",
+      "type": "object"
+    },
+    "NativeQualificationArtifactDuplicate": {
+      "additionalProperties": false,
+      "properties": {
+        "case_name": {
+          "enum": [
+            "success",
+            "extra-fd",
+            "inbound",
+            "peer-close",
+            "emergency-cgroup-kill"
+          ],
+          "title": "Case Name",
+          "type": "string"
+        },
+        "duplicate_cloexec_verified": {
+          "const": true,
+          "title": "Duplicate Cloexec Verified",
+          "type": "boolean"
+        },
+        "duplicate_device": {
+          "minimum": 0,
+          "title": "Duplicate Device",
+          "type": "integer"
+        },
+        "duplicate_identity_verified": {
+          "const": true,
+          "title": "Duplicate Identity Verified",
+          "type": "boolean"
+        },
+        "duplicate_inode": {
+          "minimum": 1,
+          "title": "Duplicate Inode",
+          "type": "integer"
+        },
+        "duplicate_mode": {
+          "maximum": 65535,
+          "minimum": 0,
+          "title": "Duplicate Mode",
+          "type": "integer"
+        },
+        "duplicate_nlink": {
+          "const": 0,
+          "title": "Duplicate Nlink",
+          "type": "integer"
+        },
+        "duplicate_readonly_verified": {
+          "const": true,
+          "title": "Duplicate Readonly Verified",
+          "type": "boolean"
+        },
+        "duplicate_seals": {
+          "const": 63,
+          "title": "Duplicate Seals",
+          "type": "integer"
+        },
+        "duplicate_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Duplicate Sha256",
+          "type": "string"
+        },
+        "duplicate_size_bytes": {
+          "maximum": 16777216,
+          "minimum": 64,
+          "title": "Duplicate Size Bytes",
+          "type": "integer"
+        },
+        "executed_from_duplicate": {
+          "const": true,
+          "title": "Executed From Duplicate",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "case_name",
+        "duplicate_sha256",
+        "duplicate_size_bytes",
+        "duplicate_device",
+        "duplicate_inode",
+        "duplicate_mode",
+        "duplicate_nlink",
+        "duplicate_seals",
+        "duplicate_readonly_verified",
+        "duplicate_cloexec_verified",
+        "duplicate_identity_verified",
+        "executed_from_duplicate"
+      ],
+      "title": "NativeQualificationArtifactDuplicate",
+      "type": "object"
+    },
+    "NativeQualificationBuildTools": {
+      "additionalProperties": false,
+      "properties": {
+        "binutils_identity": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Binutils Identity",
+          "type": "string"
+        },
+        "compiler_identity": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Compiler Identity",
+          "type": "string"
+        },
+        "libc_identity": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Libc Identity",
+          "type": "string"
+        },
+        "linker_identity": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Linker Identity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "compiler_identity",
+        "linker_identity",
+        "libc_identity",
+        "binutils_identity"
+      ],
+      "title": "NativeQualificationBuildTools",
+      "type": "object"
+    },
+    "NativeQualificationCase": {
+      "additionalProperties": false,
+      "properties": {
+        "case_name": {
+          "enum": [
+            "success",
+            "extra-fd",
+            "inbound",
+            "peer-close",
+            "emergency-cgroup-kill"
+          ],
+          "title": "Case Name",
+          "type": "string"
+        },
+        "cleanup": {
+          "$ref": "#/$defs/NativeQualificationCaseCleanup"
+        },
+        "eof_observed": {
+          "title": "Eof Observed",
+          "type": "boolean"
+        },
+        "injection": {
+          "$ref": "#/$defs/NativeQualificationInjection"
+        },
+        "launcher_pid": {
+          "maximum": 4194303,
+          "minimum": 1,
+          "title": "Launcher Pid",
+          "type": "integer"
+        },
+        "parser_outcome": {
+          "enum": [
+            "accepted",
+            "rejected"
+          ],
+          "title": "Parser Outcome",
+          "type": "string"
+        },
+        "parser_projection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeQualificationTranscriptProjection"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parser_rejection": {
+          "anyOf": [
+            {
+              "enum": [
+                "empty_transcript",
+                "eof_not_observed"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Parser Rejection"
+        },
+        "records": {
+          "items": {
+            "$ref": "#/$defs/NativeQualificationSocketRecord"
+          },
+          "maxItems": 8,
+          "title": "Records",
+          "type": "array"
+        },
+        "returncode": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Returncode",
+          "type": "integer"
+        },
+        "transcript_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Transcript Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_name",
+        "injection",
+        "launcher_pid",
+        "returncode",
+        "eof_observed",
+        "records",
+        "transcript_sha256",
+        "parser_outcome",
+        "parser_projection",
+        "parser_rejection",
+        "cleanup"
+      ],
+      "title": "NativeQualificationCase",
+      "type": "object"
+    },
+    "NativeQualificationCaseCleanup": {
+      "additionalProperties": false,
+      "properties": {
+        "cleanup_method": {
+          "const": "exact-wait-empty-rmdir-v1",
+          "title": "Cleanup Method",
+          "type": "string"
+        },
+        "evaluator_fallback_cleanup_used": {
+          "const": false,
+          "title": "Evaluator Fallback Cleanup Used",
+          "type": "boolean"
+        },
+        "launcher_waited_exact": {
+          "const": true,
+          "title": "Launcher Waited Exact",
+          "type": "boolean"
+        },
+        "leaf_cgroup_procs_empty": {
+          "const": true,
+          "title": "Leaf Cgroup Procs Empty",
+          "type": "boolean"
+        },
+        "leaf_populated_zero": {
+          "const": true,
+          "title": "Leaf Populated Zero",
+          "type": "boolean"
+        },
+        "leaf_removed": {
+          "const": true,
+          "title": "Leaf Removed",
+          "type": "boolean"
+        },
+        "no_reparented_child_observed": {
+          "const": true,
+          "title": "No Reparented Child Observed",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "cleanup_method",
+        "launcher_waited_exact",
+        "no_reparented_child_observed",
+        "leaf_cgroup_procs_empty",
+        "leaf_populated_zero",
+        "leaf_removed",
+        "evaluator_fallback_cleanup_used"
+      ],
+      "title": "NativeQualificationCaseCleanup",
+      "type": "object"
+    },
+    "NativeQualificationContainer": {
+      "additionalProperties": false,
+      "properties": {
+        "cgroup_namespace_private_observed": {
+          "const": true,
+          "title": "Cgroup Namespace Private Observed",
+          "type": "boolean"
+        },
+        "cgroup_root_initially_only_pid_one": {
+          "const": true,
+          "title": "Cgroup Root Initially Only Pid One",
+          "type": "boolean"
+        },
+        "dependency_root_total_bytes": {
+          "maximum": 1073741824,
+          "minimum": 1,
+          "title": "Dependency Root Total Bytes",
+          "type": "integer"
+        },
+        "dependency_root_tree_manifest_method": {
+          "const": "canonical-relative-path-content-manifest-v1",
+          "title": "Dependency Root Tree Manifest Method",
+          "type": "string"
+        },
+        "dependency_root_tree_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Dependency Root Tree Sha256",
+          "type": "string"
+        },
+        "docker_server_version": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Docker Server Version",
+          "type": "string"
+        },
+        "effective_uid_zero_observed": {
+          "const": true,
+          "title": "Effective Uid Zero Observed",
+          "type": "boolean"
+        },
+        "fault_profile_id": {
+          "const": "bpe.native-qualification.pidfd-send-signal-eperm.v1",
+          "title": "Fault Profile Id",
+          "type": "string"
+        },
+        "invocation": {
+          "$ref": "#/$defs/NativeQualificationContainerInvocation"
+        },
+        "mount_namespace_private_observed": {
+          "const": true,
+          "title": "Mount Namespace Private Observed",
+          "type": "boolean"
+        },
+        "network_namespace_isolated_observed": {
+          "const": true,
+          "title": "Network Namespace Isolated Observed",
+          "type": "boolean"
+        },
+        "observed_invocation_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Observed Invocation Sha256",
+          "type": "string"
+        },
+        "outer_seccomp_instruction_contract_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Outer Seccomp Instruction Contract Sha256",
+          "type": "string"
+        },
+        "pid_namespace_private_observed": {
+          "const": true,
+          "title": "Pid Namespace Private Observed",
+          "type": "boolean"
+        },
+        "pid_one_observed": {
+          "const": true,
+          "title": "Pid One Observed",
+          "type": "boolean"
+        },
+        "privileged_observed": {
+          "const": true,
+          "title": "Privileged Observed",
+          "type": "boolean"
+        },
+        "runtime_bpe_tree_manifest_method": {
+          "const": "installed-bpe-tree-content-manifest-v1",
+          "title": "Runtime Bpe Tree Manifest Method",
+          "type": "string"
+        },
+        "runtime_bpe_tree_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Runtime Bpe Tree Manifest Sha256",
+          "type": "string"
+        },
+        "runtime_bpe_tree_matches_built_wheel": {
+          "const": true,
+          "title": "Runtime Bpe Tree Matches Built Wheel",
+          "type": "boolean"
+        },
+        "runtime_dependency_manifest_method": {
+          "const": "python-distribution-summary-tree-digest-v1",
+          "title": "Runtime Dependency Manifest Method",
+          "type": "string"
+        },
+        "runtime_dependency_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Runtime Dependency Manifest Sha256",
+          "type": "string"
+        },
+        "runtime_distribution_wheel_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Runtime Distribution Wheel Sha256",
+          "type": "string"
+        },
+        "runtime_distributions": {
+          "items": {
+            "$ref": "#/$defs/NativeQualificationRuntimeDistribution"
+          },
+          "maxItems": 512,
+          "minItems": 1,
+          "title": "Runtime Distributions",
+          "type": "array"
+        },
+        "runtime_id": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Runtime Id",
+          "type": "string"
+        },
+        "runtime_lockfile_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Runtime Lockfile Sha256",
+          "type": "string"
+        },
+        "runtime_name": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Runtime Name",
+          "type": "string"
+        },
+        "runtime_probe_source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Runtime Probe Source Sha256",
+          "type": "string"
+        },
+        "runtime_root_total_bytes": {
+          "maximum": 1073741824,
+          "minimum": 1,
+          "title": "Runtime Root Total Bytes",
+          "type": "integer"
+        },
+        "runtime_root_tree_completeness_method": {
+          "const": "recursive-lstat-exact-wheel-projection-v1",
+          "title": "Runtime Root Tree Completeness Method",
+          "type": "string"
+        },
+        "runtime_root_tree_manifest_method": {
+          "const": "canonical-relative-path-content-manifest-v1",
+          "title": "Runtime Root Tree Manifest Method",
+          "type": "string"
+        },
+        "runtime_root_tree_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Runtime Root Tree Sha256",
+          "type": "string"
+        },
+        "runtime_version": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Runtime Version",
+          "type": "string"
+        },
+        "single_threaded_before_fork": {
+          "const": true,
+          "title": "Single Threaded Before Fork",
+          "type": "boolean"
+        },
+        "user_namespace_identity_recorded": {
+          "const": true,
+          "title": "User Namespace Identity Recorded",
+          "type": "boolean"
+        },
+        "user_namespace_private_qualified": {
+          "const": false,
+          "title": "User Namespace Private Qualified",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "invocation",
+        "docker_server_version",
+        "runtime_name",
+        "runtime_version",
+        "runtime_id",
+        "runtime_dependency_manifest_method",
+        "runtime_dependency_manifest_sha256",
+        "runtime_distributions",
+        "dependency_root_tree_manifest_method",
+        "dependency_root_tree_sha256",
+        "dependency_root_total_bytes",
+        "runtime_distribution_wheel_sha256",
+        "runtime_bpe_tree_manifest_method",
+        "runtime_bpe_tree_manifest_sha256",
+        "runtime_bpe_tree_matches_built_wheel",
+        "runtime_root_tree_manifest_method",
+        "runtime_root_tree_completeness_method",
+        "runtime_root_tree_sha256",
+        "runtime_root_total_bytes",
+        "runtime_probe_source_sha256",
+        "runtime_lockfile_sha256",
+        "observed_invocation_sha256",
+        "pid_one_observed",
+        "effective_uid_zero_observed",
+        "privileged_observed",
+        "pid_namespace_private_observed",
+        "mount_namespace_private_observed",
+        "user_namespace_identity_recorded",
+        "user_namespace_private_qualified",
+        "cgroup_namespace_private_observed",
+        "network_namespace_isolated_observed",
+        "single_threaded_before_fork",
+        "cgroup_root_initially_only_pid_one",
+        "fault_profile_id",
+        "outer_seccomp_instruction_contract_sha256"
+      ],
+      "title": "NativeQualificationContainer",
+      "type": "object"
+    },
+    "NativeQualificationContainerInvocation": {
+      "additionalProperties": false,
+      "properties": {
+        "cgroup_namespace_mode": {
+          "const": "private",
+          "title": "Cgroup Namespace Mode",
+          "type": "string"
+        },
+        "command_contract": {
+          "const": "python-no-site-pid1-sealed-fd-exec-v1",
+          "title": "Command Contract",
+          "type": "string"
+        },
+        "dependencies_mount_readonly": {
+          "const": true,
+          "title": "Dependencies Mount Readonly",
+          "type": "boolean"
+        },
+        "distribution_mount_readonly": {
+          "const": true,
+          "title": "Distribution Mount Readonly",
+          "type": "boolean"
+        },
+        "image_config_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Image Config Sha256",
+          "type": "string"
+        },
+        "image_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Image Manifest Sha256",
+          "type": "string"
+        },
+        "image_platform_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Image Platform Sha256",
+          "type": "string"
+        },
+        "image_reference": {
+          "maxLength": 512,
+          "pattern": "^[^@\\s]+@sha256:[0-9a-f]{64}$",
+          "title": "Image Reference",
+          "type": "string"
+        },
+        "invocation_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Invocation Sha256",
+          "type": "string"
+        },
+        "launcher_mount_readonly": {
+          "const": true,
+          "title": "Launcher Mount Readonly",
+          "type": "boolean"
+        },
+        "mount_bindings": {
+          "items": {
+            "$ref": "#/$defs/NativeQualificationMountBinding"
+          },
+          "maxItems": 8,
+          "minItems": 8,
+          "title": "Mount Bindings",
+          "type": "array"
+        },
+        "mount_namespace_mode": {
+          "const": "container-default-private",
+          "title": "Mount Namespace Mode",
+          "type": "string"
+        },
+        "network_mode": {
+          "const": "none",
+          "title": "Network Mode",
+          "type": "string"
+        },
+        "pid_namespace_mode": {
+          "const": "container-default-private",
+          "title": "Pid Namespace Mode",
+          "type": "string"
+        },
+        "platform": {
+          "const": "linux/amd64",
+          "title": "Platform",
+          "type": "string"
+        },
+        "privileged_configured": {
+          "const": true,
+          "title": "Privileged Configured",
+          "type": "boolean"
+        },
+        "probe_mount_readonly": {
+          "const": true,
+          "title": "Probe Mount Readonly",
+          "type": "boolean"
+        },
+        "qualification_output_mount": {
+          "const": "dedicated-readwrite-output-v1",
+          "title": "Qualification Output Mount",
+          "type": "string"
+        },
+        "qualification_output_mount_readwrite": {
+          "const": true,
+          "title": "Qualification Output Mount Readwrite",
+          "type": "boolean"
+        },
+        "schema_version": {
+          "const": "bpe.linux-inert-launcher-native-invocation.v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "user_namespace_mode": {
+          "const": "daemon-default-recorded-only",
+          "title": "User Namespace Mode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "invocation_sha256",
+        "image_reference",
+        "image_manifest_sha256",
+        "image_platform_sha256",
+        "image_config_sha256",
+        "platform",
+        "command_contract",
+        "privileged_configured",
+        "pid_namespace_mode",
+        "mount_namespace_mode",
+        "user_namespace_mode",
+        "cgroup_namespace_mode",
+        "network_mode",
+        "mount_bindings",
+        "distribution_mount_readonly",
+        "launcher_mount_readonly",
+        "probe_mount_readonly",
+        "dependencies_mount_readonly",
+        "qualification_output_mount",
+        "qualification_output_mount_readwrite"
+      ],
+      "title": "NativeQualificationContainerInvocation",
+      "type": "object"
+    },
+    "NativeQualificationFinalization": {
+      "additionalProperties": false,
+      "properties": {
+        "every_launcher_duplicate_closed": {
+          "const": true,
+          "title": "Every Launcher Duplicate Closed",
+          "type": "boolean"
+        },
+        "manager_cgroup_empty": {
+          "const": true,
+          "title": "Manager Cgroup Empty",
+          "type": "boolean"
+        },
+        "manager_cgroup_removed": {
+          "const": true,
+          "title": "Manager Cgroup Removed",
+          "type": "boolean"
+        },
+        "probe_restored_to_cgroup_namespace_root": {
+          "const": true,
+          "title": "Probe Restored To Cgroup Namespace Root",
+          "type": "boolean"
+        },
+        "retained_artifact_closed": {
+          "const": true,
+          "title": "Retained Artifact Closed",
+          "type": "boolean"
+        },
+        "source_artifact_descriptor_closed": {
+          "const": true,
+          "title": "Source Artifact Descriptor Closed",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "probe_restored_to_cgroup_namespace_root",
+        "manager_cgroup_empty",
+        "manager_cgroup_removed",
+        "every_launcher_duplicate_closed",
+        "retained_artifact_closed",
+        "source_artifact_descriptor_closed"
+      ],
+      "title": "NativeQualificationFinalization",
+      "type": "object"
+    },
+    "NativeQualificationHost": {
+      "additionalProperties": false,
+      "properties": {
+        "base_page_size_bytes": {
+          "const": 4096,
+          "title": "Base Page Size Bytes",
+          "type": "integer"
+        },
+        "boot_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Boot Id Sha256",
+          "type": "string"
+        },
+        "cgroup_namespace": {
+          "$ref": "#/$defs/NativeQualificationNamespaceIdentity"
+        },
+        "cgroup_v2_filesystem_magic": {
+          "const": 1667723888,
+          "title": "Cgroup V2 Filesystem Magic",
+          "type": "integer"
+        },
+        "container_architecture": {
+          "const": "x86_64",
+          "title": "Container Architecture",
+          "type": "string"
+        },
+        "docker_server_architecture": {
+          "const": "x86_64",
+          "title": "Docker Server Architecture",
+          "type": "string"
+        },
+        "emulation_detected": {
+          "const": false,
+          "title": "Emulation Detected",
+          "type": "boolean"
+        },
+        "kernel_release": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Kernel Release",
+          "type": "string"
+        },
+        "kernel_version": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "title": "Kernel Version",
+          "type": "string"
+        },
+        "mount_namespace": {
+          "$ref": "#/$defs/NativeQualificationNamespaceIdentity"
+        },
+        "pid_namespace": {
+          "$ref": "#/$defs/NativeQualificationNamespaceIdentity"
+        },
+        "proc_version_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Proc Version Sha256",
+          "type": "string"
+        },
+        "runner_architecture": {
+          "const": "x86_64",
+          "title": "Runner Architecture",
+          "type": "string"
+        },
+        "user_namespace": {
+          "$ref": "#/$defs/NativeQualificationNamespaceIdentity"
+        }
+      },
+      "required": [
+        "runner_architecture",
+        "docker_server_architecture",
+        "container_architecture",
+        "emulation_detected",
+        "kernel_release",
+        "kernel_version",
+        "proc_version_sha256",
+        "boot_id_sha256",
+        "base_page_size_bytes",
+        "cgroup_v2_filesystem_magic",
+        "pid_namespace",
+        "mount_namespace",
+        "user_namespace",
+        "cgroup_namespace"
+      ],
+      "title": "NativeQualificationHost",
+      "type": "object"
+    },
+    "NativeQualificationInjection": {
+      "additionalProperties": false,
+      "properties": {
+        "contract_id": {
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._/@:+-]{0,127}$",
+          "title": "Contract Id",
+          "type": "string"
+        },
+        "control_peer_closed_before_exec": {
+          "title": "Control Peer Closed Before Exec",
+          "type": "boolean"
+        },
+        "outer_seccomp_fault_profile_id": {
+          "anyOf": [
+            {
+              "const": "bpe.native-qualification.pidfd-send-signal-eperm.v1",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Outer Seccomp Fault Profile Id"
+        },
+        "prequeued_control_payload_hex": {
+          "anyOf": [
+            {
+              "const": "78",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Prequeued Control Payload Hex"
+        },
+        "unexpected_inherited_descriptor": {
+          "anyOf": [
+            {
+              "const": 257,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Unexpected Inherited Descriptor"
+        }
+      },
+      "required": [
+        "contract_id",
+        "unexpected_inherited_descriptor",
+        "prequeued_control_payload_hex",
+        "control_peer_closed_before_exec",
+        "outer_seccomp_fault_profile_id"
+      ],
+      "title": "NativeQualificationInjection",
+      "type": "object"
+    },
+    "NativeQualificationMountBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "purpose": {
+          "enum": [
+            "provenance-context",
+            "tracked-tree-manifest",
+            "built-wheel",
+            "probe",
+            "launcher",
+            "dependency-tree",
+            "source-tree",
+            "qualification-output"
+          ],
+          "title": "Purpose",
+          "type": "string"
+        },
+        "readonly": {
+          "title": "Readonly",
+          "type": "boolean"
+        },
+        "source_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Source Sha256"
+        },
+        "source_size_bytes": {
+          "anyOf": [
+            {
+              "maximum": 1073741824,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Source Size Bytes"
+        },
+        "target_kind": {
+          "enum": [
+            "file",
+            "directory"
+          ],
+          "title": "Target Kind",
+          "type": "string"
+        },
+        "target_mode": {
+          "maximum": 4095,
+          "minimum": 0,
+          "title": "Target Mode",
+          "type": "integer"
+        },
+        "target_path": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Target Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "purpose",
+        "target_path",
+        "target_kind",
+        "source_sha256",
+        "source_size_bytes",
+        "readonly",
+        "target_mode"
+      ],
+      "title": "NativeQualificationMountBinding",
+      "type": "object"
+    },
+    "NativeQualificationNamespaceIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "device": {
+          "minimum": 0,
+          "title": "Device",
+          "type": "integer"
+        },
+        "inode": {
+          "minimum": 1,
+          "title": "Inode",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "device",
+        "inode"
+      ],
+      "title": "NativeQualificationNamespaceIdentity",
+      "type": "object"
+    },
+    "NativeQualificationRuntimeDistribution": {
+      "additionalProperties": false,
+      "properties": {
+        "aggregate_scope": {
+          "enum": [
+            "package-tree",
+            "distribution-files"
+          ],
+          "title": "Aggregate Scope",
+          "type": "string"
+        },
+        "aggregate_tree_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Aggregate Tree Sha256",
+          "type": "string"
+        },
+        "file_count": {
+          "maximum": 100000,
+          "minimum": 1,
+          "title": "File Count",
+          "type": "integer"
+        },
+        "normalized_name": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "title": "Normalized Name",
+          "type": "string"
+        },
+        "root": {
+          "enum": [
+            "runtime",
+            "dependencies"
+          ],
+          "title": "Root",
+          "type": "string"
+        },
+        "total_bytes": {
+          "maximum": 1073741824,
+          "minimum": 1,
+          "title": "Total Bytes",
+          "type": "integer"
+        },
+        "version": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "root",
+        "normalized_name",
+        "version",
+        "aggregate_scope",
+        "file_count",
+        "total_bytes",
+        "aggregate_tree_sha256"
+      ],
+      "title": "NativeQualificationRuntimeDistribution",
+      "type": "object"
+    },
+    "NativeQualificationSocketRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "ancillary_present": {
+          "const": false,
+          "title": "Ancillary Present",
+          "type": "boolean"
+        },
+        "control_truncated": {
+          "const": false,
+          "title": "Control Truncated",
+          "type": "boolean"
+        },
+        "message_truncated": {
+          "const": false,
+          "title": "Message Truncated",
+          "type": "boolean"
+        },
+        "payload_hex": {
+          "pattern": "^[0-9a-f]{128}$",
+          "title": "Payload Hex",
+          "type": "string"
+        }
+      },
+      "required": [
+        "payload_hex",
+        "message_truncated",
+        "control_truncated",
+        "ancillary_present"
+      ],
+      "title": "NativeQualificationSocketRecord",
+      "type": "object"
+    },
+    "NativeQualificationSourceFile": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "maximum": 4194304,
+          "minimum": 1,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "size_bytes"
+      ],
+      "title": "NativeQualificationSourceFile",
+      "type": "object"
+    },
+    "NativeQualificationSourceManifest": {
+      "additionalProperties": false,
+      "properties": {
+        "files": {
+          "items": {
+            "$ref": "#/$defs/NativeQualificationSourceFile"
+          },
+          "maxItems": 50,
+          "minItems": 50,
+          "title": "Files",
+          "type": "array"
+        },
+        "manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Manifest Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "bpe.linux-inert-launcher-native-source-manifest.v1",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "manifest_sha256",
+        "files"
+      ],
+      "title": "NativeQualificationSourceManifest",
+      "type": "object"
+    },
+    "NativeQualificationSourceRun": {
+      "additionalProperties": false,
+      "properties": {
+        "built_wheel_bpe_tree_manifest_method": {
+          "const": "closed-wheel-bpe-tree-content-manifest-v1",
+          "title": "Built Wheel Bpe Tree Manifest Method",
+          "type": "string"
+        },
+        "built_wheel_bpe_tree_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Built Wheel Bpe Tree Manifest Sha256",
+          "type": "string"
+        },
+        "built_wheel_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Built Wheel Sha256",
+          "type": "string"
+        },
+        "built_wheel_size_bytes": {
+          "maximum": 67108864,
+          "minimum": 1,
+          "title": "Built Wheel Size Bytes",
+          "type": "integer"
+        },
+        "ci_context_authenticated": {
+          "const": false,
+          "title": "Ci Context Authenticated",
+          "type": "boolean"
+        },
+        "commit_bpe_tree_manifest_method": {
+          "const": "git-src-bpe-to-installed-bpe-tree-content-manifest-v1",
+          "title": "Commit Bpe Tree Manifest Method",
+          "type": "string"
+        },
+        "commit_bpe_tree_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Commit Bpe Tree Manifest Sha256",
+          "type": "string"
+        },
+        "context_source": {
+          "const": "github-actions-workflow-run-environment-v1",
+          "title": "Context Source",
+          "type": "string"
+        },
+        "git_commit": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Git Commit",
+          "type": "string"
+        },
+        "github_actor_category": {
+          "const": "unverified",
+          "title": "Github Actor Category",
+          "type": "string"
+        },
+        "github_context_file_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Github Context File Sha256",
+          "type": "string"
+        },
+        "github_context_file_size_bytes": {
+          "maximum": 65536,
+          "minimum": 1,
+          "title": "Github Context File Size Bytes",
+          "type": "integer"
+        },
+        "github_event": {
+          "const": "workflow_run",
+          "title": "Github Event",
+          "type": "string"
+        },
+        "github_job": {
+          "const": "native-qualification",
+          "title": "Github Job",
+          "type": "string"
+        },
+        "github_ref": {
+          "const": "refs/heads/main",
+          "title": "Github Ref",
+          "type": "string"
+        },
+        "github_repository": {
+          "const": "synechism/bpe",
+          "title": "Github Repository",
+          "type": "string"
+        },
+        "github_run_attempt": {
+          "maximum": 1000,
+          "minimum": 1,
+          "title": "Github Run Attempt",
+          "type": "integer"
+        },
+        "github_run_id": {
+          "minimum": 1,
+          "title": "Github Run Id",
+          "type": "integer"
+        },
+        "github_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Github Sha",
+          "type": "string"
+        },
+        "probe_source_size_bytes": {
+          "maximum": 4194304,
+          "minimum": 1,
+          "title": "Probe Source Size Bytes",
+          "type": "integer"
+        },
+        "repository": {
+          "const": "github.com/synechism/bpe",
+          "title": "Repository",
+          "type": "string"
+        },
+        "source_manifest": {
+          "$ref": "#/$defs/NativeQualificationSourceManifest"
+        },
+        "source_manifest_total_bytes": {
+          "maximum": 16777216,
+          "minimum": 1,
+          "title": "Source Manifest Total Bytes",
+          "type": "integer"
+        },
+        "tracked_tree_content_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Tracked Tree Content Manifest Sha256",
+          "type": "string"
+        },
+        "tracked_tree_manifest_file_size_bytes": {
+          "maximum": 131072,
+          "minimum": 1,
+          "title": "Tracked Tree Manifest File Size Bytes",
+          "type": "integer"
+        },
+        "tracked_tree_manifest_method": {
+          "const": "git-commit-blob-canonical-content-manifest-v1",
+          "title": "Tracked Tree Manifest Method",
+          "type": "string"
+        },
+        "tracked_tree_matches_git_commit": {
+          "const": true,
+          "title": "Tracked Tree Matches Git Commit",
+          "type": "boolean"
+        },
+        "tracked_tree_total_bytes": {
+          "maximum": 1073741824,
+          "minimum": 1,
+          "title": "Tracked Tree Total Bytes",
+          "type": "integer"
+        },
+        "upstream_workflow_run": {
+          "$ref": "#/$defs/NativeQualificationUpstreamWorkflowRun"
+        },
+        "workflow_path": {
+          "const": ".github/workflows/native-qualification.yml",
+          "title": "Workflow Path",
+          "type": "string"
+        },
+        "workflow_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Workflow Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "repository",
+        "git_commit",
+        "github_context_file_sha256",
+        "github_context_file_size_bytes",
+        "source_manifest",
+        "source_manifest_total_bytes",
+        "tracked_tree_manifest_method",
+        "tracked_tree_content_manifest_sha256",
+        "tracked_tree_manifest_file_size_bytes",
+        "tracked_tree_total_bytes",
+        "tracked_tree_matches_git_commit",
+        "commit_bpe_tree_manifest_method",
+        "commit_bpe_tree_manifest_sha256",
+        "built_wheel_bpe_tree_manifest_method",
+        "built_wheel_bpe_tree_manifest_sha256",
+        "built_wheel_size_bytes",
+        "probe_source_size_bytes",
+        "workflow_path",
+        "workflow_sha256",
+        "github_repository",
+        "github_sha",
+        "github_run_id",
+        "github_run_attempt",
+        "github_job",
+        "github_event",
+        "github_ref",
+        "github_actor_category",
+        "upstream_workflow_run",
+        "context_source",
+        "ci_context_authenticated",
+        "built_wheel_sha256"
+      ],
+      "title": "NativeQualificationSourceRun",
+      "type": "object"
+    },
+    "NativeQualificationTranscriptProjection": {
+      "additionalProperties": false,
+      "properties": {
+        "achieved_result_mask": {
+          "maximum": 511,
+          "minimum": 0,
+          "title": "Achieved Result Mask",
+          "type": "integer"
+        },
+        "child_pid": {
+          "anyOf": [
+            {
+              "maximum": 4194303,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Child Pid"
+        },
+        "elapsed_ns": {
+          "anyOf": [
+            {
+              "maximum": 45000000000,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Elapsed Ns"
+        },
+        "failure_errno": {
+          "anyOf": [
+            {
+              "maximum": 4095,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Failure Errno"
+        },
+        "failure_reason": {
+          "anyOf": [
+            {
+              "enum": [
+                "bad_argc",
+                "bad_argv",
+                "nonempty_environment",
+                "bad_descriptor_layout",
+                "bad_stdio",
+                "bad_control_socket",
+                "bad_cgroup_descriptor",
+                "cgroup_not_empty",
+                "protocol_input",
+                "peer_closed",
+                "resource_exhausted",
+                "clone3_unavailable",
+                "clone3_rejected",
+                "pidfd_unavailable",
+                "child_setup_failed",
+                "pidfd_signal_failed",
+                "cgroup_kill_failed",
+                "child_observation_failed",
+                "child_reap_failed",
+                "timeout",
+                "cleanup_incomplete",
+                "io_failure",
+                "internal"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Failure Reason"
+        },
+        "failure_stage": {
+          "anyOf": [
+            {
+              "enum": [
+                "startup",
+                "descriptor_validation",
+                "cgroup_validation",
+                "fixture_setup",
+                "clone3",
+                "child_ready",
+                "pidfd_signal",
+                "cgroup_kill",
+                "child_observation",
+                "child_reap",
+                "cleanup",
+                "protocol"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Failure Stage"
+        },
+        "frame_types": {
+          "items": {
+            "enum": [
+              "hello",
+              "child_ready",
+              "child_signaled",
+              "child_observed",
+              "final",
+              "error"
+            ],
+            "type": "string"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "title": "Frame Types",
+          "type": "array"
+        },
+        "launcher_exit_code": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Launcher Exit Code",
+          "type": "integer"
+        },
+        "launcher_pid": {
+          "maximum": 4194303,
+          "minimum": 1,
+          "title": "Launcher Pid",
+          "type": "integer"
+        },
+        "succeeded": {
+          "title": "Succeeded",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "succeeded",
+        "frame_types",
+        "launcher_exit_code",
+        "launcher_pid",
+        "child_pid",
+        "achieved_result_mask",
+        "elapsed_ns",
+        "failure_stage",
+        "failure_reason",
+        "failure_errno"
+      ],
+      "title": "NativeQualificationTranscriptProjection",
+      "type": "object"
+    },
+    "NativeQualificationUpstreamWorkflowRun": {
+      "additionalProperties": false,
+      "description": "Exact successful CI run whose commit the trusted controller qualifies.",
+      "properties": {
+        "conclusion": {
+          "const": "success",
+          "title": "Conclusion",
+          "type": "string"
+        },
+        "event": {
+          "const": "push",
+          "title": "Event",
+          "type": "string"
+        },
+        "head_branch": {
+          "const": "main",
+          "title": "Head Branch",
+          "type": "string"
+        },
+        "head_repository_full_name": {
+          "const": "synechism/bpe",
+          "title": "Head Repository Full Name",
+          "type": "string"
+        },
+        "head_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Head Sha",
+          "type": "string"
+        },
+        "run_attempt": {
+          "maximum": 1000,
+          "minimum": 1,
+          "title": "Run Attempt",
+          "type": "integer"
+        },
+        "run_id": {
+          "minimum": 1,
+          "title": "Run Id",
+          "type": "integer"
+        },
+        "workflow_id": {
+          "minimum": 1,
+          "title": "Workflow Id",
+          "type": "integer"
+        },
+        "workflow_name": {
+          "const": "CI",
+          "title": "Workflow Name",
+          "type": "string"
+        },
+        "workflow_path": {
+          "const": ".github/workflows/ci.yml",
+          "title": "Workflow Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workflow_name",
+        "workflow_id",
+        "workflow_path",
+        "run_id",
+        "run_attempt",
+        "event",
+        "head_branch",
+        "head_repository_full_name",
+        "head_sha",
+        "conclusion"
+      ],
+      "title": "NativeQualificationUpstreamWorkflowRun",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Unsigned, replayable evidence for the exact fixed native qualification cases.",
+  "properties": {
+    "artifact": {
+      "$ref": "#/$defs/NativeQualificationArtifact"
+    },
+    "authenticity": {
+      "const": "unsigned",
+      "title": "Authenticity",
+      "type": "string"
+    },
+    "authoritative": {
+      "const": false,
+      "title": "Authoritative",
+      "type": "boolean"
+    },
+    "candidate_bytes_accessed": {
+      "const": false,
+      "title": "Candidate Bytes Accessed",
+      "type": "boolean"
+    },
+    "case_set_id": {
+      "const": "bpe.linux-inert-launcher-native-case-set.v1",
+      "title": "Case Set Id",
+      "type": "string"
+    },
+    "case_set_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Case Set Sha256",
+      "type": "string"
+    },
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/NativeQualificationCase"
+      },
+      "maxItems": 5,
+      "minItems": 5,
+      "title": "Cases",
+      "type": "array"
+    },
+    "container": {
+      "$ref": "#/$defs/NativeQualificationContainer"
+    },
+    "context_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Context Sha256",
+      "type": "string"
+    },
+    "descendant_tree_cleanup_qualified": {
+      "const": false,
+      "title": "Descendant Tree Cleanup Qualified",
+      "type": "boolean"
+    },
+    "durable": {
+      "const": false,
+      "title": "Durable",
+      "type": "boolean"
+    },
+    "evaluation_job_bytes_accessed": {
+      "const": false,
+      "title": "Evaluation Job Bytes Accessed",
+      "type": "boolean"
+    },
+    "execution_authorized": {
+      "const": false,
+      "title": "Execution Authorized",
+      "type": "boolean"
+    },
+    "execution_scope": {
+      "const": "evaluator-only-native-qualification",
+      "title": "Execution Scope",
+      "type": "string"
+    },
+    "externally_anchored": {
+      "const": false,
+      "title": "Externally Anchored",
+      "type": "boolean"
+    },
+    "filesystem_isolation_qualified": {
+      "const": false,
+      "title": "Filesystem Isolation Qualified",
+      "type": "boolean"
+    },
+    "finalization": {
+      "$ref": "#/$defs/NativeQualificationFinalization"
+    },
+    "fixture_child_exec_performed": {
+      "const": false,
+      "title": "Fixture Child Exec Performed",
+      "type": "boolean"
+    },
+    "fixture_child_process_count": {
+      "const": 2,
+      "title": "Fixture Child Process Count",
+      "type": "integer"
+    },
+    "fixture_execution_started": {
+      "const": true,
+      "title": "Fixture Execution Started",
+      "type": "boolean"
+    },
+    "freshness_authenticated": {
+      "const": false,
+      "title": "Freshness Authenticated",
+      "type": "boolean"
+    },
+    "host": {
+      "$ref": "#/$defs/NativeQualificationHost"
+    },
+    "launcher_execution_started": {
+      "const": true,
+      "title": "Launcher Execution Started",
+      "type": "boolean"
+    },
+    "launcher_process_count": {
+      "const": 5,
+      "title": "Launcher Process Count",
+      "type": "integer"
+    },
+    "network_isolation_qualified": {
+      "const": false,
+      "title": "Network Isolation Qualified",
+      "type": "boolean"
+    },
+    "official_grading_qualified": {
+      "const": false,
+      "title": "Official Grading Qualified",
+      "type": "boolean"
+    },
+    "parser_contract_id": {
+      "const": "bpe.inert-native-transcript-parser.v1",
+      "title": "Parser Contract Id",
+      "type": "string"
+    },
+    "preflight_before_process_creation_verified": {
+      "const": true,
+      "title": "Preflight Before Process Creation Verified",
+      "type": "boolean"
+    },
+    "production_launch_admission_used": {
+      "const": false,
+      "title": "Production Launch Admission Used",
+      "type": "boolean"
+    },
+    "production_launch_attempts_consumed": {
+      "const": 0,
+      "title": "Production Launch Attempts Consumed",
+      "type": "integer"
+    },
+    "production_orchestration_qualified": {
+      "const": false,
+      "title": "Production Orchestration Qualified",
+      "type": "boolean"
+    },
+    "provenance_authenticated": {
+      "const": false,
+      "title": "Provenance Authenticated",
+      "type": "boolean"
+    },
+    "qualification_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Qualification Id",
+      "type": "string"
+    },
+    "qualification_nonce": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Qualification Nonce",
+      "type": "string"
+    },
+    "qualification_nonce_method": {
+      "const": "secrets-token-bytes-256-bit-v1",
+      "title": "Qualification Nonce Method",
+      "type": "string"
+    },
+    "qualification_nonce_purpose": {
+      "const": "run-correlation-only",
+      "title": "Qualification Nonce Purpose",
+      "type": "string"
+    },
+    "resource_pressure_qualified": {
+      "const": false,
+      "title": "Resource Pressure Qualified",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "bpe.linux-inert-launcher-native-qualification-report.v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "signed_deadlines_qualified": {
+      "const": false,
+      "title": "Signed Deadlines Qualified",
+      "type": "boolean"
+    },
+    "signed_output_limits_qualified": {
+      "const": false,
+      "title": "Signed Output Limits Qualified",
+      "type": "boolean"
+    },
+    "sigstore_attested": {
+      "const": false,
+      "title": "Sigstore Attested",
+      "type": "boolean"
+    },
+    "source_run": {
+      "$ref": "#/$defs/NativeQualificationSourceRun"
+    },
+    "status": {
+      "const": "native_probe_passed_unsigned",
+      "title": "Status",
+      "type": "string"
+    },
+    "worm_archived": {
+      "const": false,
+      "title": "Worm Archived",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "status",
+    "qualification_id",
+    "qualification_nonce",
+    "qualification_nonce_method",
+    "qualification_nonce_purpose",
+    "parser_contract_id",
+    "case_set_id",
+    "case_set_sha256",
+    "context_sha256",
+    "source_run",
+    "host",
+    "container",
+    "artifact",
+    "cases",
+    "finalization",
+    "preflight_before_process_creation_verified",
+    "launcher_execution_started",
+    "fixture_execution_started",
+    "launcher_process_count",
+    "fixture_child_process_count",
+    "execution_scope",
+    "production_launch_admission_used",
+    "production_launch_attempts_consumed",
+    "authenticity",
+    "durable",
+    "sigstore_attested",
+    "worm_archived",
+    "provenance_authenticated",
+    "externally_anchored",
+    "freshness_authenticated",
+    "authoritative",
+    "execution_authorized",
+    "fixture_child_exec_performed",
+    "candidate_bytes_accessed",
+    "evaluation_job_bytes_accessed",
+    "resource_pressure_qualified",
+    "descendant_tree_cleanup_qualified",
+    "filesystem_isolation_qualified",
+    "network_isolation_qualified",
+    "signed_deadlines_qualified",
+    "signed_output_limits_qualified",
+    "production_orchestration_qualified",
+    "official_grading_qualified"
+  ],
+  "title": "LinuxInertLauncherNativeQualificationReport",
+  "type": "object"
+}

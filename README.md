@@ -4,9 +4,10 @@ BPE is the grading and execution foundation for training small language models t
 and generate eBPF programs that the Linux kernel can prove safe.
 
 The public repository is a reviewed source projection. It intentionally omits active
-evaluator-private grader artifacts and the internal test/CI projection; the evaluator's
-Git history is never publication-safe merely because its current worktree is filtered. See
-[the publication boundary](docs/publication.md).
+evaluator-private grader artifacts and the internal test suite. A narrow operational overlay
+retains only the ordinary CI workflow, the trusted native-qualification workflow, and their
+two fixed native probes. The evaluator's Git history is never publication-safe merely because
+its current worktree is filtered. See [the publication boundary](docs/publication.md).
 
 The project's primary claim is deliberately strict: a task is solved only when the
 candidate compiles with the fixed toolchain, passes object-policy checks, loads through
@@ -59,7 +60,8 @@ qualification gate**:
   built-in no-exec child, exact `clone3`/pidfd/cgroup state machine, and cross-language
   bounded result parser; Python can authenticate and seal its exact bytes into a retained
   read-only executable fd without launching it, and a blocking privileged native x86-64
-  Linux CI gate is configured to exercise its fixed live-kernel lifecycle;
+  Linux CI gate is configured to exercise its fixed live-kernel lifecycle and emit an
+  unsigned, replay-validated report only after complete cleanup;
 - a typed, deterministic XDP differential oracle for return values, packet/context bytes,
   maps, ordered events, counters, and first-divergence evidence;
 - a cross-platform worker capability probe that refuses to claim verifier support on macOS;
@@ -74,8 +76,11 @@ preflight and the blocking privileged native x86-64 qualification gate for the f
 presence is not qualification evidence: the lifecycle is qualified only by a successful
 privileged run on a native x86-64 CI host. That configured run includes an evaluator-only
 inherited seccomp case whose successful canonical `EPERM`/mask-`0x1c3` failure and external
-reap/empty/removal checks qualify emergency cleanup through `cgroup.kill` when both pidfd
-signal attempts are denied. The remaining
+reap/empty/removal checks evidence the emergency cleanup outcome under the fixed-child,
+trusted-kernel, single-writer assumptions when both pidfd signal attempts are denied. The
+transcript does not independently prove the return from the emergency `cgroup.kill` write.
+The resulting report remains unsigned, freshness-unauthenticated, non-durable, and
+nonauthoritative. The remaining
 Phase 1B.2b-1 work is atomic Python launch orchestration that preserves preflight-before-
 consumption ordering and terminal post-consumption failure semantics. That is followed by a
 pinned Linux XDP compiler and disposable microVM worker. See [the
@@ -88,7 +93,8 @@ protocol](docs/worker-protocol.md), [signed dispatch admission](docs/dispatch-ad
 taxonomy](docs/root-cause-taxonomy.md), [cgroup-v2 empty-leaf
 qualification](docs/cgroup-qualification.md), [inert-fixture intent
 admission](docs/inert-fixture-admission.md), [immutable launcher artifact
-preflight](docs/launcher-artifact-preflight.md), and [roadmap](docs/roadmap.md).
+preflight](docs/launcher-artifact-preflight.md), [native launcher qualification
+evidence](docs/native-launcher-qualification.md), and [roadmap](docs/roadmap.md).
 
 ## Quick start
 

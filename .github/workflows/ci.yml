@@ -1,0 +1,291 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Python 3.11 / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.9.22"
+          enable-cache: true
+
+      - name: Install Python and dependencies
+        run: |
+          uv python install 3.11
+          uv sync --frozen --extra dev --python 3.11
+
+      - name: Build and audit the fixed native inert-fixture launcher
+        if: runner.os == 'Linux'
+        run: make -C worker/linux/inert_fixture_launcher check
+
+      - name: Lint
+        run: uv run --frozen ruff check .
+
+      - name: Type-check
+        run: uv run --frozen mypy src
+
+      - name: Validate the closed evaluator or public projection
+        run: uv run --frozen python scripts/validate_repository_projection.py
+
+      - name: Test the available evaluator projection
+        run: |
+          if test -d tasks/smoke/missing-null/grader; then
+            uv run --frozen pytest
+          else
+            uv run --frozen python -m py_compile \
+              tests/integration/cgroup_v2_native_probe.py \
+              tests/integration/inert_fixture_launcher_native_probe.py
+          fi
+
+      - name: Verify generated schemas
+        run: |
+          uv run --frozen python scripts/export_schemas.py
+          git diff --exit-code -- schemas
+
+      - name: Validate available task projection and platform probe
+        run: |
+          if test -d tasks/smoke/missing-null/grader; then
+            uv run --frozen bpe task validate tasks/smoke/missing-null
+            uv run --frozen bpe task lint tasks/smoke/missing-null
+          else
+            test -d tasks/smoke/missing-null/public
+            test ! -e tasks/smoke/missing-null/grader
+          fi
+          uv run --frozen bpe capabilities
+
+      - name: Build wheel and source distribution
+        run: uv build
+
+      - name: Assert release archives exclude evaluator-private assets
+        run: |
+          uv run --frozen python - <<'PY'
+          import re
+          import stat
+          import subprocess
+          import tarfile
+          import zipfile
+          from collections import Counter
+          from pathlib import Path, PurePosixPath
+
+          sdists = list(Path("dist").glob("*.tar.gz"))
+          wheels = list(Path("dist").glob("*.whl"))
+          if len(sdists) != 1:
+              raise RuntimeError(f"expected one sdist, found: {sdists}")
+          if len(wheels) != 1:
+              raise RuntimeError(f"expected one wheel, found: {wheels}")
+
+          def parse_archive_path(raw_name: str, *, directory: bool) -> PurePosixPath:
+              name = raw_name[:-1] if directory and raw_name.endswith("/") else raw_name
+              if not name or "\\" in name or "\x00" in name:
+                  raise RuntimeError(f"unsafe archive path: {raw_name!r}")
+              path = PurePosixPath(name)
+              if (
+                  path.is_absolute()
+                  or path.as_posix() != name
+                  or any(part in {"", ".", ".."} or ":" in part for part in path.parts)
+                  or re.match(r"^[A-Za-z]:", name)
+              ):
+                  raise RuntimeError(f"unsafe archive path: {raw_name!r}")
+              return path
+
+          def reject_duplicates(kind: str, paths: list[PurePosixPath]) -> None:
+              duplicates = sorted(str(path) for path, count in Counter(paths).items() if count > 1)
+              if duplicates:
+                  raise RuntimeError(f"duplicate {kind} archive paths: {duplicates}")
+
+          def is_public_source(path: PurePosixPath) -> bool:
+              root_files = {
+                  ".gitignore",
+                  "CONTRIBUTING.md",
+                  "LICENSE",
+                  "Makefile",
+                  "README.md",
+                  "SECURITY.md",
+                  "pyproject.toml",
+                  "uv.lock",
+              }
+              public_trees = {"docs", "policies", "schemas", "scripts", "src", "suites", "worker"}
+              if len(path.parts) == 1:
+                  return path.name in root_files
+              if path.parts[0] in public_trees:
+                  return True
+              return (
+                  path.parts[0] == "tasks"
+                  and "public" in path.parts[1:-1]
+                  and "grader" not in path.parts[1:]
+              )
+
+          with tarfile.open(sdists[0], "r:gz") as archive:
+              members = archive.getmembers()
+              invalid_types = [
+                  member.name for member in members if not (member.isfile() or member.isdir())
+              ]
+              if invalid_types:
+                  raise RuntimeError(f"sdist contains non-file members: {invalid_types}")
+              sdist_names = [
+                  parse_archive_path(member.name, directory=member.isdir()) for member in members
+              ]
+              reject_duplicates("sdist", sdist_names)
+
+              expected_root = sdists[0].name.removesuffix(".tar.gz")
+              roots = {path.parts[0] for path in sdist_names}
+              if roots != {expected_root}:
+                  raise RuntimeError(
+                      f"sdist must have the exact common root {expected_root!r}, found {roots}"
+                  )
+
+              actual_files = {
+                  PurePosixPath(*path.parts[1:])
+                  for path, member in zip(sdist_names, members, strict=True)
+                  if member.isfile()
+              }
+
+              tracked = subprocess.run(
+                  ["git", "ls-files", "-z"],
+                  check=True,
+                  capture_output=True,
+              ).stdout.split(b"\x00")
+              expected_files = {
+                  PurePosixPath(raw.decode("utf-8"))
+                  for raw in tracked
+                  if raw and is_public_source(PurePosixPath(raw.decode("utf-8")))
+              }
+              expected_files.add(PurePosixPath("PKG-INFO"))
+              if actual_files != expected_files:
+                  missing = sorted(str(path) for path in expected_files - actual_files)
+                  unexpected = sorted(str(path) for path in actual_files - expected_files)
+                  raise RuntimeError(
+                      f"sdist public manifest mismatch: missing={missing}, unexpected={unexpected}"
+                  )
+
+          with zipfile.ZipFile(wheels[0]) as archive:
+              infos = archive.infolist()
+              wheel_names = [
+                  parse_archive_path(info.filename, directory=info.is_dir()) for info in infos
+              ]
+              reject_duplicates("wheel", wheel_names)
+              symlinks = [
+                  info.filename
+                  for info in infos
+                  if stat.S_ISLNK((info.external_attr >> 16) & 0xFFFF)
+              ]
+              if symlinks:
+                  raise RuntimeError(f"wheel contains symlinks: {symlinks}")
+
+          forbidden_wheel_paths = [
+              str(path)
+              for path in wheel_names
+              if {"tasks", "tests", "grader"} & set(path.parts)
+          ]
+          if forbidden_wheel_paths:
+              raise RuntimeError(
+                  f"wheel contains evaluator-private paths: {forbidden_wheel_paths}"
+              )
+          PY
+
+      - name: Smoke-test the installed wheel outside the checkout
+        run: |
+          uv venv .wheel-venv --python 3.11
+          uv pip install --python .wheel-venv/bin/python dist/*.whl
+          cd /tmp
+          "$GITHUB_WORKSPACE/.wheel-venv/bin/bpe" capabilities > /dev/null
+          "$GITHUB_WORKSPACE/.wheel-venv/bin/bpe" task admission --help > /dev/null
+          "$GITHUB_WORKSPACE/.wheel-venv/bin/bpe" corpus --help > /dev/null
+          "$GITHUB_WORKSPACE/.wheel-venv/bin/bpe" job --help > /dev/null
+          "$GITHUB_WORKSPACE/.wheel-venv/bin/bpe" schema show worker-response-v1.json > /dev/null
+          "$GITHUB_WORKSPACE/.wheel-venv/bin/bpe" schema show inert-fixture-intent-claim-receipt-v1.json > /dev/null
+          "$GITHUB_WORKSPACE/.wheel-venv/bin/bpe" schema show inert-fixture-launch-attempt-receipt-v1.json > /dev/null
+          "$GITHUB_WORKSPACE/.wheel-venv/bin/bpe" schema show linux-inert-launcher-native-qualification-report-v1.json > /dev/null
+          "$GITHUB_WORKSPACE/.wheel-venv/bin/python" - "$GITHUB_WORKSPACE/.wheel-venv/bin/bpe" <<'PY'
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          import bpe.admission
+          import bpe.corpus
+          import bpe.cgroup
+          import bpe.dispatch
+          import bpe.ingress
+          import bpe.inert_fixture
+          import bpe.inert_launch
+          import bpe.inert_native_protocol
+          import bpe.inert_native_qualification
+          import bpe.job
+          import bpe.oracle
+          import bpe.qualification
+          import bpe.replay
+          import bpe.task
+          import bpe.worker_cli
+          import bpe.worker_protocol
+          from bpe.schemas import JSON_SCHEMAS
+
+          schema_directory = Path(sys.argv[1]).parents[2] / "schemas"
+          committed = {
+              path.name: path.read_bytes() for path in sorted(schema_directory.glob("*.json"))
+          }
+          if set(JSON_SCHEMAS) != set(committed):
+              missing = sorted(set(committed) - set(JSON_SCHEMAS))
+              unexpected = sorted(set(JSON_SCHEMAS) - set(committed))
+              raise RuntimeError(
+                  f"installed schema registry mismatch: missing={missing}, unexpected={unexpected}"
+              )
+
+          cli = sys.argv[1]
+          for name, expected in committed.items():
+              rendered = subprocess.run(
+                  [cli, "schema", "show", name],
+                  check=True,
+                  capture_output=True,
+              ).stdout
+              if rendered != expected:
+                  raise RuntimeError(f"installed schema bytes differ for {name}")
+          PY
+          "$GITHUB_WORKSPACE/.wheel-venv/bin/python" -c "from importlib import resources; from bpe.models import RewardPolicy; RewardPolicy.model_validate_json(resources.files('bpe').joinpath('data/reward-v1.json').read_text())"
+          "$GITHUB_WORKSPACE/.wheel-venv/bin/python" -c "from importlib import resources; from bpe.corpus import CorpusAuditPolicy; CorpusAuditPolicy.model_validate_json(resources.files('bpe').joinpath('data/corpus-audit-v1.json').read_text())"
+          "$GITHUB_WORKSPACE/.wheel-venv/bin/python" - "$GITHUB_WORKSPACE/.wheel-venv/bin/bpe-worker" <<'PY'
+          import subprocess
+          import sys
+
+          from bpe.canonical import canonical_json_bytes
+          from bpe.worker_protocol import (
+              CapabilitiesRequest,
+              validate_worker_subprocess_result,
+          )
+
+          request = CapabilitiesRequest(
+              schema_version="bpe.worker-request.v1",
+              request_id="ci-probe",
+              method="capabilities",
+          )
+          result = subprocess.run(
+              [sys.argv[1]],
+              input=canonical_json_bytes(request),
+              capture_output=True,
+              check=False,
+              timeout=5,
+          )
+          response = validate_worker_subprocess_result(request, result)
+          assert response.capabilities.official_benchmark_eligible is False
+          PY

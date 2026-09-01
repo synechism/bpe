@@ -137,9 +137,12 @@ fd, and a privileged disposable Linux probe is designed to exercise atomic
 `clone3(CLONE_INTO_CGROUP | CLONE_PIDFD)` creation, pidfd lifecycle handling, a live
 `cgroup.kill`, reaping, and empty cleanup. It also configures an evaluator-only inherited
 seccomp adversary that forces both pidfd signal attempts to fail with `EPERM`, making exact
-reap and empty/removable cleanup depend on emergency `cgroup.kill`. Only a successful
-privileged run with the canonical failure transcript on native x86-64 qualifies that
-fallback or the broader lifecycle; probe and workflow presence do not. The atomic Python
+reap and empty/removable cleanup depend, under the fixed-child, trusted-kernel,
+single-writer assumptions, on emergency `cgroup.kill`. The transcript does not independently
+prove the write's return. Only a successful privileged run with the canonical failure
+transcript on native x86-64 supplies that narrow lifecycle evidence; probe and workflow
+presence do not. Its replayable report remains wholly fabricable by an untrusted producer
+until an external attestation authenticates and durably anchors it. The atomic Python
 orchestrator that joins those
 boundaries to the consumed launch attempt is still pending. Bounded signed output/deadlines,
 real resource pressure, and race-safe forking-descendant cleanup require later fixed fixtures. A later

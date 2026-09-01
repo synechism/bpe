@@ -1,0 +1,512 @@
+name: Native qualification
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-qualification-${{ github.event.workflow_run.head_sha }}-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+
+jobs:
+  native-qualification:
+    name: Trusted native launcher qualification
+    runs-on: ubuntu-latest
+    if: >-
+      ${{
+        github.event_name == 'workflow_run' &&
+        github.repository == 'synechism/bpe' &&
+        github.ref == 'refs/heads/main' &&
+        github.event.workflow_run.name == 'CI' &&
+        github.event.workflow_run.path == '.github/workflows/ci.yml' &&
+        github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.head_branch == 'main' &&
+        github.event.workflow_run.head_repository.full_name == 'synechism/bpe' &&
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.head_sha != '' &&
+        github.sha == github.event.workflow_run.head_sha
+      }}
+    env:
+      NATIVE_QUALIFICATION_IMAGE: python:3.11-slim-bookworm@sha256:0bee7276f83efd4a1ee05bbbf4281d95ed28e079220a9457f25a93e3f1e3c31b
+      NATIVE_QUALIFICATION_WHEEL_FILENAME: bpe-0.1.0-py3-none-any.whl
+      UPSTREAM_WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+      UPSTREAM_WORKFLOW_ID: ${{ github.event.workflow_run.workflow_id }}
+      UPSTREAM_WORKFLOW_PATH: ${{ github.event.workflow_run.path }}
+      UPSTREAM_RUN_ID: ${{ github.event.workflow_run.id }}
+      UPSTREAM_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+      UPSTREAM_EVENT: ${{ github.event.workflow_run.event }}
+      UPSTREAM_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+      UPSTREAM_HEAD_REPOSITORY: ${{ github.event.workflow_run.head_repository.full_name }}
+      UPSTREAM_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+      UPSTREAM_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+
+    steps:
+      - name: Check out the exact qualified commit without credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Assert trusted controller and qualified commit
+        run: |
+          test "$GITHUB_EVENT_NAME" = workflow_run
+          test "$GITHUB_REPOSITORY" = synechism/bpe
+          test "$GITHUB_REF" = refs/heads/main
+          test "$GITHUB_JOB" = native-qualification
+          test "$GITHUB_SHA" = "$UPSTREAM_HEAD_SHA"
+          test "$UPSTREAM_WORKFLOW_NAME" = CI
+          test "$UPSTREAM_WORKFLOW_PATH" = .github/workflows/ci.yml
+          test "$UPSTREAM_EVENT" = push
+          test "$UPSTREAM_HEAD_BRANCH" = main
+          test "$UPSTREAM_HEAD_REPOSITORY" = synechism/bpe
+          test "$UPSTREAM_CONCLUSION" = success
+          printf '%s\n' "$UPSTREAM_HEAD_SHA" | grep -Eq '^[0-9a-f]{40}$'
+          printf '%s\n' "$UPSTREAM_WORKFLOW_ID" | grep -Eq '^[1-9][0-9]*$'
+          printf '%s\n' "$UPSTREAM_RUN_ID" | grep -Eq '^[1-9][0-9]*$'
+          printf '%s\n' "$UPSTREAM_RUN_ATTEMPT" | grep -Eq '^[1-9][0-9]{0,2}$'
+          test "$(GIT_NO_REPLACE_OBJECTS=1 git rev-parse --verify 'HEAD^{commit}')" = "$GITHUB_SHA"
+          test "$(GIT_NO_REPLACE_OBJECTS=1 git rev-parse --verify 'HEAD^{commit}')" = "$UPSTREAM_HEAD_SHA"
+
+      - name: Install uv without a shared cache
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.9.22"
+          enable-cache: false
+
+      - name: Configure a fresh uv cache
+        run: |
+          uv_cache_dir=$(mktemp -d "$RUNNER_TEMP/bpe-native-qualification-uv.XXXXXX")
+          printf 'UV_CACHE_DIR=%s\n' "$uv_cache_dir" >> "$GITHUB_ENV"
+
+      - name: Rebuild trusted native inputs
+        run: |
+          test -d "$UV_CACHE_DIR"
+          uv python install 3.11
+          uv sync --frozen --extra dev --python 3.11
+          make -C worker/linux/inert_fixture_launcher check
+          uv build
+
+      - name: Prepare fixed native qualification inputs from commit blobs
+        run: |
+          native_root=$(mktemp -d "$RUNNER_TEMP/bpe-native-qualification.XXXXXX")
+          echo "NATIVE_QUALIFICATION_ROOT=$native_root" >> "$GITHUB_ENV"
+          mkdir -p "$native_root/dependencies" "$native_root/provenance"
+          uv export --frozen --no-dev --no-emit-project --format requirements.txt \
+            --output-file "$native_root/requirements.txt"
+          uv pip install --python 3.11 --target "$native_root/dependencies" \
+            --link-mode copy --require-hashes -r "$native_root/requirements.txt"
+          docker pull --platform linux/amd64 "$NATIVE_QUALIFICATION_IMAGE"
+          NATIVE_QUALIFICATION_ROOT="$native_root" uv run --frozen python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import platform
+          import re
+          import shutil
+          import stat
+          import subprocess
+          import zipfile
+          from pathlib import Path, PurePosixPath
+
+          from bpe.inert_native_qualification import (
+              MAX_NATIVE_QUALIFICATION_BUILT_WHEEL_BYTES,
+              MAX_NATIVE_QUALIFICATION_RUNTIME_TOTAL_BYTES,
+              NATIVE_QUALIFICATION_BPE_SOURCE_PATHS,
+              NATIVE_QUALIFICATION_BUILT_WHEEL_FILENAME,
+              NATIVE_QUALIFICATION_SOURCE_PATHS,
+              NATIVE_QUALIFICATION_WHEEL_DIST_INFO_PATHS,
+          )
+
+          workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve(strict=True)
+          native_root = Path(os.environ["NATIVE_QUALIFICATION_ROOT"]).resolve(strict=True)
+          image_reference = os.environ["NATIVE_QUALIFICATION_IMAGE"]
+          git_environment = os.environ.copy()
+          git_environment["GIT_NO_REPLACE_OBJECTS"] = "1"
+
+          def run(*arguments: str) -> str:
+              return subprocess.run(
+                  arguments,
+                  cwd=workspace,
+                  check=True,
+                  capture_output=True,
+                  text=True,
+              ).stdout.strip()
+
+          def git_bytes(*arguments: str) -> bytes:
+              return subprocess.run(
+                  ("git", *arguments),
+                  cwd=workspace,
+                  env=git_environment,
+                  check=True,
+                  capture_output=True,
+              ).stdout
+
+          def git_text(*arguments: str) -> str:
+              return git_bytes(*arguments).decode("ascii").strip()
+
+          def canonical_bytes(value: object) -> bytes:
+              return (
+                  json.dumps(
+                      value,
+                      ensure_ascii=False,
+                      allow_nan=False,
+                      separators=(",", ":"),
+                      sort_keys=True,
+                  ).encode("utf-8")
+                  + b"\n"
+              )
+
+          def sha256(content: bytes) -> str:
+              return hashlib.sha256(content).hexdigest()
+
+          def require_safe_path(raw: bytes) -> str:
+              relative = raw.decode("utf-8", errors="strict")
+              path = PurePosixPath(relative)
+              if (
+                  not relative
+                  or len(relative.encode("utf-8")) > 4096
+                  or path.is_absolute()
+                  or path.as_posix() != relative
+                  or "\\" in relative
+                  or any(part in {"", ".", ".."} for part in path.parts)
+                  or any(ord(character) < 32 or ord(character) == 127 for character in relative)
+              ):
+                  raise RuntimeError(f"Git tree contains an unsafe path: {relative!r}")
+              return relative
+
+          head = git_text("rev-parse", "--verify", "HEAD^{commit}")
+          if not re.fullmatch(r"[0-9a-f]{40}", head):
+              raise RuntimeError("checked-out HEAD is not an exact lowercase commit identity")
+          if head != os.environ["GITHUB_SHA"] or head != os.environ["UPSTREAM_HEAD_SHA"]:
+              raise RuntimeError("checked-out HEAD differs from the trusted controller binding")
+
+          diff = subprocess.run(
+              ("git", "diff", "--no-ext-diff", "--quiet", head, "--"),
+              cwd=workspace,
+              env=git_environment,
+              check=False,
+          )
+          if diff.returncode != 0:
+              raise RuntimeError("tracked source tree differs from the qualified commit")
+          if git_bytes("status", "--porcelain=v1", "--untracked-files=no"):
+              raise RuntimeError("tracked source tree is dirty")
+
+          tree_listing = git_bytes("ls-tree", "-r", "-z", "--full-tree", head)
+          tracked_records: list[tuple[str, str, str, bytes]] = []
+          for raw_record in tree_listing.split(b"\0"):
+              if not raw_record:
+                  continue
+              raw_metadata, separator, raw_path = raw_record.partition(b"\t")
+              if separator != b"\t":
+                  raise RuntimeError("Git tree contains a malformed record")
+              try:
+                  mode, object_type, object_id = raw_metadata.decode("ascii").split(" ")
+              except (UnicodeDecodeError, ValueError) as exc:
+                  raise RuntimeError("Git tree contains malformed object metadata") from exc
+              if mode not in {"100644", "100755"} or object_type != "blob":
+                  raise RuntimeError("Git tree contains a non-regular blob")
+              if not re.fullmatch(r"[0-9a-f]{40}", object_id):
+                  raise RuntimeError("Git tree contains an invalid blob identity")
+              tracked_records.append(
+                  (require_safe_path(raw_path), mode, object_id, raw_path)
+              )
+
+          tracked_records.sort(key=lambda item: item[0])
+          tracked_paths = tuple(item[0] for item in tracked_records)
+          if len(set(tracked_paths)) != len(tracked_paths):
+              raise RuntimeError("Git tree paths are not unique")
+
+          tracked_entries: list[dict[str, object]] = []
+          tracked_content: dict[str, bytes] = {}
+          for relative, mode, object_id, _raw_path in tracked_records:
+              content = git_bytes("cat-file", "blob", object_id)
+              object_header = f"blob {len(content)}\0".encode("ascii")
+              recomputed = hashlib.sha1(
+                  object_header + content,
+                  usedforsecurity=False,
+              ).hexdigest()
+              if recomputed != object_id:
+                  raise RuntimeError(f"Git blob identity mismatch: {relative}")
+              tracked_content[relative] = content
+              tracked_entries.append(
+                  {
+                      "path": relative,
+                      "mode": mode,
+                      "git_blob_sha1": object_id,
+                      "sha256": sha256(content),
+                      "size_bytes": len(content),
+                  }
+              )
+
+          if git_bytes("ls-tree", "-r", "-z", "--full-tree", head) != tree_listing:
+              raise RuntimeError("qualified Git tree changed during object extraction")
+
+          source_root = native_root / "source"
+          source_root.mkdir(mode=0o755)
+          for relative in NATIVE_QUALIFICATION_SOURCE_PATHS:
+              if relative not in tracked_content:
+                  raise RuntimeError(f"critical source is absent from the commit: {relative}")
+              destination = source_root / relative
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              destination.write_bytes(tracked_content[relative])
+
+          tracked_manifest = canonical_bytes(
+              {
+                  "schema_version": "bpe.git-commit-blob-content-manifest.v1",
+                  "files": tracked_entries,
+              }
+          )
+          (native_root / "provenance" / "tracked-tree-content-manifest.json").write_bytes(
+              tracked_manifest
+          )
+
+          wheels = tuple(sorted((workspace / "dist").glob("*.whl")))
+          if len(wheels) != 1:
+              raise RuntimeError(f"expected exactly one built wheel, found {wheels}")
+          wheel_input = wheels[0]
+          if (
+              os.environ["NATIVE_QUALIFICATION_WHEEL_FILENAME"]
+              != NATIVE_QUALIFICATION_BUILT_WHEEL_FILENAME
+              or wheel_input.name != NATIVE_QUALIFICATION_BUILT_WHEEL_FILENAME
+          ):
+              raise RuntimeError("built wheel has the wrong canonical filename")
+          if not 1 <= wheel_input.stat().st_size <= MAX_NATIVE_QUALIFICATION_BUILT_WHEEL_BYTES:
+              raise RuntimeError("built wheel archive exceeds its byte bound")
+          expected_bpe = {
+              relative.removeprefix("src/"): tracked_content[relative]
+              for relative in NATIVE_QUALIFICATION_BPE_SOURCE_PATHS
+          }
+          expected_wheel_paths = set(expected_bpe) | set(
+              NATIVE_QUALIFICATION_WHEEL_DIST_INFO_PATHS
+          )
+          seen_wheel_paths: set[str] = set()
+          wheel_content_bytes = 0
+          with zipfile.ZipFile(wheel_input) as archive:
+              for info in archive.infolist():
+                  relative = require_safe_path(info.filename.encode("utf-8"))
+                  if relative in seen_wheel_paths:
+                      raise RuntimeError("built wheel contains a duplicate member")
+                  seen_wheel_paths.add(relative)
+                  mode = (info.external_attr >> 16) & 0xFFFF
+                  if (
+                      info.is_dir()
+                      or relative not in expected_wheel_paths
+                      or stat.S_ISLNK(mode)
+                      or stat.S_IFMT(mode) not in {0, stat.S_IFREG}
+                      or info.flag_bits & 0x1
+                  ):
+                      raise RuntimeError("built wheel layout is not exactly closed")
+                  if info.file_size > (
+                      MAX_NATIVE_QUALIFICATION_RUNTIME_TOTAL_BYTES - wheel_content_bytes
+                  ):
+                      raise RuntimeError("built wheel content exceeds its byte bound")
+                  content = archive.read(info)
+                  if len(content) != info.file_size:
+                      raise RuntimeError("built wheel member changed during read")
+                  wheel_content_bytes += len(content)
+                  if relative in expected_bpe and content != expected_bpe[relative]:
+                      raise RuntimeError(
+                          f"built wheel BPE member differs from commit: {relative}"
+                      )
+          if seen_wheel_paths != expected_wheel_paths:
+              raise RuntimeError("built wheel layout is not exactly closed")
+          distribution_root = native_root / "dist"
+          distribution_root.mkdir(mode=0o755)
+          wheel = distribution_root / NATIVE_QUALIFICATION_BUILT_WHEEL_FILENAME
+          shutil.copyfile(wheel_input, wheel)
+
+          launcher_source = (
+              workspace
+              / "build/native/inert_fixture_launcher/bpe-inert-fixture-launcher"
+          )
+          launcher = native_root / "launcher"
+          shutil.copyfile(launcher_source, launcher)
+          launcher_notes = run("readelf", "-n", str(launcher_source))
+          build_ids = re.findall(r"Build ID:\s*([0-9a-f]{40})", launcher_notes)
+          if len(build_ids) != 1:
+              raise RuntimeError("launcher lacks one exact SHA-1 GNU build ID")
+
+          inspected = json.loads(run("docker", "image", "inspect", image_reference))
+          if not isinstance(inspected, list) or len(inspected) != 1:
+              raise RuntimeError("container image inspection was not singular")
+          image = inspected[0]
+          image_manifest_sha256 = image_reference.rsplit("@sha256:", 1)[1]
+          image_config_sha256 = image["Id"].removeprefix("sha256:")
+          image_index = json.loads(
+              run("docker", "buildx", "imagetools", "inspect", "--raw", image_reference)
+          )
+          if "manifests" in image_index:
+              platform_descriptors = [
+                  item
+                  for item in image_index["manifests"]
+                  if item.get("platform", {}).get("os") == "linux"
+                  and item.get("platform", {}).get("architecture") == "amd64"
+                  and item.get("platform", {}).get("variant") in {None, ""}
+              ]
+              if len(platform_descriptors) != 1:
+                  raise RuntimeError("image index lacks one exact linux/amd64 descriptor")
+              image_platform_sha256 = platform_descriptors[0]["digest"].removeprefix(
+                  "sha256:"
+              )
+          elif image.get("Os") == "linux" and image.get("Architecture") == "amd64":
+              image_platform_sha256 = image_manifest_sha256
+          else:
+              raise RuntimeError("pinned image is not an exact linux/amd64 manifest")
+          if not re.fullmatch(r"[0-9a-f]{64}", image_platform_sha256):
+              raise RuntimeError("image platform descriptor digest is invalid")
+          platform_reference = (
+              f"{image_reference.split('@', 1)[0]}@sha256:{image_platform_sha256}"
+          )
+          platform_manifest = json.loads(
+              run("docker", "buildx", "imagetools", "inspect", "--raw", platform_reference)
+          )
+          if platform_manifest.get("config", {}).get("digest") != image["Id"]:
+              raise RuntimeError("pulled image config differs from its platform manifest")
+          docker_server_version = run("docker", "version", "--format", "{{.Server.Version}}")
+          docker_server_architecture = run("docker", "info", "--format", "{{.Architecture}}")
+          runtime_name = run("docker", "info", "--format", "{{.DefaultRuntime}}")
+          runtime_config = run("docker", "info", "--format", "{{json .Runtimes}}")
+          runtime_id = run("docker", "info", "--format", "{{.ID}}")
+
+          def first_line(*arguments: str) -> str:
+              result = subprocess.run(
+                  arguments,
+                  cwd=workspace,
+                  check=True,
+                  capture_output=True,
+                  text=True,
+              )
+              lines = (result.stdout + result.stderr).splitlines()
+              if not lines:
+                  raise RuntimeError(f"identity command produced no output: {arguments}")
+              return lines[0][:512]
+
+          provenance = {
+              "git_commit": head,
+              "github_sha": os.environ["GITHUB_SHA"],
+              "github_run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "github_run_attempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
+              "github_repository": os.environ["GITHUB_REPOSITORY"],
+              "github_job": os.environ["GITHUB_JOB"],
+              "github_event": os.environ["GITHUB_EVENT_NAME"],
+              "github_ref": os.environ["GITHUB_REF"],
+              "github_actor_category": "unverified",
+              "upstream_workflow_name": os.environ["UPSTREAM_WORKFLOW_NAME"],
+              "upstream_workflow_id": int(os.environ["UPSTREAM_WORKFLOW_ID"]),
+              "upstream_workflow_path": os.environ["UPSTREAM_WORKFLOW_PATH"],
+              "upstream_run_id": int(os.environ["UPSTREAM_RUN_ID"]),
+              "upstream_run_attempt": int(os.environ["UPSTREAM_RUN_ATTEMPT"]),
+              "upstream_event": os.environ["UPSTREAM_EVENT"],
+              "upstream_head_branch": os.environ["UPSTREAM_HEAD_BRANCH"],
+              "upstream_head_repository_full_name": os.environ[
+                  "UPSTREAM_HEAD_REPOSITORY"
+              ],
+              "upstream_head_sha": os.environ["UPSTREAM_HEAD_SHA"],
+              "upstream_conclusion": os.environ["UPSTREAM_CONCLUSION"],
+              "built_wheel_sha256": sha256(wheel.read_bytes()),
+              "runner_architecture": platform.machine(),
+              "docker_server_architecture": docker_server_architecture,
+              "docker_server_version": docker_server_version,
+              "image_reference": image_reference,
+              "image_manifest_sha256": image_manifest_sha256,
+              "image_platform_sha256": image_platform_sha256,
+              "image_config_sha256": image_config_sha256,
+              "runtime_name": runtime_name,
+              "runtime_version": f"not-separately-reported;docker-server={docker_server_version}",
+              "runtime_id": f"{runtime_id}:{sha256(runtime_config.encode('utf-8'))}",
+              "compiler_identity": first_line("cc", "--version"),
+              "linker_identity": first_line("ld", "--version"),
+              "libc_identity": first_line("ldd", "--version"),
+              "binutils_identity": first_line("readelf", "--version"),
+              "launcher_build_id_sha1": build_ids[0],
+          }
+          (native_root / "provenance" / "context.json").write_bytes(
+              canonical_bytes(provenance)
+          )
+
+          output = native_root / "output"
+          output.mkdir(mode=0o700)
+          os.chmod(launcher, 0o555)
+          os.chmod(wheel, 0o444)
+          for tree in (native_root / "dependencies", source_root, native_root / "provenance"):
+              for directory, child_directories, child_files in os.walk(tree):
+                  for name in (*child_directories, *child_files):
+                      path = Path(directory) / name
+                      if path.is_symlink():
+                          raise RuntimeError(f"native input tree contains a symlink: {path}")
+                  for name in child_files:
+                      os.chmod(Path(directory) / name, 0o444)
+                  os.chmod(directory, 0o555)
+          PY
+
+      - name: Qualify native cgroup-v2 empty-leaf lifecycle
+        run: |
+          test "$(uname -m)" = x86_64
+          test "$(docker info --format '{{.Architecture}}')" = x86_64
+          docker run --rm --read-only --platform linux/amd64 --privileged \
+            --cgroupns=private --network=none \
+            --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/dist/$NATIVE_QUALIFICATION_WHEEL_FILENAME,target=/dist/$NATIVE_QUALIFICATION_WHEEL_FILENAME,readonly" \
+            --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/source/tests/integration/cgroup_v2_native_probe.py,target=/probe.py,readonly" \
+            --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/dependencies,target=/dependencies,readonly" \
+            --tmpfs /runtime:rw,nosuid,nodev,noexec,mode=0755,size=67108864 \
+            --tmpfs /tmp:rw,nosuid,nodev,noexec,mode=01777,size=67108864 \
+            --env PYTHONPATH=/runtime:/dependencies \
+            --env PYTHONDONTWRITEBYTECODE=1 \
+            --env NATIVE_QUALIFICATION_WHEEL_FILENAME \
+            "$NATIVE_QUALIFICATION_IMAGE" \
+            sh -ceu 'PYTHONPATH= python -I -m pip install --target /runtime --no-deps --no-compile --no-cache-dir --disable-pip-version-check "/dist/$NATIVE_QUALIFICATION_WHEEL_FILENAME" >/tmp/bpe-pip.log; exec python -S /probe.py'
+
+      - name: Exercise fixed native launcher in a live cgroup-v2 leaf
+        timeout-minutes: 5
+        run: |
+          test "$(uname -m)" = x86_64
+          test "$(docker info --format '{{.Architecture}}')" = x86_64
+          launcher_sha256=$(sha256sum "$NATIVE_QUALIFICATION_ROOT/launcher" | awk '{print $1}')
+          docker run --rm --read-only --platform linux/amd64 --privileged \
+            --cgroupns=private --network=none \
+            --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/dist/$NATIVE_QUALIFICATION_WHEEL_FILENAME,target=/dist/$NATIVE_QUALIFICATION_WHEEL_FILENAME,readonly" \
+            --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/launcher,target=/launcher,readonly" \
+            --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/source/tests/integration/inert_fixture_launcher_native_probe.py,target=/probe.py,readonly" \
+            --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/dependencies,target=/dependencies,readonly" \
+            --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/provenance,target=/qualification-provenance,readonly" \
+            --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/source,target=/qualification-source,readonly" \
+            --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/output,target=/qualification-output" \
+            --tmpfs /runtime:rw,nosuid,nodev,noexec,mode=0755,size=67108864 \
+            --tmpfs /tmp:rw,nosuid,nodev,noexec,mode=01777,size=67108864 \
+            --env PYTHONPATH=/runtime:/dependencies \
+            --env PYTHONDONTWRITEBYTECODE=1 \
+            --env BPE_LAUNCHER_SHA256="$launcher_sha256" \
+            --env NATIVE_QUALIFICATION_WHEEL_FILENAME \
+            "$NATIVE_QUALIFICATION_IMAGE" \
+            sh -ceu 'PYTHONPATH= python -I -m pip install --target /runtime --no-deps --no-compile --no-cache-dir --disable-pip-version-check "/dist/$NATIVE_QUALIFICATION_WHEEL_FILENAME" >/tmp/bpe-pip.log; exec python -S /probe.py --launcher /launcher --launcher-sha256 "$BPE_LAUNCHER_SHA256"'
+
+      - name: Validate unsigned native launcher qualification report
+        run: |
+          report="$NATIVE_QUALIFICATION_ROOT/output/native-launcher-qualification-report.json"
+          test "$(sudo stat -c '%a' "$report")" = 600
+          test "$(sudo stat -c '%u' "$report")" = 0
+          sudo env PYTHONPATH="$PWD/src" .venv/bin/python - "$report" <<'PY'
+          import sys
+          from pathlib import Path
+
+          from bpe.inert_native_qualification import (
+              canonical_inert_native_qualification_report_bytes,
+              validate_inert_native_qualification_report_bytes,
+          )
+
+          raw = Path(sys.argv[1]).read_bytes()
+          output_entries = tuple(sorted(path.name for path in Path(sys.argv[1]).parent.iterdir()))
+          if output_entries != (Path(sys.argv[1]).name,):
+              raise RuntimeError(f"qualification output directory is not exact: {output_entries}")
+          report = validate_inert_native_qualification_report_bytes(raw)
+          if report.status != "native_probe_passed_unsigned":
+              raise RuntimeError("native qualification report has the wrong status")
+          if raw != canonical_inert_native_qualification_report_bytes(report):
+              raise RuntimeError("native qualification report is not canonical")
+          PY

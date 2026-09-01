@@ -271,7 +271,11 @@ actual `clone3(CLONE_INTO_CGROUP | CLONE_PIDFD)`, pidfd stop/exit observation an
 one live `cgroup.kill`, and empty cleanup first. The configured native gate also has an
 evaluator-only inherited seccomp case that denies both `pidfd_send_signal` attempts with
 `EPERM`; only a successful native run with the canonical `0x1c3` error transcript plus
-external reap/empty/removal checks qualifies emergency cleanup through `cgroup.kill`.
+external reap/empty/removal checks supplies emergency-cleanup evidence under the fixed-child,
+trusted-kernel, single-writer assumptions. The transcript does not independently prove the
+return from the emergency `cgroup.kill` write. The separate [native qualification
+report](native-launcher-qualification.md) retains the raw replay inputs and exact cleanup
+observations but remains unsigned and nonauthoritative.
 Signed wall/output deadlines, real
 controller pressure, and forking-descendant cleanup require later fixed fixture protocols
 and cannot be inferred from that first slice. Its static-PIE build, fixed seccomp filter, and
