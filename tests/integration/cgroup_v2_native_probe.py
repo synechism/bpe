@@ -241,7 +241,15 @@ def _require_success_result(result: LinuxInertFixtureOrchestrationResult) -> Non
         or result.authoritative
         or result.official_grading_eligible
     ):
-        raise RuntimeError("production orchestration did not return exact fixture success")
+        diagnostic = json.dumps(
+            canonical_data(result),
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        raise RuntimeError(
+            "production orchestration did not return exact fixture success: "
+            + diagnostic
+        )
 
 
 def _run_production_orchestration(
