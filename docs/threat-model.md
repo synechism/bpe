@@ -142,14 +142,38 @@ single-writer assumptions, on emergency `cgroup.kill`. The transcript does not i
 prove the write's return. Only a successful privileged run with the canonical failure
 transcript on native x86-64 supplies that narrow lifecycle evidence; probe and workflow
 presence do not. Its replayable report remains wholly fabricable by an untrusted producer
-until an external attestation authenticates and durably anchors it. The atomic Python
-orchestrator that joins those
-boundaries to the consumed launch attempt is still pending. Bounded signed output/deadlines,
-real resource pressure, and race-safe forking-descendant cleanup require later fixed fixtures. A later
-terminal result also needs a separate signing domain, attestor role, and durable
-result/finalization ledger; it cannot authorize retry or candidate launch. See [cgroup-v2
-empty-leaf qualification](cgroup-qualification.md) and [inert-fixture intent
-admission](inert-fixture-admission.md).
+until an external attestation authenticates and durably anchors it.
+
+The Phase 1B.2b-1 [atomic fixed-fixture
+orchestrator](inert-fixture-orchestration.md) now joins those boundaries without exposing a
+general execution surface. It completes read-only intent/claim verification, immutable
+artifact staging, and dedicated-host admission before consuming the launch attempt. It
+verifies the committed receipt before retaining a cgroup, then uses one fixed
+`posix_spawn` descriptor map, argument, and empty environment. No recovered ambiguous
+receipt is ever used to launch. Every post-consumption outcome remains no-retry, including
+a terminal error when the ledger proves only a tombstone or receipt recovery is not
+trustworthy.
+
+The dedicated-process checks reduce descriptor and reaping ambiguity but do not defend
+against a hostile same-UID peer or a controller that becomes multithreaded concurrently.
+The controller must start single-threaded and childless with default `SIGCHLD`, a soft
+descriptor limit of at least 64, and only close-on-exec ambient descriptors below 32. It
+saves and normalizes the exact `SIGCHLD` action so `SA_NOCLDWAIT` cannot undermine exact-PID
+reaping, and temporarily owns child-subreaper state. Both are restored only after the child
+set is empty. The implementation does not install `PDEATHSIG`, so abrupt controller death
+can strand work beyond its in-process cleanup and leave only a durable launch-ledger receipt
+or tombstone. Deployment must place the controller in an outer systemd unit or dedicated PID
+namespace whose trusted supervisor independently owns kill, reap, and cgroup cleanup.
+
+The result binds the signature-verified policy and shared fixture/cleanup/total deadline
+observations, bounded raw socket records, exact replay projection, and cleanup facts. It is
+still unsigned, freshness-unauthenticated, non-durable, and wholly fabricable by an
+untrusted producer. Real resource pressure and race-safe forking-descendant cleanup require
+later fixtures. An authoritative terminal result also needs a separate signing domain,
+attestor role, and durable result/finalization ledger; it cannot authorize retry or
+candidate launch. See [cgroup-v2 empty-leaf qualification](cgroup-qualification.md),
+[inert-fixture intent admission](inert-fixture-admission.md), and [atomic fixed-fixture
+orchestration](inert-fixture-orchestration.md).
 
 The Phase 1B.2a one-shot property is local to one configured physical SQLite ledger. The
 database persists its worker and claim-ledger identities and admission checks the anchored

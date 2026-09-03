@@ -1650,6 +1650,7 @@ def _cleanup_leaf_once(
     started_ns = time.monotonic_ns()
     deadline_ns = started_ns + timeout_ms * 1_000_000
     events_fd = -1
+    events_close_error: BaseException | None = None
     kill_error: LinuxCgroupError | None = None
     populated_before = False
     try:
@@ -1679,7 +1680,11 @@ def _cleanup_leaf_once(
         progress.leaf_removed = True
     finally:
         if events_fd >= 0:
-            os.close(events_fd)
+            closing_events_fd, events_fd = events_fd, -1
+            try:
+                os.close(closing_events_fd)
+            except BaseException as exc:
+                events_close_error = exc
 
     try:
         _require_empty_domain_root(
@@ -1710,6 +1715,11 @@ def _cleanup_leaf_once(
             "io_failure",
             "the cgroup.kill write was not accepted",
         ) from kill_error
+    if events_close_error is not None:
+        raise LinuxCgroupLifecycleError(
+            "io_failure",
+            "the cgroup events descriptor could not be closed",
+        ) from events_close_error
     if require_prequalified_empty and (
         populated_before or not leaf.populated_zero_before_cleanup
     ):
@@ -1879,9 +1889,9 @@ class LinuxCgroupV2RetainedLeaf:
 
     ``duplicate_leaf_fd()`` returns a caller-owned CLOEXEC descriptor after
     immediately revalidating the retained root, leaf name, and leaf identity.  The
-    caller must close every duplicate before ``cleanup()``.  An unclosed duplicate
-    can retain a removed, dying kernel cgroup object and is never evidence that the
-    object was reclaimed.
+    caller must close every duplicate before ``cleanup()`` or
+    ``cleanup_with_timeout_ms()``.  An unclosed duplicate can retain a removed,
+    dying kernel cgroup object and is never evidence that the object was reclaimed.
     """
 
     __slots__ = (
@@ -2120,7 +2130,12 @@ class LinuxCgroupV2RetainedLeaf:
                     with suppress(OSError):
                         os.close(descriptor)
 
-    def _cleanup(self, *, require_prequalified_empty: bool) -> int:
+    def _cleanup(
+        self,
+        *,
+        require_prequalified_empty: bool,
+        timeout_ms: int,
+    ) -> int:
         with self._lock:
             if self._finished:
                 if self._terminal_error is not None:
@@ -2139,7 +2154,7 @@ class LinuxCgroupV2RetainedLeaf:
                     root_device=self._root_stat.st_dev,
                     leaf=self._leaf,
                     retries=self._policy.openat2_eagain_retries,
-                    timeout_ms=self._policy.cleanup_timeout_ms,
+                    timeout_ms=timeout_ms,
                     require_prequalified_empty=require_prequalified_empty,
                 )
                 _require_root_unchanged(
@@ -2159,11 +2174,11 @@ class LinuxCgroupV2RetainedLeaf:
             except BaseException as exc:
                 operation_error = exc
 
-            close_error: OSError | None = None
+            close_error: BaseException | None = None
             for descriptor in (self._leaf.descriptor, self._root_fd):
                 try:
                     os.close(descriptor)
-                except OSError as exc:
+                except BaseException as exc:
                     close_error = close_error or exc
             self._root_fd = -1
 
@@ -2195,7 +2210,35 @@ class LinuxCgroupV2RetainedLeaf:
         duration after success or re-raise the exact first cleanup failure.
         """
 
-        return self._cleanup(require_prequalified_empty=False)
+        return self._cleanup(
+            require_prequalified_empty=False,
+            timeout_ms=self._policy.cleanup_timeout_ms,
+        )
+
+    def cleanup_with_timeout_ms(self, timeout_ms: int) -> int:
+        """Clean the live leaf within a caller-selected, policy-bounded timeout.
+
+        This is the same terminal, idempotent operation as :meth:`cleanup`, but it
+        lets an orchestrator spend only the time remaining in a larger shared
+        deadline.  The timeout must be an exact built-in integer from one
+        millisecond through the policy's cleanup bound.  Invalid input does not
+        consume the retained handle.
+        """
+
+        if type(timeout_ms) is not int:
+            raise LinuxCgroupRejected(
+                "invalid_inputs",
+                "the retained cleanup timeout must be an exact integer",
+            )
+        if not 1 <= timeout_ms <= self._policy.cleanup_timeout_ms:
+            raise LinuxCgroupRejected(
+                "invalid_inputs",
+                "the retained cleanup timeout is outside the policy bound",
+            )
+        return self._cleanup(
+            require_prequalified_empty=False,
+            timeout_ms=timeout_ms,
+        )
 
     def __enter__(self) -> Self:
         with self._lock:
@@ -2370,7 +2413,10 @@ def qualify_linux_cgroup_v2(
         resource_profile,
         delegated_root_fd=delegated_root_fd,
     )
-    cleanup_duration_ms = retained._cleanup(require_prequalified_empty=True)
+    cleanup_duration_ms = retained._cleanup(
+        require_prequalified_empty=True,
+        timeout_ms=retained._policy.cleanup_timeout_ms,
+    )
     frozen_policy = retained._policy
     frozen_profile = retained._resource_profile
     report_fields: dict[str, object] = {

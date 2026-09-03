@@ -11,7 +11,9 @@ separately compiled native launcher source artifact now implements that fixed st
 Python authenticates and seals its exact configured bytes without invoking it, and a
 separate blocking privileged native x86-64 Linux CI probe is configured to exercise its
 fixed live-kernel lifecycle. Qualification requires that probe to pass on a native x86-64
-host; its presence alone is not evidence. Atomic Python launch orchestration is still absent.
+host; its presence alone is not evidence. The separate Phase 1B.2b-1 atomic Python
+orchestrator can now consume the launch attempt and run only this built-in no-exec fixture;
+that does not change the non-launching semantics of the admission API itself.
 A successful admission receipt has status
 `claimed_not_started` and fixes
 `launch_authorized`, `launch_attempt_consumed`,
@@ -253,17 +255,23 @@ consumption outcome. A consumed attempt is never retried, including after a call
 The one-shot property is local to one configured physical launch ledger; deployment must
 prevent whole-file rollback, cloning, and duplicate provisioning for the same logical ID.
 
-## Required native boundary
+## Atomic fixed-fixture boundary
 
-The orchestration boundary must safely preflight the host, trusted launcher bytes, and exact
-seccomp filter before consuming the launch attempt. The process-free [immutable launcher
-artifact preflight](launcher-artifact-preflight.md) now provides that sealed executable-FD
-handoff. A blocking privileged native probe is configured to exercise the exact fixed
-launcher lifecycle, and qualifies it only when it passes on a native x86-64 host. The
-pending atomic orchestrator must then consume that attempt before creating a leaf cgroup or
-any process and treat every later failure or ambiguity as terminal.
-Neither the original claim receipt nor the launch-attempt receipt can be accepted as a
-standalone launch token.
+The Phase 1B.2b-1 [atomic fixed-fixture
+orchestrator](inert-fixture-orchestration.md) joins these inputs in a deliberately strict
+order. It completes read-only signed-intent and committed-claim verification, immutable
+launcher preflight and executable-fd staging, and dedicated-host checks before it mutates
+the launch ledger. It creates no cgroup or process until the attempt has been durably
+consumed and its returned receipt has been verified against the committed row. Neither the
+original claim receipt nor a detached launch-attempt receipt is a standalone launch token.
+
+An ambiguous launch-ledger commit is recovered only to establish terminal no-retry evidence;
+the recovered receipt is never used to launch. If recovery cannot establish a trustworthy
+receipt, the caller receives a terminal-consumption error and must still never retry. After
+a clean commit and verification, the orchestrator alone retains the leaf and invokes the
+fixed launcher through descriptor slots `0..4`, exact `argv[0]`, and an empty environment.
+Fixture, cleanup, and total time share one monotonic deadline chain, and every normally
+handled post-consumption failure returns terminal unsigned evidence with retry forbidden.
 
 The repository now contains a separately compiled, single-threaded, one-shot C launcher
 whose child follows one built-in fixed no-exec fixture state machine. It must qualify the
@@ -275,23 +283,26 @@ external reap/empty/removal checks supplies emergency-cleanup evidence under the
 trusted-kernel, single-writer assumptions. The transcript does not independently prove the
 return from the emergency `cgroup.kill` write. The separate [native qualification
 report](native-launcher-qualification.md) retains the raw replay inputs and exact cleanup
-observations but remains unsigned and nonauthoritative.
-Signed wall/output deadlines, real
-controller pressure, and forking-descendant cleanup require later fixed fixture protocols
-and cannot be inferred from that first slice. Its static-PIE build, fixed seccomp filter, and
+observations but remains unsigned and nonauthoritative. The production orchestration result
+separately preserves the signature-verified policy, bounded raw protocol, shared deadline
+facts, and cleanup state, but it too is unsigned, non-durable, and nonauthoritative. Real
+controller pressure and forking-descendant cleanup require later fixed fixture protocols and
+cannot be inferred from this slice. Its static-PIE build, fixed seccomp filter, and
 result-only wire parser have compile and unit checks plus a configured blocking privileged
 native x86-64 live-kernel gate. Only a successful native run supplies qualification
-evidence. The
-process-free Python preflight can retain its exact sealed executable fd, but no atomic Python
-orchestration path launches it yet. The Phase 1B.2a launcher kind, artifact and seccomp digests, fixed
-`argc == 1`/empty-environment design, descriptor layout, IPC method, and fixture protocol
-remain commitments until the complete launch-orchestration/result boundary is reviewed;
-their presence alone is not evidence that any of it ran.
+evidence. The orchestrator requires a dedicated single-threaded, initially childless process,
+default `SIGCHLD`, a soft descriptor limit of at least 64, and only non-inheritable ambient
+descriptors below 32. It saves the exact signal action, clears hidden `SA_NOCLDWAIT` before
+spawn, and restores the action after the child set is empty. It installs no parent-death
+signal, so deployment must provide outer systemd- or PID-namespace-owned cleanup for abrupt
+controller death.
 
 A terminal result needs another signing domain and result-attestor trust role, plus a
 separate durable result or finalization ledger. It must bind the original intent, committed
 claim and launch-attempt identities and exact launcher/fixture/resource policy. Such a
-result is evidence, cannot authorize a retry or candidate launch, and remains
-nonauthoritative. Candidate execution, executable/argv/environment/dynamic-loader
+result cannot authorize a retry or candidate launch. A normally returned orchestration
+observation is replayable but does not satisfy this authenticated, crash-durable boundary;
+controller death may leave only the launch-ledger tombstone. Candidate execution,
+caller-controlled executable/argv/environment/dynamic-loader
 qualification, filesystem or network isolation, and official grading remain later,
 separately reviewed boundaries.

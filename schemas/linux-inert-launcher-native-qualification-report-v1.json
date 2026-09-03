@@ -1509,8 +1509,8 @@
           "items": {
             "$ref": "#/$defs/NativeQualificationSourceFile"
           },
-          "maxItems": 50,
-          "minItems": 50,
+          "maxItems": 51,
+          "minItems": 51,
           "title": "Files",
           "type": "array"
         },

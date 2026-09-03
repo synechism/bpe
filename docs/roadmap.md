@@ -50,8 +50,8 @@
   `launch_attempt_consumed_not_started`: it is terminal no-retry evidence, not launch
   authority, and the API has no process, executable, cgroup, argv, environment, job, or
   candidate surface;
-- **Phase 1B.2b-1 — artifact preflight and native x86-64 qualification gate
-  implemented/configured; atomic orchestration pending:** a native x86-64
+- **Phase 1B.2b-1 — fixed-fixture orchestration implemented; native x86-64
+  qualification required:** a native x86-64
   `clone3(CLONE_INTO_CGROUP | CLONE_PIDFD)` supervisor limited to a fixed inert
   fixture, with a fixed seccomp filter, cross-language bounded result protocol, and static
   ELF build gates. A process-free Python preflight authenticates the configured digest,
@@ -66,14 +66,18 @@
   gate can emit a canonical replayable report only after strict cleanup, but that report is
   unsigned, freshness-unauthenticated, non-durable, and nonauthoritative. Qualification
   requires the gate to pass on a native x86-64 host; its code and configuration alone are
-  not evidence. Atomic
-  Python orchestration that orders
-  preflight, one-shot consumption, retained-cgroup handoff, launch, collection, and terminal
-  cleanup is still pending. Wall and output deadlines, real controller pressure, and
-  forking-descendant cleanup remain later fixed fixtures. The boundary accepts no caller
-  argv, environment, executable path, candidate, or job bytes. A distinct result-signing
-  domain and durable result/finalization ledger must bind any terminal outcome without
-  creating candidate-launch or retry authority;
+  not evidence. The atomic Python boundary now completes signed-intent/claim,
+  immutable-artifact, and dedicated-host preflight before durable attempt consumption;
+  verifies the committed receipt before cgroup retention; launches only the fixed
+  descriptor `0..4`, single-argument, empty-environment ABI; and shares fixture, cleanup,
+  and total monotonic deadlines through terminal cleanup. Ambiguous consumption never
+  reaches launch and never permits retry. Its replayable terminal result is still unsigned,
+  non-durable, freshness-unauthenticated, and nonauthoritative. Real controller pressure,
+  forking-descendant cleanup, and abrupt-controller-death recovery remain later boundaries.
+  The API accepts no caller argv, environment, executable path, candidate, job, external
+  fixture, or callback. A distinct result-signing domain and durable result/finalization
+  ledger must bind any terminal outcome without creating candidate-launch or retry
+  authority;
 - pinned Clang 18 single-file XDP compilation;
 - ELF/BTF/object-policy inspection;
 - static libbpf runner with per-program log buffers at verifier log level 2;

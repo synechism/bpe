@@ -15,6 +15,7 @@ from bpe.inert_launch import JSON_SCHEMAS as INERT_LAUNCH_JSON_SCHEMAS
 from bpe.inert_native_qualification import (
     JSON_SCHEMAS as INERT_NATIVE_QUALIFICATION_JSON_SCHEMAS,
 )
+from bpe.inert_orchestration import JSON_SCHEMAS as INERT_ORCHESTRATION_JSON_SCHEMAS
 from bpe.ingress import JSON_SCHEMAS as INGRESS_JSON_SCHEMAS
 from bpe.job import EvaluationJobManifest, EvaluationPlan
 from bpe.models import JSON_SCHEMAS as CORE_JSON_SCHEMAS
@@ -31,6 +32,7 @@ JSON_SCHEMAS: dict[str, type[BaseModel]] = {
     **INERT_FIXTURE_JSON_SCHEMAS,
     **INERT_LAUNCH_JSON_SCHEMAS,
     **INERT_NATIVE_QUALIFICATION_JSON_SCHEMAS,
+    **INERT_ORCHESTRATION_JSON_SCHEMAS,
     **ORACLE_JSON_SCHEMAS,
     **QUALIFICATION_JSON_SCHEMAS,
     "admission-plan-v1.json": AdmissionPlan,
@@ -55,6 +57,7 @@ if len(JSON_SCHEMAS) != (
     + len(INERT_FIXTURE_JSON_SCHEMAS)
     + len(INERT_LAUNCH_JSON_SCHEMAS)
     + len(INERT_NATIVE_QUALIFICATION_JSON_SCHEMAS)
+    + len(INERT_ORCHESTRATION_JSON_SCHEMAS)
     + len(ORACLE_JSON_SCHEMAS)
     + len(QUALIFICATION_JSON_SCHEMAS)
     + 11

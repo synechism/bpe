@@ -36,8 +36,9 @@ AT_EMPTY_PATH)`/equivalent flow; hashing a pathname and later executing that pat
 an acceptable preflight. `bpe.inert_artifact` now provides the process-free deployment
 preflight: it verifies the configured digest, ELF and embedded seccomp markers, copies the
 bytes into a completely sealed executable memfd, and retains only a read-only descriptor.
-Atomic launch orchestration remains separate and pending. The build emits a static PIE so
-no runtime ELF interpreter or shared-library path participates.
+`bpe.inert_orchestration` now consumes that sealed descriptor only after the complete
+preflight and maps it into the fixed ABI described above. The build emits a static PIE so no
+runtime ELF interpreter or shared-library path participates.
 
 ## Fixed kernel sequence
 

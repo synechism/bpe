@@ -123,6 +123,7 @@ NATIVE_QUALIFICATION_BPE_SOURCE_PATHS = (
     "src/bpe/inert_launch.py",
     "src/bpe/inert_native_protocol.py",
     "src/bpe/inert_native_qualification.py",
+    "src/bpe/inert_orchestration.py",
     "src/bpe/ingress.py",
     "src/bpe/job.py",
     "src/bpe/models.py",

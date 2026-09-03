@@ -217,6 +217,7 @@ jobs:
           "$GITHUB_WORKSPACE/.wheel-venv/bin/bpe" schema show worker-response-v1.json > /dev/null
           "$GITHUB_WORKSPACE/.wheel-venv/bin/bpe" schema show inert-fixture-intent-claim-receipt-v1.json > /dev/null
           "$GITHUB_WORKSPACE/.wheel-venv/bin/bpe" schema show inert-fixture-launch-attempt-receipt-v1.json > /dev/null
+          "$GITHUB_WORKSPACE/.wheel-venv/bin/bpe" schema show linux-inert-fixture-orchestration-result-v1.json > /dev/null
           "$GITHUB_WORKSPACE/.wheel-venv/bin/bpe" schema show linux-inert-launcher-native-qualification-report-v1.json > /dev/null
           "$GITHUB_WORKSPACE/.wheel-venv/bin/python" - "$GITHUB_WORKSPACE/.wheel-venv/bin/bpe" <<'PY'
           import subprocess
@@ -232,6 +233,7 @@ jobs:
           import bpe.inert_launch
           import bpe.inert_native_protocol
           import bpe.inert_native_qualification
+          import bpe.inert_orchestration
           import bpe.job
           import bpe.oracle
           import bpe.qualification

@@ -478,19 +478,25 @@ jobs:
                   os.chmod(directory, 0o555)
           PY
 
-      - name: Qualify native cgroup-v2 empty-leaf lifecycle
+      - name: Qualify cgroup-v2 and production fixture orchestration
+        timeout-minutes: 5
         run: |
           test "$(uname -m)" = x86_64
           test "$(docker info --format '{{.Architecture}}')" = x86_64
+          launcher_sha256=$(sha256sum "$NATIVE_QUALIFICATION_ROOT/launcher" | awk '{print $1}')
+          sudo chown 0:0 "$NATIVE_QUALIFICATION_ROOT/launcher"
+          test "$(stat -c '%u:%g:%a' "$NATIVE_QUALIFICATION_ROOT/launcher")" = 0:0:555
           docker run --rm --read-only --platform linux/amd64 --privileged \
             --cgroupns=private --network=none \
             --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/dist/$NATIVE_QUALIFICATION_WHEEL_FILENAME,target=/dist/$NATIVE_QUALIFICATION_WHEEL_FILENAME,readonly" \
+            --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/launcher,target=/launcher,readonly" \
             --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/source/tests/integration/cgroup_v2_native_probe.py,target=/probe.py,readonly" \
             --mount "type=bind,source=$NATIVE_QUALIFICATION_ROOT/dependencies,target=/dependencies,readonly" \
             --tmpfs /runtime:rw,nosuid,nodev,noexec,mode=0755,size=67108864 \
             --tmpfs /tmp:rw,nosuid,nodev,noexec,mode=01777,size=67108864 \
             --env PYTHONPATH=/runtime:/dependencies \
             --env PYTHONDONTWRITEBYTECODE=1 \
+            --env BPE_LAUNCHER_SHA256="$launcher_sha256" \
             --env NATIVE_QUALIFICATION_WHEEL_FILENAME \
             "$NATIVE_QUALIFICATION_IMAGE" \
             sh -ceu 'PYTHONPATH= python -I -m pip install --target /runtime --no-deps --no-compile --no-cache-dir --disable-pip-version-check "/dist/$NATIVE_QUALIFICATION_WHEEL_FILENAME" >/tmp/bpe-pip.log; exec python -S /probe.py'

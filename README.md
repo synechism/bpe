@@ -19,9 +19,9 @@ This repository currently contains the **Phase 0 grading contract**, the non-exe
 **Phase 1A dispatch primitive**, the non-executing **Phase 1B.0 Linux ingress boundary**,
 the non-executing **Phase 1B.1 cgroup-v2 empty-leaf qualification boundary**, and the
 pure-Python, non-launching **Phase 1B.2a inert-fixture intent admission** and
-**Phase 1B.2b-0 launch-attempt consumption boundaries**, plus the process-free
-**Phase 1B.2b-1 immutable launcher-artifact preflight and configured native x86-64
-qualification gate**:
+**Phase 1B.2b-0 launch-attempt consumption boundaries**, plus the Phase 1B.2b-1
+process-free **immutable launcher-artifact preflight**, fixed-fixture atomic Python
+**orchestrator**, and configured native x86-64 qualification gate:
 
 - strict, versioned task, suite, experiment, exact-check scoring-contract, evidence,
   environment, grade, policy, replay, and attestation-registry schemas;
@@ -62,6 +62,10 @@ qualification gate**:
   read-only executable fd without launching it, and a blocking privileged native x86-64
   Linux CI gate is configured to exercise its fixed live-kernel lifecycle and emit an
   unsigned, replay-validated report only after complete cleanup;
+- atomic fixed-fixture orchestration that completes authorization, artifact, and dedicated-
+  host preflight before consuming the launch attempt, verifies that committed receipt before
+  retaining a cgroup, uses one fixed `posix_spawn` ABI, shares signed fixture/cleanup/total
+  deadlines, and returns only unsigned terminal replay evidence after bounded cleanup;
 - a typed, deterministic XDP differential oracle for return values, packet/context bytes,
   maps, ordered events, counters, and first-divergence evidence;
 - a cross-platform worker capability probe that refuses to claim verifier support on macOS;
@@ -69,9 +73,10 @@ qualification gate**:
 - unit, contract, and tamper-detection tests.
 
 Privileged verifier execution is intentionally not faked on macOS. Signed dispatch, Linux
-ingress, cgroup qualification, inert-fixture admission, and launch-attempt consumption still
-return `execution_started: false` and `authoritative: false`. Immutable launcher-artifact
-preflight and the blocking privileged native x86-64 qualification gate for the fixed
+ingress, cgroup qualification, inert-fixture admission, and launch-attempt consumption remain
+non-executing and nonauthoritative. Immutable launcher-artifact preflight, the atomic Python
+orchestrator for the built-in no-exec fixture, and the blocking privileged native x86-64
+qualification gate for the fixed
 `clone3(CLONE_INTO_CGROUP | CLONE_PIDFD)` supervisor are implemented. Code or workflow
 presence is not qualification evidence: the lifecycle is qualified only by a successful
 privileged run on a native x86-64 CI host. That configured run includes an evaluator-only
@@ -80,10 +85,13 @@ reap/empty/removal checks evidence the emergency cleanup outcome under the fixed
 trusted-kernel, single-writer assumptions when both pidfd signal attempts are denied. The
 transcript does not independently prove the return from the emergency `cgroup.kill` write.
 The resulting report remains unsigned, freshness-unauthenticated, non-durable, and
-nonauthoritative. The remaining
-Phase 1B.2b-1 work is atomic Python launch orchestration that preserves preflight-before-
-consumption ordering and terminal post-consumption failure semantics. That is followed by a
-pinned Linux XDP compiler and disposable microVM worker. See [the
+nonauthoritative. A separate step in the same trusted gate provisions ephemeral private
+ledgers and a signed fixed-fixture intent, calls the installed production orchestrator, and
+requires exact replay, one-shot consumption, caller-descriptor preservation, and complete
+cgroup cleanup. Its orchestration result is likewise unsigned and cannot survive controller
+death as a durable finalization record; the launch ledger may retain only a terminal
+tombstone. A pinned Linux XDP compiler and disposable microVM worker follow this narrow
+fixed-fixture slice. See [the
 grading design](docs/grading.md), [provisional admission
 contract](docs/admission.md), [contamination gate](docs/contamination.md), [environment
 contract](docs/environment.md), [grader qualification](docs/grader-qualification.md), [typed
@@ -93,7 +101,8 @@ protocol](docs/worker-protocol.md), [signed dispatch admission](docs/dispatch-ad
 taxonomy](docs/root-cause-taxonomy.md), [cgroup-v2 empty-leaf
 qualification](docs/cgroup-qualification.md), [inert-fixture intent
 admission](docs/inert-fixture-admission.md), [immutable launcher artifact
-preflight](docs/launcher-artifact-preflight.md), [native launcher qualification
+preflight](docs/launcher-artifact-preflight.md), [atomic fixed-fixture
+orchestration](docs/inert-fixture-orchestration.md), [native launcher qualification
 evidence](docs/native-launcher-qualification.md), and [roadmap](docs/roadmap.md).
 
 ## Quick start
@@ -110,6 +119,7 @@ uv run bpe schema show linux-cgroup-v2-qualification-policy-v1.json
 uv run bpe schema show linux-cgroup-v2-qualification-report-v1.json
 uv run bpe schema show signed-inert-fixture-intent-v1.json
 uv run bpe schema show inert-fixture-launch-attempt-receipt-v1.json
+uv run bpe schema show linux-inert-fixture-orchestration-result-v1.json
 uv run bpe capabilities
 printf '%s\n' '{"method":"capabilities","request_id":"probe-001","schema_version":"bpe.worker-request.v1"}' | uv run bpe-worker
 ```
@@ -197,6 +207,18 @@ evidence with every launch, process, execution, candidate/job-access, and author
 fixed false. The API accepts no executable, process callback, argv, environment, cgroup,
 job, or candidate surface; the receipt itself is not launch authority.
 
+Phase 1B.2b-1 adds the only consumer that can cross this narrow boundary. It performs all
+read-only authorization verification, immutable-artifact staging, and dedicated-host checks
+before consumption;
+only a clean, verified committed attempt receipt may proceed to retained-cgroup handoff and
+the fixed `posix_spawn` launcher ABI. The signature-verified fixture, cleanup, and total
+deadlines share one monotonic lifecycle. Every handled post-consumption outcome forbids
+retry. Its canonical result preserves raw protocol and cleanup facts for replay but remains
+unsigned, non-durable, freshness-unauthenticated, nonauthoritative, and ineligible for
+official grading. It accepts no candidate, evaluation job, external fixture, dynamic path,
+argv, environment, or process callback. See [atomic fixed-fixture
+orchestration](docs/inert-fixture-orchestration.md).
+
 Likewise, dynamic-admission reports are structurally `provisional` and
 `authoritative: false`. They validate supplied microVM-shaped evidence but do not establish
 that a trusted worker produced it or that every run used a distinct restored snapshot. A
@@ -226,6 +248,7 @@ stored evidence without redefining historical benchmark success.
 | Cgroup-v2 empty-leaf qualification | explicit refusal | non-authorizing probe on x86-64 | provisioning/qualification pending |
 | Inert-fixture intent admission | non-launching claim | non-launching claim | non-launching claim |
 | Inert-fixture launch-attempt consumption | non-launching terminal claim | non-launching terminal claim | provisioning/qualification pending |
+| Atomic built-in inert-fixture orchestration | explicit refusal | unsigned diagnostic on x86-64 | provisioning/attestation pending |
 | Candidate compile/load in Phase 0 worker | no | no | no |
 | Real kernel verifier | no | nonofficial diagnostics planned | planned authoritative path |
 | Official benchmark eligibility | no | no | Phase 1 target |

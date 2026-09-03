@@ -35,7 +35,7 @@ root intended by `delegated_root_id`, and keeping exclusive ownership of it for 
 The ID is a deployment label; the function cannot derive or authenticate the label-to-file
 descriptor mapping.
 
-For the later native boundary, `retain_linux_cgroup_v2_leaf(...)` runs the same root
+For the native orchestration boundary, `retain_linux_cgroup_v2_leaf(...)` runs the same root
 admission, creation, configuration, exact readback, and post-configuration root audit but
 returns a process-free retained handle instead of immediately cleaning the leaf and issuing
 a report. The handle is not a qualification report, launch token, or authority grant.
@@ -152,15 +152,19 @@ of a live or forking process tree. In addition, successful `rmdir` and absence o
 name do not prove that every kernel object associated with a dying cgroup has been
 reclaimed. Accordingly the report fixes `dying_descendants_reclaimed: false`.
 
-`LinuxCgroupV2RetainedLeaf.cleanup()` is the live-leaf variant used by a later supervisor.
+`LinuxCgroupV2RetainedLeaf.cleanup()` is the live-leaf variant used by the fixed-fixture
+supervisor.
 It permits prior population, writes `cgroup.kill`, waits within the same fixed monotonic
 budget for `populated 0`, identity-checks and removes only the original random leaf, and
-re-audits the delegated root. The operation is terminal, thread-safe, and idempotent:
-repeated calls return the first duration or re-raise the exact first failure. Context-manager
-cleanup preserves an active body exception and annotates it when cleanup also fails.
-`cleanup_completed` and `cleanup_error` expose that terminal outcome. This cleanup does not
-reap processes itself; pidfd observation and reaping remain the launcher's and orchestrator's
-responsibility.
+re-audits the delegated root. `cleanup_with_timeout_ms(...)` performs the same operation
+with an exact positive integer timeout no greater than the policy's fixed cleanup bound, so
+an orchestrator can consume only the time remaining in a larger shared deadline. Invalid
+timeout input leaves the handle active. Both entry points share one terminal, thread-safe,
+idempotent outcome: repeated calls return the first duration or re-raise the exact first
+failure. Context-manager cleanup preserves an active body exception and annotates it when
+cleanup also fails. `cleanup_completed` and `cleanup_error` expose that terminal outcome.
+This cleanup does not reap processes itself; pidfd observation and reaping remain the
+launcher's and orchestrator's responsibility.
 
 ## Report and nonclaims
 
@@ -212,12 +216,23 @@ execution permission.
 After ordinary CI succeeds for a same-repository `main` push, the separate trusted
 `workflow_run` job runs the rebuilt installed wheel as PID 1 inside a disposable privileged,
 private cgroup namespace. The probe creates separate manager and empty delegate cgroups,
-enables the exact controllers, exercises the complete empty-leaf lifecycle on native
-x86-64 cgroup v2, asserts that the leaf is gone, and verifies the report's nonexecution
-claims. The container has no systemd manager, so the test installs the exact
-`user.delegate=1` kernel xattr itself. This verifies the kernel-facing marker and cgroup
-lifecycle, not production systemd provenance; deployment must still provision the
-delegation with systemd and satisfy every admission check independently.
+enables the exact controllers, and first exercises the complete empty-leaf lifecycle on
+native x86-64 cgroup v2. It asserts that the leaf is gone and verifies the report's
+nonexecution claims.
+
+The same dedicated probe then provisions private claim and launch ledgers, creates and
+claims one short-lived signed intent for the reviewed launcher digest, and calls the
+production fixed-fixture orchestrator against the same still-empty delegation. It requires
+one successful canonical replay, exactly one durable claim and attempt, exact receipt
+recovery, unchanged caller-owned descriptors, and no remaining child cgroup. This second
+operation does create the trusted launcher and built-in no-exec fixture; it does not change
+the earlier empty-leaf report's fixed nonexecution fields or make the orchestration result
+authoritative.
+
+The container has no systemd manager, so the test installs the exact `user.delegate=1`
+kernel xattr itself. This verifies the kernel-facing marker and cgroup lifecycle, not
+production systemd provenance; deployment must still provision the delegation with systemd,
+provide outer controller-death containment, and satisfy every admission check independently.
 
 ## Trust assumptions and next boundary
 
@@ -232,13 +247,24 @@ The Phase 1B.2b-1 blocking privileged native gate is configured to exercise a fi
 fixture and launcher that atomically creates the child in a leaf with
 `clone3(CLONE_INTO_CGROUP | CLONE_PIDFD)`. When it passes on native x86-64, it qualifies
 pidfd stop/exit observation and reaping, one live `cgroup.kill`, `populated 0`, and exact
-cleanup. Gate code and configuration alone are not qualification evidence. The pending
-atomic Python orchestrator must acquire the same fully revalidated retained handle before
-launch.
-Bounded signed output/deadlines, real resource pressure, and a forking descendant require
-later fixed fixture protocols. No phase may infer those claims from empty-leaf or single-child
-success, and this boundary still exposes no caller-controlled argv, environment, executable
-path, job, or candidate bytes.
+cleanup. Gate code and configuration alone are not qualification evidence. The atomic
+Python boundary is now implemented: it performs authorization, artifact, and host
+preflight before durable launch-attempt consumption, verifies that committed receipt, and
+only then acquires this fully revalidated retained handle. It duplicates the leaf into fixed
+launcher descriptor `4` and passes the remaining shared cleanup allowance to
+`cleanup_with_timeout_ms(...)`; cgroup cleanup and adopted-child reaping cannot each reset
+the signed total deadline. If no allowance remains, a one-millisecond safety cleanup may
+still run, but the orchestration result records the deadline overrun. A recovered ambiguous
+receipt never reaches this API.
+
+The orchestrator's success or launcher-failure result requires cgroup cleanup to complete,
+but that result is unsigned and nonauthoritative. Abrupt controller death is not covered:
+there is no `PDEATHSIG`, so deployment needs an outer systemd unit or PID namespace that
+independently owns process and cgroup cleanup. Real resource pressure and a forking
+descendant require later fixed fixture protocols. No phase may infer those claims from
+empty-leaf or single-child success, and this boundary still exposes no caller-controlled
+argv, environment, executable path, external fixture, job, or candidate bytes. See [atomic
+fixed-fixture orchestration](inert-fixture-orchestration.md).
 
 Primary references are the kernel's [cgroup v2
 documentation](https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html), systemd's

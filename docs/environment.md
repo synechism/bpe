@@ -8,10 +8,11 @@ Phase 1B.1 adds an empty-leaf cgroup-v2 qualification probe. Phase 1B.2a adds a 
 signed intent claim for one future fixed inert fixture, and Phase 1B.2b-0 adds a separate
 pure-Python atomic launch-attempt consumption ledger. Phase 1B.2b-1 adds process-free
 immutable artifact preflight plus a configured blocking privileged native x86-64
-live-kernel qualification probe for the fixed launcher. Only a successful run of that gate
-on a native x86-64 CI host produces lifecycle-qualification evidence. None of the production
-Python boundaries is yet a process
-launcher; atomic launch orchestration and candidate isolation remain later Phase 1 work.
+live-kernel qualification probe and an atomic Python orchestrator for the fixed built-in
+no-exec fixture. Only a successful run of the gate on a native x86-64 CI host produces its
+narrow lifecycle-qualification evidence. The orchestrator can create only that diagnostic
+launcher and fixture; candidate isolation and candidate execution remain later Phase 1
+work.
 
 ## Agent-visible environment
 
@@ -169,12 +170,29 @@ emergency cleanup outcome under the fixed-child, trusted-kernel, single-writer a
 the transcript does not independently prove the return from the emergency `cgroup.kill`
 write. The gate's [native qualification report](native-launcher-qualification.md) preserves
 raw replay inputs and cleanup observations but remains unsigned, freshness-unauthenticated,
-non-durable, and nonauthoritative. Atomic Python orchestration remains
-pending. Bounded signed
-output/deadlines, real resource pressure, and forking-descendant cleanup remain later fixed
-fixtures. Snapshot freshness, candidate execution, executable/argv/environment/dynamic-
-loader qualification, and authoritative result attestations remain separate later
-requirements.
+non-durable, and nonauthoritative.
+
+The [atomic fixed-fixture orchestrator](inert-fixture-orchestration.md) now completes all
+read-only authorization, artifact, and dedicated-host preflight before durable launch-attempt
+consumption. A retained cgroup is created only after the returned committed receipt is
+verified. The child ABI is fixed to `/dev/null` on `0..2`, one `SOCK_SEQPACKET` endpoint on
+`3`, the retained leaf on `4`, exact launcher `argv[0]`, and an empty environment. The
+signature-verified fixture, cleanup, and total deadline values share one monotonic lifecycle
+through cgroup cleanup and adopted-child reaping. The result retains bounded raw protocol
+records and cleanup facts, but it remains unsigned, freshness-unauthenticated, non-durable,
+and nonauthoritative.
+
+This call requires a dedicated single-threaded, initially childless controller with default
+`SIGCHLD`, soft `RLIMIT_NOFILE >= 64`, and all ambient descriptors close-on-exec with no
+descriptor numbered 32 or above. The guard saves the exact signal action, clears hidden
+`SA_NOCLDWAIT` before spawn, and restores that action after the child set is empty. Those
+checks are point-in-time deployment invariants. The orchestrator installs no `PDEATHSIG`; an
+outer systemd unit or dedicated PID namespace must own kill, reap, and cgroup cleanup if the
+controller dies abruptly. Such a death may leave only the durable launch-ledger tombstone
+rather than a result. Real resource pressure,
+forking-descendant cleanup, snapshot freshness, candidate execution, caller-controlled
+executable/argv/environment/dynamic-loader qualification, filesystem/network isolation, and
+authoritative result attestations remain separate later requirements.
 
 For execution-profile v1, `snapshot_sha256` is the canonical JSON digest of the complete
 typed `SnapshotComponents` record. It is not a direct digest of only `vm_state`, memory, or

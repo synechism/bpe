@@ -1,7 +1,7 @@
 # Immutable launcher artifact preflight
 
 `bpe.inert_artifact` is the process-free boundary between a trusted deployment artifact
-and the later one-shot inert-fixture orchestrator. It accepts the complete configured
+and the Phase 1B.2b-1 one-shot inert-fixture orchestrator. It accepts the complete configured
 `InertFixtureLaunchExpectation` plus one exact caller-supplied readable descriptor. It
 accepts no launcher path, command, argument vector, environment, candidate, job, cgroup,
 claim token, or process-creation callback.
@@ -43,6 +43,15 @@ Preflight does not consume the launch ledger, create a cgroup, create a process,
 launch, or produce authoritative qualification evidence. The orchestration boundary must
 complete this preflight before consuming the one-shot launch attempt, then treat every
 failure after consumption as terminal.
+
+The [atomic fixed-fixture orchestrator](inert-fixture-orchestration.md) is the implemented
+consumer of this handle. It stages a second close-on-exec descriptor and completes its
+dedicated-process checks before attempt consumption. Only a clean committed-receipt
+verification may proceed to retained-cgroup handoff and fixed `posix_spawn`; recovery after
+ambiguous consumption produces no launch. The orchestrator closes both its staged duplicate
+and the retained artifact handle as explicit terminal cleanup facts. Its serialized artifact
+receipt remains a point-in-time preflight statement and cannot substitute for those live
+handle operations.
 
 There is no portable or less-sealed fallback. A non-Linux host, non-x86-64 ABI, older
 kernel without executable memfds or execute seals, unverified procfs, unexpected ELF,

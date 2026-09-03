@@ -18,6 +18,14 @@ point-in-time receipt whose one-shot production attempt was not consumed. No ser
 report is a launch token, retry token, artifact handle, or proof that a retained descriptor
 still exists.
 
+The separate [atomic fixed-fixture orchestrator](inert-fixture-orchestration.md) is now
+implemented, but it does not widen this report. Native qualification's five cases remain
+evaluator-controlled launcher tests that intentionally bypass the production launch ledgers;
+the report therefore continues to fix `production_orchestration_qualified: false`. The
+trusted workflow exercises the installed production orchestrator in its separate cgroup
+gate, with its own signed intent, private ledgers, canonical result replay, and cleanup
+assertions; those observations are not imported into this five-case report.
+
 ## Fixed case set
 
 Version 1 admits exactly these cases, in this order:
@@ -66,6 +74,26 @@ state. After the launcher exits, the probe must prove exact launcher reap, no re
 descendant, empty `cgroup.procs`, `populated 0`, and successful leaf removal. Best-effort
 evaluator fallback cleanup invalidates qualification even if the final filesystem happens to
 look empty.
+
+## Relationship to atomic orchestration
+
+Production orchestration has stricter admission and ordering than the case controller. It
+must reauthenticate the signed intent and exact claim, seal and stage the artifact, validate
+a dedicated single-threaded childless host, durably consume and verify the launch-attempt
+receipt, and only then retain and hand off a cgroup. Its `posix_spawn` call exposes exactly
+`/dev/null` on descriptors `0..2`, the control socket on `3`, the cgroup leaf on `4`, one
+fixed `argv[0]`, and an empty environment. Ambiguous receipt recovery never reaches spawn.
+
+The production result preserves at most eight bounded raw socket records and reruns the same
+strict transcript parser used here. It additionally binds the full fixture/cgroup policies,
+launch-attempt receipt, shared fixture/cleanup/total deadline observations, retained-leaf
+identity, and terminal cleanup facts. That result is also unsigned and nonauthoritative; it
+does not convert this qualification report into provenance or vice versa.
+
+The production controller has no `PDEATHSIG`. Its dedicated-process and child-subreaper
+checks support normal terminal cleanup, not crash recovery. An outer systemd unit or PID
+namespace must independently contain and reap work after abrupt controller death, when the
+only durable local evidence may be the launch-ledger tombstone.
 
 ## Provenance and finalization
 
