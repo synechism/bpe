@@ -21,9 +21,11 @@ import fcntl
 import os
 import platform
 import resource
+import select
 import signal
 import socket
 import stat
+import struct
 import sys
 import threading
 import time
@@ -91,8 +93,14 @@ _SOURCE_DESCRIPTOR_MINIMUM = 32
 _MINIMUM_NOFILE_LIMIT = 64
 _SOCK_CLOEXEC_LINUX = 0o2000000
 _MSG_CMSG_CLOEXEC = getattr(socket, "MSG_CMSG_CLOEXEC", 0)
+_MSG_EOR = getattr(socket, "MSG_EOR", 0)
+_SO_PASSCRED_LINUX = getattr(socket, "SO_PASSCRED", 16)
+_SCM_CREDENTIALS_LINUX = getattr(socket, "SCM_CREDENTIALS", 2)
 _SCM_RIGHTS_ITEM_SIZE = array.array("i").itemsize
-_CONTROL_ANCILLARY_SIZE = socket.CMSG_SPACE(253 * _SCM_RIGHTS_ITEM_SIZE)
+_UCRED = struct.Struct("=iII")
+_CONTROL_ANCILLARY_SIZE = socket.CMSG_SPACE(
+    253 * _SCM_RIGHTS_ITEM_SIZE
+) + socket.CMSG_SPACE(_UCRED.size)
 _WAIT_POLL_SECONDS = 0.01
 _PR_SET_CHILD_SUBREAPER = 36
 _PR_GET_CHILD_SUBREAPER = 37
@@ -220,12 +228,17 @@ class LinuxInertFixtureNativeSocketRecord(_OrchestrationModel):
     payload_hex: _FRAME_HEX
     message_truncated: bool
     control_truncated: bool
-    ancillary_present: bool
+    sender_credentials_present: bool
+    sender_pid: Annotated[int, Field(ge=-(1 << 31), le=(1 << 31) - 1)] | None
+    sender_uid: Annotated[int, Field(ge=0, le=(1 << 32) - 1)] | None
+    sender_gid: Annotated[int, Field(ge=0, le=(1 << 32) - 1)] | None
+    unexpected_ancillary_present: bool
 
     @field_validator(
         "message_truncated",
         "control_truncated",
-        "ancillary_present",
+        "sender_credentials_present",
+        "unexpected_ancillary_present",
         mode="before",
     )
     @classmethod
@@ -234,12 +247,44 @@ class LinuxInertFixtureNativeSocketRecord(_OrchestrationModel):
             raise ValueError("native record metadata must be boolean")
         return value
 
-    def as_protocol_record(self) -> InertNativeSocketRecord:
+    @model_validator(mode="after")
+    def sender_credentials_are_exact(self) -> Self:
+        values = (self.sender_pid, self.sender_uid, self.sender_gid)
+        if any(value is None for value in values) != all(
+            value is None for value in values
+        ):
+            raise ValueError("sender credential values must be all present or all absent")
+        values_present = self.sender_pid is not None
+        if values_present and not self.sender_credentials_present:
+            raise ValueError("sender credential values require ancillary presence")
+        if (
+            self.sender_credentials_present
+            and not values_present
+            and not self.unexpected_ancillary_present
+        ):
+            raise ValueError(
+                "unparsed sender credentials require unexpected ancillary evidence"
+            )
+        return self
+
+    def as_protocol_record(
+        self,
+        *,
+        expected_sender_credentials: tuple[int, int, int],
+    ) -> InertNativeSocketRecord:
+        credentials_are_exact = (
+            self.sender_credentials_present
+            and (self.sender_pid, self.sender_uid, self.sender_gid)
+            == expected_sender_credentials
+        )
         return InertNativeSocketRecord(
             payload=bytes.fromhex(self.payload_hex),
             message_truncated=self.message_truncated,
             control_truncated=self.control_truncated,
-            ancillary_present=self.ancillary_present,
+            ancillary_present=(
+                self.unexpected_ancillary_present
+                or not credentials_are_exact
+            ),
         )
 
 
@@ -257,6 +302,8 @@ class LinuxInertFixtureNativeObservation(_OrchestrationModel):
 
     observation_sha256: Sha256
     launcher_pid: _PID
+    expected_sender_uid: Annotated[int, Field(ge=0, le=(1 << 32) - 1)]
+    expected_sender_gid: Annotated[int, Field(ge=0, le=(1 << 32) - 1)]
     launcher_returncode: _RETURN_CODE | None
     eof_observed: bool
     records: Annotated[
@@ -325,8 +372,18 @@ class LinuxInertFixtureNativeObservation(_OrchestrationModel):
             return self
 
         try:
+            expected_sender_credentials = (
+                self.launcher_pid,
+                self.expected_sender_uid,
+                self.expected_sender_gid,
+            )
             transcript = parse_inert_native_transcript(
-                tuple(record.as_protocol_record() for record in self.records),
+                tuple(
+                    record.as_protocol_record(
+                        expected_sender_credentials=expected_sender_credentials,
+                    )
+                    for record in self.records
+                ),
                 returncode=self.launcher_returncode,
                 eof_observed=self.eof_observed,
                 expected_launcher_pid=self.launcher_pid,
@@ -966,6 +1023,8 @@ class _CleanupWindow:
 @dataclass(frozen=True, slots=True)
 class _NativeRun:
     pid: int | None
+    expected_sender_uid: int
+    expected_sender_gid: int
     returncode: int | None
     records: tuple[LinuxInertFixtureNativeSocketRecord, ...]
     eof_observed: bool
@@ -1397,7 +1456,87 @@ def _close_received_rights(ancillary: list[tuple[int, int, bytes]]) -> bool:
     return completed
 
 
-def _collect_records(control: socket.socket, deadline_ns: int) -> _CollectionObservation:
+def _inspect_control_ancillary(
+    ancillary: list[tuple[int, int, bytes]],
+    *,
+    expected_sender_credentials: tuple[int, int, int],
+) -> tuple[bool, int | None, int | None, int | None, bool, bool]:
+    """Parse one kernel ucred and classify every other control item."""
+
+    credentials_present = False
+    sender_pid: int | None = None
+    sender_uid: int | None = None
+    sender_gid: int | None = None
+    unexpected_ancillary_present = False
+    for level, message_type, message_data in ancillary:
+        if level == socket.SOL_SOCKET and message_type == socket.SCM_RIGHTS:
+            unexpected_ancillary_present = True
+            continue
+        if (
+            level == socket.SOL_SOCKET
+            and message_type == _SCM_CREDENTIALS_LINUX
+            and not credentials_present
+        ):
+            credentials_present = True
+            if len(message_data) != _UCRED.size:
+                unexpected_ancillary_present = True
+                continue
+            sender_pid, sender_uid, sender_gid = _UCRED.unpack(message_data)
+            continue
+        unexpected_ancillary_present = True
+    credentials_verified = (
+        credentials_present
+        and (sender_pid, sender_uid, sender_gid) == expected_sender_credentials
+    )
+    return (
+        credentials_present,
+        sender_pid,
+        sender_uid,
+        sender_gid,
+        credentials_verified,
+        unexpected_ancillary_present,
+    )
+
+
+def _enable_control_credentials(control: socket.socket) -> None:
+    control.setsockopt(socket.SOL_SOCKET, _SO_PASSCRED_LINUX, 1)
+    if control.getsockopt(socket.SOL_SOCKET, _SO_PASSCRED_LINUX) != 1:
+        raise OSError(errno.EIO, "SO_PASSCRED was not enabled exactly")
+
+
+def _control_return_flags_valid(flags: int) -> bool:
+    """Accept only the fixed CLOEXEC echo and normal record-boundary metadata."""
+
+    return flags >= 0 and flags & ~(_MSG_CMSG_CLOEXEC | _MSG_EOR) == 0
+
+
+def _control_peer_hup_observed(control: socket.socket) -> bool:
+    """Confirm that an empty seqpacket receive represents read-side closure."""
+
+    descriptor = control.fileno()
+    if descriptor < 0:
+        raise OSError(errno.EBADF, os.strerror(errno.EBADF))
+    poller = select.poll()
+    poller.register(
+        descriptor,
+        select.POLLIN | select.POLLHUP | select.POLLERR | select.POLLNVAL,
+    )
+    observed = 0
+    for observed_descriptor, events in poller.poll(0):
+        if observed_descriptor != descriptor:
+            raise OSError(errno.EIO, "control poll returned an unrelated descriptor")
+        observed |= events
+    if observed & (select.POLLERR | select.POLLNVAL):
+        raise OSError(errno.EIO, "control poll reported an invalid socket state")
+    return bool(observed & select.POLLHUP)
+
+
+def _collect_records(
+    control: socket.socket,
+    deadline_ns: int,
+    *,
+    expected_sender_credentials: tuple[int, int, int],
+) -> _CollectionObservation:
     records: list[LinuxInertFixtureNativeSocketRecord] = []
     received_descriptors_finalized = True
     while True:
@@ -1446,37 +1585,66 @@ def _collect_records(control: socket.socket, deadline_ns: int) -> _CollectionObs
             received_descriptors_finalized = (
                 rights_closed and received_descriptors_finalized
             )
-        if payload == b"" and not ancillary and flags == 0:
-            if received_ns >= deadline_ns:
+        (
+            sender_credentials_present,
+            sender_pid,
+            sender_uid,
+            sender_gid,
+            sender_credentials_verified,
+            unexpected_ancillary_present,
+        ) = _inspect_control_ancillary(
+            ancillary,
+            expected_sender_credentials=expected_sender_credentials,
+        )
+        return_flags_valid = _control_return_flags_valid(flags)
+        if payload == b"" and not ancillary and return_flags_valid:
+            try:
+                peer_hup_observed = _control_peer_hup_observed(control)
+            except OSError as exc:
                 return _CollectionObservation(
                     records=tuple(records),
                     eof_observed=False,
-                    failure_reason="deadline_exceeded",
-                    failure_component_reason="fixture_deadline",
+                    failure_reason="transcript_collection_failed",
+                    failure_component_reason="peer_hup_poll_failed",
+                    failure_errno=_bounded_errno(exc.errno),
+                    received_descriptors_finalized=received_descriptors_finalized,
+                )
+            if peer_hup_observed:
+                if received_ns >= deadline_ns:
+                    return _CollectionObservation(
+                        records=tuple(records),
+                        eof_observed=False,
+                        failure_reason="deadline_exceeded",
+                        failure_component_reason="fixture_deadline",
+                        failure_errno=None,
+                        received_descriptors_finalized=received_descriptors_finalized,
+                    )
+                return _CollectionObservation(
+                    records=tuple(records),
+                    eof_observed=True,
+                    failure_reason=None,
+                    failure_component_reason=None,
                     failure_errno=None,
                     received_descriptors_finalized=received_descriptors_finalized,
                 )
-            return _CollectionObservation(
-                records=tuple(records),
-                eof_observed=True,
-                failure_reason=None,
-                failure_component_reason=None,
-                failure_errno=None,
-                received_descriptors_finalized=received_descriptors_finalized,
-            )
 
         record = LinuxInertFixtureNativeSocketRecord(
             payload_hex=payload.hex(),
             message_truncated=bool(flags & socket.MSG_TRUNC),
             control_truncated=bool(flags & socket.MSG_CTRUNC),
-            ancillary_present=bool(ancillary),
+            sender_credentials_present=sender_credentials_present,
+            sender_pid=sender_pid,
+            sender_uid=sender_uid,
+            sender_gid=sender_gid,
+            unexpected_ancillary_present=unexpected_ancillary_present,
         )
         record_overflow = len(records) >= PROTOCOL_MAX_FRAMES
         if not record_overflow:
             records.append(record)
         if (
-            flags & (socket.MSG_TRUNC | socket.MSG_CTRUNC)
-            or ancillary
+            not return_flags_valid
+            or not sender_credentials_verified
+            or unexpected_ancillary_present
             or not rights_closed
             or len(payload) != PROTOCOL_FRAME_SIZE
             or record_overflow
@@ -1717,6 +1885,8 @@ def _spawn_and_collect(
     overall_deadline_ns: int,
     cleanup_timeout_ms: int,
 ) -> _NativeRun:
+    expected_sender_uid = os.getuid()
+    expected_sender_gid = os.getgid()
     stdin_fd = -1
     stdout_fd = -1
     stderr_fd = -1
@@ -1755,6 +1925,8 @@ def _spawn_and_collect(
                 socket.SOCK_SEQPACKET
                 | getattr(socket, "SOCK_CLOEXEC", _SOCK_CLOEXEC_LINUX),
             )
+            if sys.platform == "linux":
+                _enable_control_credentials(parent_control)
             sources = _duplicate_sources(
                 (stdin_fd, stdout_fd, stderr_fd, child_control.fileno(), leaf_fd),
                 owned=source_descriptors,
@@ -1798,7 +1970,15 @@ def _spawn_and_collect(
 
             if parent_control is None:  # pragma: no cover - setup invariant
                 raise AssertionError("spawned launcher has no parent control socket")
-            collection = _collect_records(parent_control, fixture_deadline_ns)
+            collection = _collect_records(
+                parent_control,
+                fixture_deadline_ns,
+                expected_sender_credentials=(
+                    pid,
+                    expected_sender_uid,
+                    expected_sender_gid,
+                ),
+            )
             records = collection.records
             eof_observed = collection.eof_observed
             staging_finalized = (
@@ -1945,6 +2125,8 @@ def _spawn_and_collect(
 
     return _NativeRun(
         pid=pid,
+        expected_sender_uid=expected_sender_uid,
+        expected_sender_gid=expected_sender_gid,
         returncode=returncode,
         records=records,
         eof_observed=eof_observed,
@@ -1968,6 +2150,8 @@ def _build_native_observation(run: _NativeRun) -> LinuxInertFixtureNativeObserva
         return None
     raw_fields: dict[str, object] = {
         "launcher_pid": run.pid,
+        "expected_sender_uid": run.expected_sender_uid,
+        "expected_sender_gid": run.expected_sender_gid,
         "launcher_returncode": run.returncode,
         "eof_observed": run.eof_observed,
         "records": run.records,
@@ -1988,8 +2172,18 @@ def _build_native_observation(run: _NativeRun) -> LinuxInertFixtureNativeObserva
         }
     else:
         try:
+            expected_sender_credentials = (
+                run.pid,
+                run.expected_sender_uid,
+                run.expected_sender_gid,
+            )
             transcript = parse_inert_native_transcript(
-                tuple(record.as_protocol_record() for record in run.records),
+                tuple(
+                    record.as_protocol_record(
+                        expected_sender_credentials=expected_sender_credentials,
+                    )
+                    for record in run.records
+                ),
                 returncode=run.returncode,
                 eof_observed=run.eof_observed,
                 expected_launcher_pid=run.pid,

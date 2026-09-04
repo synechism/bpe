@@ -1394,6 +1394,18 @@
           "title": "Eof Observed",
           "type": "boolean"
         },
+        "expected_sender_gid": {
+          "maximum": 4294967295,
+          "minimum": 0,
+          "title": "Expected Sender Gid",
+          "type": "integer"
+        },
+        "expected_sender_uid": {
+          "maximum": 4294967295,
+          "minimum": 0,
+          "title": "Expected Sender Uid",
+          "type": "integer"
+        },
         "failure_errno": {
           "anyOf": [
             {
@@ -1551,6 +1563,8 @@
       "required": [
         "observation_sha256",
         "launcher_pid",
+        "expected_sender_uid",
+        "expected_sender_gid",
         "launcher_returncode",
         "eof_observed",
         "records",
@@ -1571,10 +1585,6 @@
       "additionalProperties": false,
       "description": "One bounded native socket record, including trust-relevant recvmsg metadata.",
       "properties": {
-        "ancillary_present": {
-          "title": "Ancillary Present",
-          "type": "boolean"
-        },
         "control_truncated": {
           "title": "Control Truncated",
           "type": "boolean"
@@ -1589,13 +1599,64 @@
           "pattern": "^(?:[0-9a-f]{2})*$",
           "title": "Payload Hex",
           "type": "string"
+        },
+        "sender_credentials_present": {
+          "title": "Sender Credentials Present",
+          "type": "boolean"
+        },
+        "sender_gid": {
+          "anyOf": [
+            {
+              "maximum": 4294967295,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Sender Gid"
+        },
+        "sender_pid": {
+          "anyOf": [
+            {
+              "maximum": 2147483647,
+              "minimum": -2147483648,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Sender Pid"
+        },
+        "sender_uid": {
+          "anyOf": [
+            {
+              "maximum": 4294967295,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Sender Uid"
+        },
+        "unexpected_ancillary_present": {
+          "title": "Unexpected Ancillary Present",
+          "type": "boolean"
         }
       },
       "required": [
         "payload_hex",
         "message_truncated",
         "control_truncated",
-        "ancillary_present"
+        "sender_credentials_present",
+        "sender_pid",
+        "sender_uid",
+        "sender_gid",
+        "unexpected_ancillary_present"
       ],
       "title": "LinuxInertFixtureNativeSocketRecord",
       "type": "object"

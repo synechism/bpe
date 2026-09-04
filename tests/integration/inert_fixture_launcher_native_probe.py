@@ -20,6 +20,7 @@ import os
 import platform
 import re
 import secrets
+import select
 import signal
 import socket
 import stat
@@ -142,9 +143,15 @@ _RENAME_NOREPLACE = 1
 _CGROUP2_SUPER_MAGIC = 0x63677270
 _SOCK_CLOEXEC_LINUX = 0o2000000
 _MSG_CMSG_CLOEXEC = getattr(socket, "MSG_CMSG_CLOEXEC", 0)
+_MSG_EOR = getattr(socket, "MSG_EOR", 0)
+_SO_PASSCRED_LINUX = getattr(socket, "SO_PASSCRED", 16)
+_SCM_CREDENTIALS_LINUX = getattr(socket, "SCM_CREDENTIALS", 2)
 _SCM_RIGHTS_ITEM_SIZE = array.array("i").itemsize
+_UCRED = struct.Struct("=iII")
 # Linux rejects SCM_RIGHTS messages containing more than SCM_MAX_FD descriptors.
-_CONTROL_ANCILLARY_SIZE = socket.CMSG_SPACE(253 * _SCM_RIGHTS_ITEM_SIZE)
+_CONTROL_ANCILLARY_SIZE = socket.CMSG_SPACE(
+    253 * _SCM_RIGHTS_ITEM_SIZE
+) + socket.CMSG_SPACE(_UCRED.size)
 
 _PR_GET_SECCOMP = 21
 _PR_SET_NO_NEW_PRIVS = 38
@@ -355,6 +362,8 @@ def _require_private_namespace(root: Path) -> None:
     task_ids = {entry.name for entry in Path("/proc/self/task").iterdir()}
     if task_ids != {"1"}:
         raise RuntimeError("native launcher probe must be single-threaded before fork")
+    if _MSG_CMSG_CLOEXEC == 0:
+        raise RuntimeError("native launcher probe requires atomic ancillary CLOEXEC")
     if not (root / "cgroup.controllers").is_file():
         raise RuntimeError("native launcher probe requires a writable cgroup-v2 mount")
     if _read_nonempty_lines(root / "cgroup.procs") != ("1",):
@@ -1712,7 +1721,76 @@ def _child_exec(
         os._exit(127)
 
 
-def _collect_records(control: socket.socket, deadline: float) -> tuple[
+def _enable_control_credentials(control: socket.socket) -> None:
+    control.setsockopt(socket.SOL_SOCKET, _SO_PASSCRED_LINUX, 1)
+    if control.getsockopt(socket.SOL_SOCKET, _SO_PASSCRED_LINUX) != 1:
+        raise RuntimeError("native launcher control socket did not retain SO_PASSCRED")
+
+
+def _close_received_rights(ancillary: list[tuple[int, int, bytes]]) -> None:
+    close_failed = False
+    for level, message_type, message_data in ancillary:
+        if level != socket.SOL_SOCKET or message_type != socket.SCM_RIGHTS:
+            continue
+        usable_size = len(message_data) - len(message_data) % _SCM_RIGHTS_ITEM_SIZE
+        received_descriptors = array.array("i")
+        received_descriptors.frombytes(message_data[:usable_size])
+        for descriptor in received_descriptors:
+            try:
+                os.close(descriptor)
+            except OSError:
+                close_failed = True
+    if close_failed:
+        raise RuntimeError("received ancillary descriptor closure was incomplete")
+
+
+def _require_exact_sender_credentials(
+    ancillary: list[tuple[int, int, bytes]],
+    *,
+    expected_sender_credentials: tuple[int, int, int],
+) -> None:
+    if len(ancillary) != 1:
+        raise RuntimeError("native launcher control record had inexact ancillary data")
+    level, message_type, message_data = ancillary[0]
+    if (
+        level != socket.SOL_SOCKET
+        or message_type != _SCM_CREDENTIALS_LINUX
+        or len(message_data) != _UCRED.size
+    ):
+        raise RuntimeError("native launcher control record lacked exact sender credentials")
+    if _UCRED.unpack(message_data) != expected_sender_credentials:
+        raise RuntimeError("native launcher control record sender credentials mismatched")
+
+
+def _control_return_flags_valid(flags: int) -> bool:
+    return flags >= 0 and flags & ~(_MSG_CMSG_CLOEXEC | _MSG_EOR) == 0
+
+
+def _control_peer_hup_observed(control: socket.socket) -> bool:
+    descriptor = control.fileno()
+    if descriptor < 0:
+        raise RuntimeError("native launcher control socket was already closed")
+    poller = select.poll()
+    poller.register(
+        descriptor,
+        select.POLLIN | select.POLLHUP | select.POLLERR | select.POLLNVAL,
+    )
+    observed = 0
+    for observed_descriptor, events in poller.poll(0):
+        if observed_descriptor != descriptor:
+            raise RuntimeError("native launcher control poll returned an unrelated descriptor")
+        observed |= events
+    if observed & (select.POLLERR | select.POLLNVAL):
+        raise RuntimeError("native launcher control poll reported an invalid socket state")
+    return bool(observed & select.POLLHUP)
+
+
+def _collect_records(
+    control: socket.socket,
+    deadline: float,
+    *,
+    expected_sender_credentials: tuple[int, int, int],
+) -> tuple[
     tuple[InertNativeSocketRecord, ...], bool
 ]:
     records: list[InertNativeSocketRecord] = []
@@ -1732,23 +1810,21 @@ def _collect_records(control: socket.socket, deadline: float) -> tuple[
                 "timed out draining native launcher control socket"
             ) from exc
 
-        ancillary_present = bool(ancillary)
-        for level, message_type, message_data in ancillary:
-            if level != socket.SOL_SOCKET or message_type != socket.SCM_RIGHTS:
-                continue
-            usable_size = len(message_data) - len(message_data) % _SCM_RIGHTS_ITEM_SIZE
-            received_descriptors = array.array("i")
-            received_descriptors.frombytes(message_data[:usable_size])
-            for descriptor in received_descriptors:
-                with contextlib.suppress(OSError):
-                    os.close(descriptor)
-
+        _close_received_rights(ancillary)
         if flags & (socket.MSG_TRUNC | socket.MSG_CTRUNC):
             raise RuntimeError("native launcher control message was truncated")
-        if ancillary_present:
-            raise RuntimeError("native launcher sent forbidden ancillary data")
-        if payload == b"":
+        if not _control_return_flags_valid(flags):
+            raise RuntimeError("native launcher control message had invalid return flags")
+        if payload == b"" and not ancillary:
+            if not _control_peer_hup_observed(control):
+                raise RuntimeError("empty native launcher receive lacked peer hangup")
             return tuple(records), True
+        _require_exact_sender_credentials(
+            ancillary,
+            expected_sender_credentials=expected_sender_credentials,
+        )
+        if payload == b"":
+            raise RuntimeError("zero-length native launcher control record is not EOF")
         if len(records) >= PROTOCOL_MAX_FRAMES:
             raise RuntimeError("native launcher transcript exceeded the frame bound")
         records.append(
@@ -1774,6 +1850,66 @@ def _wait_exact_child(pid: int, deadline: float) -> int:
         time.sleep(0.01)
 
 
+def _assert_zero_length_seqpacket_is_not_eof() -> None:
+    """Exercise the HUP-with-queued-record case before qualifying the launcher."""
+
+    control, peer = socket.socketpair(
+        socket.AF_UNIX,
+        socket.SOCK_SEQPACKET | _SOCK_CLOEXEC_LINUX,
+    )
+    pid: int | None = None
+    waited = False
+    expected_uid = os.getuid()
+    expected_gid = os.getgid()
+    try:
+        _enable_control_credentials(control)
+        pid = os.fork()
+        if pid == 0:
+            control.close()
+            exit_code = 0
+            try:
+                if peer.send(b"") != 0:
+                    exit_code = 127
+                marker = b"x" * PROTOCOL_FRAME_SIZE
+                if exit_code == 0 and peer.send(marker) != len(marker):
+                    exit_code = 127
+            except BaseException:
+                exit_code = 127
+            finally:
+                with contextlib.suppress(OSError):
+                    peer.close()
+            os._exit(exit_code)
+
+        peer.close()
+        returncode = _wait_exact_child(pid, time.monotonic() + 2.0)
+        waited = True
+        if returncode != 0:
+            raise RuntimeError("zero-length seqpacket regression sender failed")
+        try:
+            _collect_records(
+                control,
+                time.monotonic() + 2.0,
+                expected_sender_credentials=(pid, expected_uid, expected_gid),
+            )
+        except RuntimeError as exc:
+            if str(exc) != "zero-length native launcher control record is not EOF":
+                raise
+        else:
+            raise RuntimeError(
+                "queued zero-length seqpacket was accepted as peer EOF"
+            )
+    finally:
+        with contextlib.suppress(OSError):
+            control.close()
+        with contextlib.suppress(OSError):
+            peer.close()
+        if pid is not None and pid > 0 and not waited:
+            with contextlib.suppress(ProcessLookupError):
+                os.kill(pid, signal.SIGKILL)
+            with contextlib.suppress(ChildProcessError):
+                os.waitpid(pid, 0)
+
+
 def _spawn_and_collect(
     launcher_fd: int,
     leaf: Path,
@@ -1797,6 +1933,7 @@ def _spawn_and_collect(
     waited = False
     deadline = time.monotonic() + _CASE_TIMEOUT_SECONDS
     try:
+        _enable_control_credentials(parent_control)
         sources = _duplicate_sources(original_descriptors)
 
         child_control.close()
@@ -1824,7 +1961,11 @@ def _spawn_and_collect(
         records: tuple[InertNativeSocketRecord, ...] = ()
         eof_observed = False
         if not close_peer:
-            records, eof_observed = _collect_records(parent_control, deadline)
+            records, eof_observed = _collect_records(
+                parent_control,
+                deadline,
+                expected_sender_credentials=(pid, os.getuid(), os.getgid()),
+            )
             parent_control.close()
         returncode = _wait_exact_child(pid, deadline)
         waited = True
@@ -2797,6 +2938,7 @@ def _collect_qualified_report_bytes(
                     raise RuntimeError(
                         "private cgroup root was not empty after manager migration"
                     )
+                _assert_zero_length_seqpacket_is_not_eof()
                 for case in NATIVE_QUALIFICATION_CASES:
                     launcher_fd, duplicate = _duplicate_sealed_launcher(
                         artifact,

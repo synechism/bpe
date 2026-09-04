@@ -130,9 +130,19 @@ artifact, or subreaper cleanup forces `orchestrator_failed`.
 The control channel is independently bounded to at most eight native socket records. A
 captured payload is bounded to the fixed frame size plus one rejection byte, so short,
 oversized, and empty malformed messages remain replayable without allowing unbounded input.
-Each record preserves its payload and `recvmsg` truncation and ancillary-data facts.
-Validation reruns the strict native transcript parser; it does not trust the stored parsed
-projection.
+Before launch, the receiver enables and reads back Linux `SO_PASSCRED`. Every queued record
+must then carry exactly one kernel-supplied `SCM_CREDENTIALS` item matching the spawned
+launcher PID and the controller's captured real UID and GID. Every other control item is
+rejected, while any received `SCM_RIGHTS` descriptors still receive one bounded close pass.
+Each record preserves its payload, raw sender credentials, and `recvmsg` truncation and
+unexpected-ancillary facts. Validation re-derives the credential match and reruns the strict
+native transcript parser; it does not trust a stored parsed projection.
+
+Linux returns an empty `SOCK_SEQPACKET` payload for both a queued zero-length record and peer
+shutdown. A queued empty record still carries the kernel credential item, whereas drained
+shutdown does not. The collector therefore accepts EOF only for an empty receive with no
+ancillary data, fixed return flags, and same-descriptor `POLLHUP`. This remains unambiguous
+even when an empty record, trailing records, and shutdown are already queued together.
 
 ## Ambiguous consumption and controller death
 
